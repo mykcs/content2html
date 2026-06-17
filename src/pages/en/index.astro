@@ -1,0 +1,31 @@
+---
+// src/pages/en/index.astro - English navigation page (en route)
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+<BaseLayout
+  title="content2html"
+  description="Content (arxiv paper / local progress) → HTML (slide + long-form)"
+  lang="en"
+  productType="longform"
+>
+  <header>
+    <h1>content2html</h1>
+    <p class="swiss-rule"></p>
+  </header>
+  <main>
+    <section>
+      <h2>4 Products</h2>
+      <ul>
+        <li><strong>paper-slide.html</strong> — paper-reading talk (horizontal swipe deck)</li>
+        <li><strong>paper-summary.html</strong> — async paper summary (long-form single column)</li>
+        <li><strong>progress-slide.html</strong> — weekly progress talk (horizontal swipe deck)</li>
+        <li><strong>progress-report.html</strong> — weekly progress long-form archive</li>
+      </ul>
+    </section>
+    <section>
+      <h2>Status</h2>
+      <p>SKILL.md (main entry, trigger <code>/content2html</code>) is live. MVP deployed with <a href="/content2html/paper/2606.18246/summary/">paper summary sample</a>.</p>
+      <p>Switch to Chinese: <a href="/content2html/zh/">/zh/</a></p>
+    </section>
+  </main>
+</BaseLayout>
