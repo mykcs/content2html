@@ -1,0 +1,67 @@
+{
+  "id": "2606.18246",
+  "arxiv_id": "2606.18246",
+  "title_zh": "可变宽度 Transformer",
+  "title_en": "Variable-Width Transformers",
+  "authors": [
+    "Zhaofeng Wu",
+    "Oliver Sieberling",
+    "Shawn Tan",
+    "Rameswar Panda",
+    "Yury Polyanskiy",
+    "Yoon Kim"
+  ],
+  "abstract_zh": "扩展模型规模（尤其是深度和宽度）一直是 transformer 语言模型进步的核心驱动力。然而，大多数架构在所有层上保持恒定宽度，将固定的参数和计算预算均匀分配，尽管不同层可能扮演不同的计算角色。在本文中，我们通过提出一种 × 形（> <former）架构，实证研究了沿网络深度的非均匀容量分配。该设计在保持首尾层较宽的同时压缩中间层，使用一种无需参数的残差缩放机制。在覆盖 200M 到 2B 参数（稠密）以及 3B 参数（MoE）的 decoder-only 语言模型上，我们的 > <former 在语言建模损失上始终优于参数匹配的统一基线。通过降低平均层宽度，该架构还减少了总体 FLOPs（在拟合损失匹配的扩展曲线下降低 22%），并缩小了 KV 缓存的内存与 I/O 开销（降低 15%）。在分析中，我们展示了这种瓶颈结构在残差流中产生了定性不同的表征。总体而言，我们的结果表明非均匀宽度分配可以让语言模型的扩展更具资源效率。",
+  "abstract_en": "Scaling model size, specifically depth and width, has driven significant progress in transformer-based language models. However, most architectures maintain a constant width across all layers, allocating a fixed parameter and computation budget evenly despite different layers potentially playing distinct computational roles. In this work, we empirically investigate nonuniform capacity allocation across network depth by proposing an ×-shaped (> <former) architecture. This design maintains wider early and late layers while narrowing the middle layers, utilizing a parameter-free residual resizing mechanism. Across decoder-only language models ranging from 200M to 2B parameters (dense) and 3B parameters (MoE), our > <former consistently outperforms parameter-matched uniform baselines on language modeling loss. By reducing the average layer width, this architecture also requires fewer overall FLOPs (22% reduction under fitted loss-matched scaling curves) and smaller KV cache memory and I/O cost (15% reduction). In analysis, we show that this bottleneck structure results in qualitatively different representations in residual streams. Overall, our results demonstrate that nonuniform width allocation can result in more resource-optimal scaling of language models.",
+  "sections_zh": [
+    {
+      "heading": "1. 引言",
+      "body": "扩展 transformer 模型规模是过去几年 NLP 进展的核心路径。现有工作主要在两个维度扩展：深度（层数）和宽度（隐藏维度）。然而，目前主流架构采用均匀宽度：所有层分配相同的参数和计算预算。本工作挑战这一假设：不同层可能承担不同计算功能，因此应允许非均匀宽度分配。我们提出 × 形 > <former 架构，保留首尾层宽度而压缩中间层，形成参数瓶颈结构。"
+    },
+    {
+      "heading": "2. 方法：> <former 架构",
+      "body": "> <former 的核心是参数无关的残差缩放机制：中间层在残差流维度上被收窄，迫使模型在压缩表征中传递信息。形式上，给定输入隐藏状态 h ∈ R^d，我们定义宽度函数 w(l) = d · φ(l)，其中 φ(l) 在首尾层取 1、在中间层取 0.5 左右。残差连接通过线性投影恢复到原维度，保证信息流不丢失。整体设计既不增加参数量也不引入新激活函数，可作为 drop-in 替代方案。"
+    },
+    {
+      "heading": "3. 实验",
+      "body": "我们在 200M、500M、1B、2B 稠密 decoder-only 模型以及 3B MoE 模型上评估 > <former。训练数据使用 SlimPajama 和 The Pile，token 量 100B-300B。基线是参数匹配的均匀宽度 Transformer。结果显示：(1) > <former 在所有规模上都获得更低验证损失；(2) 在损失匹配拟合曲线上，> <former 节省约 22% FLOPs；(3) KV 缓存内存和 I/O 开销降低约 15%。"
+    },
+    {
+      "heading": "4. 分析",
+      "body": "我们通过 probing tasks 和 CKA（Centered Kernel Alignment）分析残差流表征。> <former 的中间层表征呈现更聚焦、维度更低的信息结构，提示模型在瓶颈中学会了更紧凑的语义编码。可视化 t-SNE 投影也显示，> <former 形成了与均匀 Transformer 显著不同的特征几何。"
+    },
+    {
+      "heading": "5. 结论",
+      "body": "本文实证表明，对 transformer 沿深度方向进行非均匀宽度分配是更高效的扩展策略。> <former 架构通过参数无关残差缩放实现宽度变化，在不增加参数的前提下降低 FLOPs 和 KV 缓存成本，同时获得更好的语言建模损失。这一结果挑战了「层宽应均匀」的传统假设，为资源高效的大模型设计提供了新方向。"
+    }
+  ],
+  "sections_en": [
+    {
+      "heading": "1. Introduction",
+      "body": "Scaling transformer models has been the central driver of NLP progress in recent years. Existing work has scaled along two primary axes: depth (number of layers) and width (hidden dimension). However, mainstream architectures adopt uniform width: every layer receives the same parameter and compute budget. This work challenges that assumption—different layers may play distinct computational roles, justifying nonuniform width allocation. We propose the ×-shaped > <former architecture, which retains width in early and late layers while compressing middle layers, forming a parametric bottleneck structure."
+    },
+    {
+      "heading": "2. Method: > <former Architecture",
+      "body": "The core of > <former is a parameter-free residual resizing mechanism: middle layers are narrowed in residual stream dimension, forcing the model to pass information through compressed representations. Formally, given input hidden state h ∈ R^d, we define the width function w(l) = d · φ(l), where φ(l) is 1 for early/late layers and around 0.5 for middle layers. Residual connections recover the original dimension via linear projection, ensuring information flow is preserved. The design adds no parameters and no new activations, making it a drop-in replacement."
+    },
+    {
+      "heading": "3. Experiments",
+      "body": "We evaluate > <former on 200M, 500M, 1B, 2B dense decoder-only models and a 3B MoE model. Training data is SlimPajama and The Pile with 100B-300B tokens. The baseline is a parameter-matched uniform-width Transformer. Results show: (1) > <former achieves lower validation loss at every scale; (2) on loss-matched fitted curves, > <former saves ~22% FLOPs; (3) KV cache memory and I/O cost drop by ~15%."
+    },
+    {
+      "heading": "4. Analysis",
+      "body": "We analyze residual stream representations via probing tasks and CKA (Centered Kernel Alignment). > <former's middle-layer representations exhibit a more focused, lower-dimensional information structure, suggesting the model learns more compact semantic encoding in the bottleneck. t-SNE visualization further reveals that > <former forms a feature geometry qualitatively distinct from uniform Transformers."
+    },
+    {
+      "heading": "5. Conclusion",
+      "body": "This paper empirically shows that nonuniform width allocation along depth is a more efficient scaling strategy for transformers. The > <former architecture achieves width variation via parameter-free residual resizing, reducing both FLOPs and KV cache cost without adding parameters, while achieving better language modeling loss. This result challenges the conventional assumption that layer width should be uniform, opening a new direction for resource-efficient large model design."
+    }
+  ],
+  "key_takeaways": [
+    "× 形 > <former 架构在 200M-3B 规模上一致优于均匀宽度 Transformer",
+    "参数无关残差缩放机制：drop-in 替代，零额外参数、零新激活",
+    "FLOPs 降低 22% + KV 缓存降低 15%（损失匹配曲线下）",
+    "中间层瓶颈结构产生定性不同的残差流表征（更紧凑、更聚焦）",
+    "挑战「层宽应均匀」的默认假设，为资源高效大模型设计提供新路径"
+  ]
+}

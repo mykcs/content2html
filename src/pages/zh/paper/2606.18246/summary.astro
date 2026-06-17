@@ -1,0 +1,49 @@
+---
+// src/pages/zh/paper/2606.18246/summary.astro
+// paper-mode smoke test: 中文 summary 版本 (单栏 long-form)
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import paperData from "../../../../data/test-paper.json";
+
+const paper = paperData;
+---
+<BaseLayout
+  title={`${paper.title_zh} | paper-summary`}
+  description={paper.abstract_zh}
+  lang="zh"
+  productType="longform"
+>
+  <article>
+    <header>
+      <p class="text-caption text-gray-rule">arXiv: {paper.arxiv_id}</p>
+      <h1>{paper.title_zh}</h1>
+      <p class="text-graphite">{paper.authors.join(" · ")}</p>
+      <hr class="swiss-rule" />
+    </header>
+
+    <section>
+      <h2>摘要</h2>
+      <p>{paper.abstract_zh}</p>
+    </section>
+
+    <section>
+      <h2>核心贡献</h2>
+      <ul>
+        {paper.key_takeaways.map((t) => (
+          <li>{t}</li>
+        ))}
+      </ul>
+    </section>
+
+    {paper.sections_zh.map((s) => (
+      <section>
+        <h2>{s.heading}</h2>
+        <p>{s.body}</p>
+      </section>
+    ))}
+
+    <footer>
+      <hr class="swiss-rule" />
+      <p class="text-caption text-gray-rule">本文为 paper-mode 烟雾测试产物 · {paper.id}</p>
+    </footer>
+  </article>
+</BaseLayout>

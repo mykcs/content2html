@@ -1,0 +1,49 @@
+---
+// src/pages/en/paper/2606.18246/summary.astro
+// paper-mode smoke test: English summary version (single-column longform)
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import paperData from "../../../../data/test-paper.json";
+
+const paper = paperData;
+---
+<BaseLayout
+  title={`${paper.title_en} | paper-summary`}
+  description={paper.abstract_en}
+  lang="en"
+  productType="longform"
+>
+  <article>
+    <header>
+      <p class="text-caption text-gray-rule">arXiv: {paper.arxiv_id}</p>
+      <h1>{paper.title_en}</h1>
+      <p class="text-graphite">{paper.authors.join(" · ")}</p>
+      <hr class="swiss-rule" />
+    </header>
+
+    <section>
+      <h2>Abstract</h2>
+      <p>{paper.abstract_en}</p>
+    </section>
+
+    <section>
+      <h2>Key Contributions</h2>
+      <ul>
+        {paper.key_takeaways.map((t) => (
+          <li>{t}</li>
+        ))}
+      </ul>
+    </section>
+
+    {paper.sections_en.map((s) => (
+      <section>
+        <h2>{s.heading}</h2>
+        <p>{s.body}</p>
+      </section>
+    ))}
+
+    <footer>
+      <hr class="swiss-rule" />
+      <p class="text-caption text-gray-rule">Smoke test artifact for paper-mode · {paper.id}</p>
+    </footer>
+  </article>
+</BaseLayout>

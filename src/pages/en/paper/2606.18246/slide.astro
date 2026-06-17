@@ -1,0 +1,52 @@
+---
+// src/pages/en/paper/2606.18246/slide.astro
+// paper-mode smoke test: English slide version (horizontal pagination)
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import paperData from "../../../../data/test-paper.json";
+
+const paper = paperData;
+---
+<BaseLayout
+  title={`${paper.title_en} | paper-slide`}
+  description={paper.abstract_en}
+  lang="en"
+  productType="slide"
+>
+  <section class="slide-page active" data-page="1">
+    <div class="col-span-12 flex flex-col justify-center">
+      <p class="text-caption text-gray-rule">arXiv: {paper.arxiv_id}</p>
+      <h1 class="text-display font-sans font-bold mt-4">{paper.title_en}</h1>
+      <hr class="swiss-rule my-6" />
+      <p class="text-body text-graphite">{paper.authors.join(" · ")}</p>
+    </div>
+  </section>
+
+  <section class="slide-page" data-page="2">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
+      <h2 class="col-span-12 text-headline font-sans">Abstract</h2>
+      <p class="col-span-10 col-start-2 text-body leading-relaxed">{paper.abstract_en}</p>
+    </div>
+  </section>
+
+  <section class="slide-page" data-page="3">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
+      <h2 class="col-span-12 text-headline font-sans">Key Contributions</h2>
+      <ul class="col-span-10 col-start-2 space-y-3 text-body">
+        {paper.key_takeaways.map((t) => (
+          <li class="border-l-4 border-ikb-blue pl-4">{t}</li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="slide-page" data-page="4">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
+      <h2 class="col-span-12 text-headline font-sans">Section Overview</h2>
+      <ol class="col-span-10 col-start-2 space-y-2 text-body">
+        {paper.sections_en.map((s) => (
+          <li><strong>{s.heading}</strong> — {s.body.slice(0, 60)}…</li>
+        ))}
+      </ol>
+    </div>
+  </section>
+</BaseLayout>
