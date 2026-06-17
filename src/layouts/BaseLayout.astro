@@ -60,6 +60,19 @@ const iconUrl = `${baseUrl}/icons/translate.svg`;
     </a>
     <slot />
     {productType === "slide" && (
+      <div class="slide-controls" role="toolbar" aria-label="Slide controls">
+        <span class="slide-controls__label">Preview:</span>
+        <span class="slide-controls__zoom" id="slide-zoom-level">Fit</span>
+        <div class="slide-controls__group">
+          <button data-zoom="0.5" title="Zoom 50%" aria-label="缩小">−</button>
+          <button data-zoom="1" title="Zoom 100%" aria-label="放大">+</button>
+        </div>
+        <button data-zoom="fit" class="active" title="Fit to window (0)" aria-label="适应屏幕">Fit</button>
+        <span class="slide-controls__divider"></span>
+        <button data-zoom="print" class="slide-controls__print" title="Print / Save as PDF (P)" aria-label="打印 PDF">Print PDF</button>
+      </div>
+    )}
+    {productType === "slide" && (
       <script>
         import "../scripts/slide-nav";
       </script>

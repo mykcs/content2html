@@ -1,18 +1,32 @@
-// src/scripts/slide-nav.ts — slide 横向/纵向翻页 (scroll + keyboard + touch)
-// 触发键: ArrowLeft/Right/Up/Down + Space + PageUp/Down + Home/End + 1-9 直跳
-// 触发滚轮: wheel deltaY (debounce 700ms, 避免 Mac trackpad 连续触发)
-// 触发触屏: touchstart/touchend swipe (阈值 50px)
+// src/scripts/slide-nav.ts — slide 翻页 + 缩放 (OSA-like: dark frame + auto-scale + bottom controls)
+//
+// 翻页触发 (4 选 1):
+//   - 键盘: Arrow* / Space / PageUp-Down / Home/End / 1-9
+//   - 滚轮: wheel deltaY (debounce 700ms)
+//   - 触屏: touchstart/end swipe (threshold 50px)
+//   - 控件: 点击 controls 缩放按钮 (ZoomIn/ZoomOut/Fit)
+//
+// 缩放 (OSA-style 4 档 + Fit):
+//   - Fit: 计算 viewport / 1920×1080 min scale, 上限 1
+//   - 1.0× / 0.75× / 0.5×: 固定档位
+//   - 控件点击循环切换
 //
 // 关键 fix (2026-06-17): 旧版只挂 astro:page-load, content2html 没装 ViewTransitions
 //   → 首次加载 init() 不 fire → 键盘没反应。本版补 DOMContentLoaded + 直接调用。
-//
-// Astro v6 ViewTransitions 兼容: astro:page-load 挂载 + astro:before-swap 清理
 
 const ACTIVE_CLASS = "active";
 const INDICATOR_CLASS = "slide-indicator";
+const CONTROLS_CLASS = "slide-controls";
 const WHEEL_DEBOUNCE_MS = 700;
 const TOUCH_SWIPE_THRESHOLD = 50;
+const SLIDE_W = 1920;
+const SLIDE_H = 1080;
+const FRAME_PAD = 80;
+const ZOOM_LEVELS = [0.5, 0.75, 1, "fit"] as const;
+type ZoomLevel = (typeof ZOOM_LEVELS)[number];
+type ZoomAction = ZoomLevel | "print";
 
+// === Navigation ===
 function navigate(shift: number): void {
   const pages = Array.from(
     document.querySelectorAll<HTMLElement>(".slide-page")
@@ -53,6 +67,49 @@ function ensureFirstPageActive(): void {
   if (!hasActive) pages[0].classList.add(ACTIVE_CLASS);
   const current = pages.findIndex((p) => p.classList.contains(ACTIVE_CLASS));
   updateIndicator(Math.max(0, current), pages.length);
+  // Set --slide-total for ::before counter
+  document.documentElement.style.setProperty("--slide-total", String(pages.length));
+}
+
+// === Scaling (OSA-style fit-to-viewport + 3 manual levels) ===
+function fitScale(): number {
+  const availableW = window.innerWidth - FRAME_PAD;
+  const availableH = window.innerHeight - FRAME_PAD;
+  return Math.min(availableW / SLIDE_W, availableH / SLIDE_H, 1);
+}
+
+function applyZoom(level: ZoomLevel): void {
+  const scale = level === "fit" ? fitScale() : level;
+  document.documentElement.style.setProperty("--slide-scale", String(scale));
+  // Update controls display
+  const display = document.querySelector<HTMLElement>(".slide-controls__zoom");
+  if (display) display.textContent = level === "fit" ? "Fit" : `${Math.round(level * 100)}%`;
+  // Toggle .active class on Fit button
+  const fitBtn = document.querySelector<HTMLButtonElement>("[data-zoom='fit']");
+  if (fitBtn) fitBtn.classList.toggle("active", level === "fit");
+}
+
+function zoomNext(): void {
+  const current = readCurrentZoom();
+  const idx = ZOOM_LEVELS.indexOf(current);
+  const next = ZOOM_LEVELS[(idx + 1) % ZOOM_LEVELS.length];
+  applyZoom(next);
+}
+
+function zoomPrev(): void {
+  const current = readCurrentZoom();
+  const idx = ZOOM_LEVELS.indexOf(current);
+  const prev = ZOOM_LEVELS[(idx - 1 + ZOOM_LEVELS.length) % ZOOM_LEVELS.length];
+  applyZoom(prev);
+}
+
+function readCurrentZoom(): ZoomLevel {
+  const display = document.querySelector<HTMLElement>(".slide-controls__zoom");
+  if (!display) return "fit";
+  const txt = display.textContent ?? "Fit";
+  if (txt === "Fit") return "fit";
+  const pct = parseInt(txt, 10) / 100;
+  return (ZOOM_LEVELS.find((z) => z === pct) ?? "fit") as ZoomLevel;
 }
 
 // === Keyboard ===
@@ -88,6 +145,20 @@ function onKeyDown(e: KeyboardEvent): void {
       e.preventDefault();
       navigate(999);
       break;
+    case "+":
+    case "=":
+      e.preventDefault();
+      zoomNext();
+      break;
+    case "-":
+    case "_":
+      e.preventDefault();
+      zoomPrev();
+      break;
+    case "0":
+      e.preventDefault();
+      applyZoom("fit");
+      break;
     default:
       if (e.key >= "1" && e.key <= "9") {
         e.preventDefault();
@@ -108,7 +179,13 @@ function onKeyDown(e: KeyboardEvent): void {
 // === Wheel (debounced) ===
 let lastWheelTime = 0;
 function onWheel(e: WheelEvent): void {
-  // 拦截: slide-deck 是 overflow:hidden, 默认不滚动; 这里用 wheel 触发翻页
+  // Ctrl+wheel = zoom (trackpad pinch)
+  if (e.ctrlKey || e.metaKey) {
+    e.preventDefault();
+    e.deltaY < 0 ? zoomNext() : zoomPrev();
+    return;
+  }
+  // Plain wheel = page flip
   e.preventDefault();
   const now = Date.now();
   if (now - lastWheelTime < WHEEL_DEBOUNCE_MS) return;
@@ -129,12 +206,37 @@ function onTouchEnd(e: TouchEvent): void {
   }
 }
 
+// === Controls bar wiring ===
+function onControlsClick(e: Event): void {
+  const btn = (e.target as HTMLElement | null)?.closest<HTMLElement>("[data-zoom]");
+  if (!btn) return;
+  const level = btn.dataset.zoom as ZoomAction | undefined;
+  if (!level) return;
+  if (level === "print") {
+    window.print();
+    return;
+  }
+  applyZoom(level);
+}
+
+// === Resize handler ===
+function onResize(): void {
+  // Re-fit if currently in "fit" mode
+  const display = document.querySelector<HTMLElement>(".slide-controls__zoom");
+  if (display?.textContent === "Fit") applyZoom("fit");
+}
+
+// === Attach / Detach ===
 function attach(): void {
   ensureFirstPageActive();
+  applyZoom("fit");
   document.addEventListener("keydown", onKeyDown);
   window.addEventListener("wheel", onWheel, { passive: false });
   document.addEventListener("touchstart", onTouchStart, { passive: true });
   document.addEventListener("touchend", onTouchEnd, { passive: true });
+  window.addEventListener("resize", onResize);
+  const controls = document.querySelector(`.${CONTROLS_CLASS}`);
+  if (controls) controls.addEventListener("click", onControlsClick as EventListener);
 }
 
 function detach(): void {
@@ -142,13 +244,13 @@ function detach(): void {
   window.removeEventListener("wheel", onWheel);
   document.removeEventListener("touchstart", onTouchStart);
   document.removeEventListener("touchend", onTouchEnd);
+  window.removeEventListener("resize", onResize);
+  const controls = document.querySelector(`.${CONTROLS_CLASS}`);
+  if (controls) controls.removeEventListener("click", onControlsClick as EventListener);
   document.querySelector(`.${INDICATOR_CLASS}`)?.remove();
 }
 
-// 关键: 不依赖 astro:page-load (无 ViewTransitions 不 fire)
-// 1) 同步挂载: 脚本是 module + defer, DOMContentLoaded 已经触发
-// 2) 兜底: DOMContentLoaded 还在 loading 时挂监听
-// 3) ViewTransitions 兼容: 切页时重新挂载
+// 3 重保险: 立即 attach (module defer) + DOMContentLoaded 兜底 + ViewTransitions 兼容
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", attach, { once: true });
 } else {
