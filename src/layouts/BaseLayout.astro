@@ -48,6 +48,11 @@ const switchTitle = targetLang === "en" ? "Switch to English" : "切换到中文
       </a>
     </nav>
     <slot />
+    {productType === "slide" && (
+      <script>
+        import "../scripts/slide-nav";
+      </script>
+    )}
   </body>
 </html>
 

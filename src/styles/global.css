@@ -98,6 +98,26 @@ body {
   z-index: 1;
 }
 
+/* Slide 页码指示器 (左下角, 半透明深底白字, 由 slide-nav.ts 注入) */
+.slide-indicator {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 60;
+  background: rgba(20, 20, 20, 0.72);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  padding: 0.3rem 0.7rem;
+  border-radius: 0.375rem;
+  pointer-events: none;
+  user-select: none;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
 /* Long-form 单栏长文 (max-width 720px, 1 永字 ≈ 16px) */
 .longform {
   max-width: 45rem;  /* 720px */
