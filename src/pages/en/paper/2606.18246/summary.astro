@@ -1,10 +1,24 @@
 ---
 // src/pages/en/paper/2606.18246/summary.astro
-// paper-mode smoke test: English summary version (single-column longform)
+// paper-mode: English summary version (single-column longform)
+// Migrated to Astro content collection (getEntry) — see src/content.config.ts
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
-import paperData from "../../../../data/test-paper.json";
+import { getEntry } from "astro:content";
 
-const paper = paperData;
+const entry = await getEntry("papers", "2606.18246");
+if (!entry) throw new Error("paper 2606.18246 not found in collection");
+const paper = entry.data as {
+  id: string;
+  arxiv_id?: string;
+  title_zh: string;
+  title_en: string;
+  authors: string[];
+  abstract_zh: string;
+  abstract_en: string;
+  sections_zh: { heading: string; body: string }[];
+  sections_en: { heading: string; body: string }[];
+  key_takeaways: string[];
+};
 ---
 <BaseLayout
   title={`${paper.title_en} | paper-summary`}
@@ -14,7 +28,7 @@ const paper = paperData;
 >
   <article>
     <header>
-      <p class="text-caption text-gray-rule">arXiv: {paper.arxiv_id}</p>
+      <p class="text-caption text-gray-rule">arXiv: {paper.arxiv_id ?? paper.id}</p>
       <h1>{paper.title_en}</h1>
       <p class="text-graphite">{paper.authors.join(" · ")}</p>
       <hr class="swiss-rule" />

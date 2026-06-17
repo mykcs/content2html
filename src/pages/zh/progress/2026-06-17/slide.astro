@@ -1,0 +1,90 @@
+---
+// src/pages/zh/progress/2026-06-17/slide.astro
+// progress-mode: 中文 slide 版本 (横向翻页, 5 页: title/done/doing/next/metrics)
+// 改用 Astro content collection (getEntry) — 见 src/content.config.ts
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import { getEntry } from "astro:content";
+
+const entry = await getEntry("progress", "2026-06-17");
+if (!entry) throw new Error("progress 2026-06-17 not found in collection");
+const p = entry.data as {
+  id: string;
+  project_name: string;
+  period: string;
+  done: string[];
+  doing: string[];
+  next: [string, string, string][];
+  metrics?: Record<string, string>;
+};
+---
+<BaseLayout
+  title={`${p.project_name} | progress-slide`}
+  description={`${p.period} — done/doing/next`}
+  lang="zh"
+  productType="slide"
+>
+  <section class="slide-page active" data-page="1">
+    <div class="col-span-12 flex flex-col justify-center">
+      <p class="text-caption text-gray-rule">{p.period}</p>
+      <h1 class="text-display font-sans font-bold mt-4">{p.project_name}</h1>
+      <hr class="swiss-rule my-6" />
+      <p class="text-body text-graphite">进度概览 · progress-mode 烟雾测试</p>
+    </div>
+  </section>
+
+  <section class="slide-page" data-page="2">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
+      <h2 class="col-span-12 text-headline font-sans">Done (已完成)</h2>
+      <ol class="col-span-10 col-start-2 space-y-2 text-body">
+        {p.done.map((d) => <li class="border-l-4 border-lemon-green pl-4">{d}</li>)}
+      </ol>
+    </div>
+  </section>
+
+  <section class="slide-page" data-page="3">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
+      <h2 class="col-span-12 text-headline font-sans">Doing (进行中)</h2>
+      <ul class="col-span-10 col-start-2 space-y-3 text-body">
+        {p.doing.map((d) => <li class="border-l-4 border-lemon-yellow pl-4">{d}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="slide-page" data-page="4">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
+      <h2 class="col-span-12 text-headline font-sans">Next (计划中)</h2>
+      <table class="col-span-12 text-body">
+        <thead>
+          <tr class="border-b border-gray-rule">
+            <th class="text-left py-2">任务</th>
+            <th class="text-left py-2">负责人</th>
+            <th class="text-left py-2">截止</th>
+          </tr>
+        </thead>
+        <tbody>
+          {p.next.map(([task, agent, deadline]) => (
+            <tr class="border-b border-gray-rule">
+              <td class="py-2 pr-4">{task}</td>
+              <td class="py-2 pr-4">{agent}</td>
+              <td class="py-2">{deadline}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="slide-page" data-page="5">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
+      <h2 class="col-span-12 text-headline font-sans">Metrics (指标)</h2>
+      <dl class="col-span-10 col-start-2 grid grid-cols-2 gap-4 text-body">
+        {Object.entries(p.metrics ?? {}).map(([k, v]) => (
+          <div class="border-l-4 border-ikb-blue pl-4">
+            <dt class="text-caption text-gray-rule">{k}</dt>
+            <dd class="font-semibold mt-1">{v}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+</BaseLayout>

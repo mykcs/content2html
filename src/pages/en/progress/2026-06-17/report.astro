@@ -1,0 +1,87 @@
+---
+// src/pages/en/progress/2026-06-17/report.astro
+// progress-mode: English report version (single-column longform, scrollable)
+// Migrated to Astro content collection (getEntry) — see src/content.config.ts
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import { getEntry } from "astro:content";
+
+const entry = await getEntry("progress", "2026-06-17");
+if (!entry) throw new Error("progress 2026-06-17 not found in collection");
+const p = entry.data as {
+  id: string;
+  project_name: string;
+  period: string;
+  done: string[];
+  doing: string[];
+  next: [string, string, string][];
+  metrics?: Record<string, string>;
+};
+---
+<BaseLayout
+  title={`${p.project_name} | progress-report`}
+  description={`${p.period} — done/doing/next`}
+  lang="en"
+  productType="longform"
+>
+  <article>
+    <header>
+      <p class="text-caption text-gray-rule">{p.period}</p>
+      <h1>{p.project_name}</h1>
+      <p class="text-graphite">progress-mode smoke test · weekly archive</p>
+      <hr class="swiss-rule" />
+    </header>
+
+    <section>
+      <h2>Done (completed)</h2>
+      <ol>
+        {p.done.map((d) => <li>{d}</li>)}
+      </ol>
+    </section>
+
+    <section>
+      <h2>Doing (in progress)</h2>
+      <ul>
+        {p.doing.map((d) => <li>{d}</li>)}
+      </ul>
+    </section>
+
+    <section>
+      <h2>Next (planned)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Task</th>
+            <th>Agent</th>
+            <th>Deadline</th>
+          </tr>
+        </thead>
+        <tbody>
+          {p.next.map(([task, agent, deadline]) => (
+            <tr>
+              <td>{task}</td>
+              <td>{agent}</td>
+              <td>{deadline}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Metrics</h2>
+      <dl>
+        {Object.entries(p.metrics ?? {}).map(([k, v]) => (
+          <div>
+            <dt>{k}</dt>
+            <dd>{v}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <footer>
+      <hr class="swiss-rule" />
+      <p class="text-caption text-gray-rule">Smoke test artifact for progress-mode · {p.id}</p>
+    </footer>
+  </article>
+</BaseLayout>

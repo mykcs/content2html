@@ -1,10 +1,24 @@
 ---
 // src/pages/zh/paper/2606.18246/slide.astro
-// paper-mode smoke test: 中文 slide 版本 (横向翻页)
+// paper-mode: 中文 slide 版本 (横向翻页)
+// 改用 Astro content collection (getEntry) — 见 src/content.config.ts
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
-import paperData from "../../../../data/test-paper.json";
+import { getEntry } from "astro:content";
 
-const paper = paperData;
+const entry = await getEntry("papers", "2606.18246");
+if (!entry) throw new Error("paper 2606.18246 not found in collection");
+const paper = entry.data as {
+  id: string;
+  arxiv_id?: string;
+  title_zh: string;
+  title_en: string;
+  authors: string[];
+  abstract_zh: string;
+  abstract_en: string;
+  sections_zh: { heading: string; body: string }[];
+  sections_en: { heading: string; body: string }[];
+  key_takeaways: string[];
+};
 ---
 <BaseLayout
   title={`${paper.title_zh} | paper-slide`}
@@ -14,7 +28,7 @@ const paper = paperData;
 >
   <section class="slide-page active" data-page="1">
     <div class="col-span-12 flex flex-col justify-center">
-      <p class="text-caption text-gray-rule">arXiv: {paper.arxiv_id}</p>
+      <p class="text-caption text-gray-rule">arXiv: {paper.arxiv_id ?? paper.id}</p>
       <h1 class="text-display font-sans font-bold mt-4">{paper.title_zh}</h1>
       <hr class="swiss-rule my-6" />
       <p class="text-body text-graphite">{paper.authors.join(" · ")}</p>
