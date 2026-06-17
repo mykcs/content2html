@@ -1,0 +1,62 @@
+---
+// src/pages/en/paper/2603.12109/summary.astro
+// paper-mode: English summary version (single-column longform) — AReW / Self-Locking
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import { getEntry } from "astro:content";
+
+const entry = await getEntry("papers", "2603.12109");
+if (!entry) throw new Error("paper 2603.12109 not found in collection");
+const paper = entry.data as {
+  id: string;
+  arxiv_id?: string;
+  title_zh: string;
+  title_en: string;
+  authors: string[];
+  abstract_zh: string;
+  abstract_en: string;
+  sections_zh: { heading: string; body: string }[];
+  sections_en: { heading: string; body: string }[];
+  key_takeaways: string[];
+};
+---
+<BaseLayout
+  title={`${paper.title_en} | paper-summary`}
+  description={paper.abstract_en}
+  lang="en"
+  productType="longform"
+>
+  <article>
+    <header>
+      <p class="text-caption text-gray-rule">arXiv: {paper.arxiv_id ?? paper.id}</p>
+      <h1>{paper.title_en}</h1>
+      <p class="text-graphite">{paper.authors.join(" · ")}</p>
+      <hr class="swiss-rule" />
+    </header>
+
+    <section>
+      <h2>Abstract</h2>
+      <p>{paper.abstract_en}</p>
+    </section>
+
+    <section>
+      <h2>Key Contributions</h2>
+      <ul>
+        {paper.key_takeaways.map((t) => (
+          <li>{t}</li>
+        ))}
+      </ul>
+    </section>
+
+    {paper.sections_en.map((s) => (
+      <section>
+        <h2>{s.heading}</h2>
+        <p>{s.body}</p>
+      </section>
+    ))}
+
+    <footer>
+      <hr class="swiss-rule" />
+      <p class="text-caption text-gray-rule">Paper-mode artifact · {paper.id}</p>
+    </footer>
+  </article>
+</BaseLayout>

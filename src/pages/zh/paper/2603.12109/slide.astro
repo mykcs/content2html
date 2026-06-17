@@ -1,0 +1,65 @@
+---
+// src/pages/zh/paper/2603.12109/slide.astro
+// paper-mode: 中文 slide 版本 (横向翻页) — AReW / 信息自锁
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import { getEntry } from "astro:content";
+
+const entry = await getEntry("papers", "2603.12109");
+if (!entry) throw new Error("paper 2603.12109 not found in collection");
+const paper = entry.data as {
+  id: string;
+  arxiv_id?: string;
+  title_zh: string;
+  title_en: string;
+  authors: string[];
+  abstract_zh: string;
+  abstract_en: string;
+  sections_zh: { heading: string; body: string }[];
+  sections_en: { heading: string; body: string }[];
+  key_takeaways: string[];
+};
+---
+<BaseLayout
+  title={`${paper.title_zh} | paper-slide`}
+  description={paper.abstract_zh}
+  lang="zh"
+  productType="slide"
+>
+  <section class="slide-page active" data-page="1">
+    <div class="col-span-12 flex flex-col justify-center">
+      <p class="text-caption text-gray-rule">arXiv: {paper.arxiv_id ?? paper.id}</p>
+      <h1 class="text-display font-sans font-bold mt-4">{paper.title_zh}</h1>
+      <hr class="swiss-rule my-6" />
+      <p class="text-body text-graphite">{paper.authors.join(" · ")}</p>
+    </div>
+  </section>
+
+  <section class="slide-page" data-page="2">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
+      <h2 class="col-span-12 text-headline font-sans">摘要</h2>
+      <p class="col-span-10 col-start-2 text-body leading-relaxed">{paper.abstract_zh}</p>
+    </div>
+  </section>
+
+  <section class="slide-page" data-page="3">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
+      <h2 class="col-span-12 text-headline font-sans">核心贡献</h2>
+      <ul class="col-span-10 col-start-2 space-y-3 text-body">
+        {paper.key_takeaways.map((t) => (
+          <li class="border-l-4 border-ikb-blue pl-4">{t}</li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="slide-page" data-page="4">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
+      <h2 class="col-span-12 text-headline font-sans">章节概览</h2>
+      <ol class="col-span-10 col-start-2 space-y-2 text-body">
+        {paper.sections_zh.map((s) => (
+          <li><strong>{s.heading}</strong> — {s.body.slice(0, 60)}…</li>
+        ))}
+      </ol>
+    </div>
+  </section>
+</BaseLayout>
