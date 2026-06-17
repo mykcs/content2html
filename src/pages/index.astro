@@ -1,0 +1,30 @@
+---
+// content2html 根 index.astro - 4 产物导航页 (MVP placeholder)
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+<BaseLayout
+  title="content2html"
+  description="内容 (arxiv paper / 本地 progress) → HTML (slide + long-form)"
+  lang="zh"
+  productType="longform"
+>
+  <header>
+    <h1>content2html</h1>
+    <p class="swiss-rule"></p>
+  </header>
+  <main>
+    <section>
+      <h2>4 产物</h2>
+      <ul>
+        <li><strong>paper-slide.html</strong> — 学术组会 paper-reading 演讲 (横向翻页)</li>
+        <li><strong>paper-summary.html</strong> — 异步阅读 paper 摘要 (单栏 long-form)</li>
+        <li><strong>progress-slide.html</strong> — 周报/工作进展演讲 (横向翻页)</li>
+        <li><strong>progress-report.html</strong> — 周报 long-form 归档 (单栏 long-form)</li>
+      </ul>
+    </section>
+    <section>
+      <h2>状态</h2>
+      <p>SKILL.md (主入口 trigger <code>/content2html</code>) 正在编写中。MVP 完成后此页面将展示已生成的产物列表。</p>
+    </section>
+  </main>
+</BaseLayout>

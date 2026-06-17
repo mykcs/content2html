@@ -1,0 +1,27 @@
+---
+// BaseLayout.astro - content2html 主 layout
+// 4 产物 (paper-slide / paper-summary / progress-slide / progress-report) 共用
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description?: string;
+  lang?: "zh" | "en";
+  productType?: "slide" | "longform";
+}
+
+const { title, description = "", lang = "zh", productType = "longform" } = Astro.props;
+---
+<!doctype html>
+<html lang={lang} class={productType === "slide" ? "slide-mode" : "longform-mode"}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body class={productType === "slide" ? "slide-deck" : "longform"}>
+    <slot />
+  </body>
+</html>

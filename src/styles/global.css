@@ -1,0 +1,119 @@
+/* content2html - global.css
+ * 按 ADR-0004 (4 产物统一 fork guizang Style B - design tokens 复用)
+ * Wrap guizang 视觉 tokens 进 Tailwind v4 @theme {} 块
+ * Source: vendor/guizang-ppt-skill/references/{themes-swiss,components}.md
+ */
+@import "tailwindcss";
+
+/* ============ IKB 蓝 / 柠檬黄 / 柠檬绿 / 安全橙 (Style B 4 套主题色) ============ */
+@theme {
+  /* IKB 蓝 (默认学术稳重) */
+  --color-ikb-blue: #002FA7;
+  --color-ikb-blue-light: #4A5DBF;
+  --color-ikb-blue-dark: #001A5C;
+
+  /* 柠檬黄 (高亮) */
+  --color-lemon-yellow: #FFF44F;
+  --color-lemon-yellow-light: #FFF89A;
+
+  /* 柠檬绿 (success/positive) */
+  --color-lemon-green: #C5E063;
+  --color-lemon-green-light: #DCE99A;
+
+  /* 安全橙 (warning) */
+  --color-safety-orange: #FF7900;
+  --color-safety-orange-light: #FFA640;
+
+  /* 中性色 (Swiss grid 基础) */
+  --color-black: #0A0A0A;
+  --color-graphite: #2D2D2D;
+  --color-gray-rule: #C8C8C8;
+  --color-paper: #FAFAFA;
+  --color-white: #FFFFFF;
+
+  /* 字体 (Swiss + 学术衬线) */
+  --font-sans: 'Helvetica Neue', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Times New Roman', 'Noto Serif SC', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+
+  /* Swiss 网格基准 (8pt baseline) */
+  --spacing-baseline: 8px;
+  --grid-rule-width: 0.5px;  /* 发丝线 */
+  --grid-rule-style: solid;
+
+  /* 字号层级 (极致字号对比) */
+  --text-display: 4.5rem;     /* 72pt — slide title */
+  --text-headline: 2.25rem;   /* 36pt — section heading */
+  --text-title: 1.5rem;       /* 24pt — sub-section */
+  --text-body: 1rem;          /* 16pt — body */
+  --text-caption: 0.75rem;    /* 12pt — caption / footer */
+}
+
+/* ============ Swiss grid baseline (8pt) ============ */
+html {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-black);
+  background: var(--color-white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Swiss 发丝线 (hairline rule) */
+.swiss-rule {
+  height: 0;
+  border: 0;
+  border-top: var(--grid-rule-width) var(--grid-rule-style) var(--color-black);
+  margin: 0;
+}
+
+/* Slide 横向翻页容器 (16:9 1280x720) */
+.slide-deck {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.slide-page {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1rem;
+}
+
+.slide-page.active {
+  opacity: 1;
+  z-index: 1;
+}
+
+/* Long-form 单栏长文 (max-width 720px, 1 永字 ≈ 16px) */
+.longform {
+  max-width: 45rem;  /* 720px */
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  line-height: 1.75;
+  font-family: var(--font-serif);
+}
+
+.longform h1, .longform h2, .longform h3 {
+  font-family: var(--font-sans);
+  letter-spacing: -0.01em;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.longform h1 { font-size: var(--text-headline); }
+.longform h2 { font-size: var(--text-title); }
+.longform h3 { font-size: 1.25rem; }

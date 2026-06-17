@@ -1,0 +1,21 @@
+{
+  "name": "content2html",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "内容 (arxiv paper / 本地 progress) → HTML (slide + long-form). guizang Style B 视觉.",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@astrojs/sitemap": "^3.7.3",
+    "@tailwindcss/vite": "4.1.18",
+    "astro": "^6.4.2",
+    "sharp": "^0.34.5",
+    "tailwindcss": "4.1.18"
+  }
+}
