@@ -1,0 +1,31 @@
+---
+// src/pages/zh/index.astro - 中文版导航页（zh 路由）
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+<BaseLayout
+  title="content2html"
+  description="内容 (arxiv paper / 本地 progress) → HTML (slide + long-form)"
+  lang="zh"
+  productType="longform"
+>
+  <header>
+    <h1>content2html</h1>
+    <p class="swiss-rule"></p>
+  </header>
+  <main>
+    <section>
+      <h2>4 产物</h2>
+      <ul>
+        <li><strong>paper-slide.html</strong> — 学术组会 paper-reading 演讲 (横向翻页)</li>
+        <li><strong>paper-summary.html</strong> — 异步阅读 paper 摘要 (单栏 long-form)</li>
+        <li><strong>progress-slide.html</strong> — 周报/工作进展演讲 (横向翻页)</li>
+        <li><strong>progress-report.html</strong> — 周报 long-form 归档 (单栏 long-form)</li>
+      </ul>
+    </section>
+    <section>
+      <h2>状态</h2>
+      <p>SKILL.md (主入口 trigger <code>/content2html</code>) 已上线，MVP 完成 + 部署到 <a href="/content2html/zh/paper/2606.18246/slide/">/zh/paper/2606.18246/slide/</a>。</p>
+      <p>切换英文: <a href="/en/">/en/</a></p>
+    </section>
+  </main>
+</BaseLayout>

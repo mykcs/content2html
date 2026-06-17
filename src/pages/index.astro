@@ -1,11 +1,11 @@
 ---
-// content2html 根 index.astro - 4 产物导航页 (MVP placeholder)
+// src/pages/index.astro - 默认英文版导航页（en 路由, 因为 defaultLocale: en + prefixDefaultLocale: false）
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 <BaseLayout
   title="content2html"
-  description="内容 (arxiv paper / 本地 progress) → HTML (slide + long-form)"
-  lang="zh"
+  description="Content (arxiv paper / local progress) → HTML (slide + long-form)"
+  lang="en"
   productType="longform"
 >
   <header>
@@ -14,17 +14,18 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   </header>
   <main>
     <section>
-      <h2>4 产物</h2>
+      <h2>4 Products</h2>
       <ul>
-        <li><strong>paper-slide.html</strong> — 学术组会 paper-reading 演讲 (横向翻页)</li>
-        <li><strong>paper-summary.html</strong> — 异步阅读 paper 摘要 (单栏 long-form)</li>
-        <li><strong>progress-slide.html</strong> — 周报/工作进展演讲 (横向翻页)</li>
-        <li><strong>progress-report.html</strong> — 周报 long-form 归档 (单栏 long-form)</li>
+        <li><strong>paper-slide.html</strong> — paper-reading talk (horizontal swipe deck)</li>
+        <li><strong>paper-summary.html</strong> — async paper summary (long-form single column)</li>
+        <li><strong>progress-slide.html</strong> — weekly progress talk (horizontal swipe deck)</li>
+        <li><strong>progress-report.html</strong> — weekly progress long-form archive</li>
       </ul>
     </section>
     <section>
-      <h2>状态</h2>
-      <p>SKILL.md (主入口 trigger <code>/content2html</code>) 正在编写中。MVP 完成后此页面将展示已生成的产物列表。</p>
+      <h2>Status</h2>
+      <p>SKILL.md (main entry, trigger <code>/content2html</code>) is live. MVP deployed to <a href="/content2html/paper/2606.18246/summary/">/paper/2606.18246/summary/</a>.</p>
+      <p>Switch to Chinese: <a href="/content2html/zh/">/zh/</a></p>
     </section>
   </main>
 </BaseLayout>
