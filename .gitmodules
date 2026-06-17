@@ -1,0 +1,3 @@
+[submodule "vendor/guizang-ppt-skill"]
+	path = vendor/guizang-ppt-skill
+	url = https://github.com/op7418/guizang-ppt-skill.git
