@@ -1,0 +1,48 @@
+{
+  "id": "2026-06-17",
+  "type": "progress",
+  "project_name": "~/.claude (Claude Code config + rules + skills + memory)",
+  "period": "2026-06-04 ~ 2026-06-17 (最近 2 周)",
+  "done": [
+    "[2026-06-17] docs(adr): ADR-0003 override section — prefixDefaultLocale false (跟主站 i18n 一致)",
+    "[2026-06-17] docs(adr+cases): content2html skill 设计归档 (4 ADR + 1 case)",
+    "[2026-06-15] feat(rules): Plan B merge 21→8 rules (按命名空间分组, 节省 ~20K tokens/session)",
+    "[2026-06-15] feat(hooks): add auto-compact-threshold for Kimi/MiniMax 400 errors",
+    "[2026-06-15] feat(scripts): add 400-prevention-check.sh guard hook (v1)",
+    "[2026-06-15] feat(mcp): register exa + MiniMax MCP servers for Force-All-Search 5-tool cascade",
+    "[2026-06-15] fix(hooks): correct MiniMax-M3[1m] context limit to 512K",
+    "[2026-06-12] feat(tools): Wiki Tree 操作硬化 3 件套 (Goal #2-#4, 2026-06-12)",
+    "[2026-06-12] audit(rich-audit-deep): restore 2 CRITICAL refs + archive 2 orphan hooks + kotlin.md",
+    "[2026-06-12] chore(rules): Force-All-Search v2.8 → v2.9 per-tool 显式披露协议"
+  ],
+  "doing": [
+    "[WIP] rules/process.md §A.4.1 70% auto-compact 阈值持续 calibration (实测 MiniMax 512K)",
+    "[WIP] 4 ADRs (0002-0005) 跟 content2html plan lock-step verify (1 缺, 3 需 override 段补)",
+    "[WIP] records/cases/ 反向索引补全 (case 库已 100+, 反向 tag-link 待补)"
+  ],
+  "next": [
+    [
+      "归档 progress-mode 实施 case 到 CASE-SKILL-CONTENT2HTML-PROGRESS-MODE-20260617",
+      "claudecode (executor)",
+      "2026-06-18"
+    ],
+    [
+      "content2html Task A+B 部署 verify (11 routes 200 OK)",
+      "claudecode (executor)",
+      "2026-06-18"
+    ],
+    [
+      "vault-memory launchd 夜间 sync 跑 1 周数据收集 (mem0 增量同步质量评估)",
+      "claudecode (executor)",
+      "2026-06-22"
+    ]
+  ],
+  "metrics": {
+    "commits_2_weeks": "45+",
+    "files_changed": "60+",
+    "new_rules": "8 (Plan B 合并后)",
+    "new_cases_archived": "12+",
+    "force_all_search_v": "v2.9 (5-tool per-tool 显式披露)",
+    "smart_push_coverage": "5 repos (claude + 4 webs)"
+  }
+}
