@@ -10,12 +10,11 @@ const papers = defineCollection({
   loader: glob({
     pattern: '**/*.json',
     base: './src/content/papers',
-    // Preserve arxiv-style id with dots (e.g. "2606.18246") — github-slugger strips dots by default
-    generateId: ({ entry }) =>
-      entry.replace(/\.json$/, '').replace(/^.*\//, ''),
+    // Preserve arxiv-style id with dots (e.g. "2606.18246") — github-slugger strips dots by default.
+    // Keep subdir path: 'papers/v1/2606.18246.json' → 'papers/v1/2606.18246' (allows future nested IDs).
+    generateId: ({ entry }) => entry.replace(/\.json$/, ''),
   }),
   schema: z.object({
-    id: z.string(),
     type: z.literal('paper'),
     arxiv_id: z.string().optional(),
     title_zh: z.string(),
@@ -37,12 +36,10 @@ const progress = defineCollection({
   loader: glob({
     pattern: '**/*.json',
     base: './src/content/progress',
-    // Preserve date-style id (e.g. "2026-06-17")
-    generateId: ({ entry }) =>
-      entry.replace(/\.json$/, '').replace(/^.*\//, ''),
+    // Preserve date-style id (e.g. "2026-06-17"). Keep subdir path for future nested IDs.
+    generateId: ({ entry }) => entry.replace(/\.json$/, ''),
   }),
   schema: z.object({
-    id: z.string(), // YYYY-MM-DD format
     type: z.literal('progress'),
     project_name: z.string(),
     period: z.string(),

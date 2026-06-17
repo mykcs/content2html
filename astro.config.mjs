@@ -1,9 +1,11 @@
 // content2html - astro.config.mjs
-// 按 ADR-0002 (独立 Astro project + 强解耦主站) + ADR-0003 (双语 + 默认中文)
+// 按 ADR-0002 (独立 Astro project + 强解耦主站) + ADR-0003 (双语 + 默认中文, Override 2 2026-06-17)
 // 对比主站 (~/Repo/webs/active/mykcs.github.io/astro/astro.config.mjs):
 //   - **不**导入主站 build-pipeline integration
 //   - **不**复用主站 image-map / data-im 占位符
-//   - defaultLocale 改 zh (主站是 en), prefixDefaultLocale: true (主站是 false)
+//   - i18n: defaultLocale='zh' (跟主站相反, 主站 defaultLocale='en')
+//   - prefixDefaultLocale: true (zh 不加前缀走 /, en 加 /en/ 前缀)
+//   - 主站 prefixDefaultLocale: false (en 走 /, zh 加 /zh/ 前缀)
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
