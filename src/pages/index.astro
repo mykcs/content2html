@@ -1,11 +1,11 @@
 ---
-// src/pages/index.astro - 默认英文版导航页（en 路由, 因为 defaultLocale: en + prefixDefaultLocale: false）
+// src/pages/index.astro - 默认中文版导航页（zh 路由, 因为 defaultLocale: zh + prefixDefaultLocale: true）
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 <BaseLayout
   title="content2html"
-  description="Content (arxiv paper / local progress) → HTML (slide + long-form)"
-  lang="en"
+  description="内容 (arxiv paper / 本地 progress) → HTML (slide + long-form)"
+  lang="zh"
   productType="longform"
 >
   <header>
@@ -14,18 +14,19 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   </header>
   <main>
     <section>
-      <h2>4 Products</h2>
+      <h2>4 产物</h2>
       <ul>
-        <li><strong>paper-slide.html</strong> — paper-reading talk (horizontal swipe deck)</li>
-        <li><strong>paper-summary.html</strong> — async paper summary (long-form single column)</li>
-        <li><strong>progress-slide.html</strong> — weekly progress talk (horizontal swipe deck)</li>
-        <li><strong>progress-report.html</strong> — weekly progress long-form archive</li>
+        <li><strong>paper-slide.html</strong> — 学术组会 paper-reading 演讲 (横向翻页)</li>
+        <li><strong>paper-summary.html</strong> — 异步阅读 paper 摘要 (单栏 long-form)</li>
+        <li><strong>progress-slide.html</strong> — 周报/工作进展演讲 (横向翻页)</li>
+        <li><strong>progress-report.html</strong> — 周报 long-form 归档 (单栏 long-form)</li>
       </ul>
     </section>
     <section>
-      <h2>Status</h2>
-      <p>SKILL.md (main entry, trigger <code>/content2html</code>) is live. MVP deployed to <a href="/content2html/paper/2606.18246/summary/">/paper/2606.18246/summary/</a>.</p>
-      <p>Switch to Chinese: <a href="/content2html/zh/">/zh/</a></p>
+      <h2>状态</h2>
+      <p>SKILL.md (主入口 trigger <code>/content2html</code>) 已上线，MVP 完成 + 部署到 <a href="/content2html/zh/paper/2606.18246/slide/">/zh/paper/2606.18246/slide/</a> + <a href="/content2html/zh/progress/2026-06-17/slide/">/zh/progress/2026-06-17/slide/</a>。</p>
+      <p>切换英文: <a href="/content2html/en/">/en/</a></p>
+      <p>同样 URL: <a href="/content2html/zh/">/zh/</a> (zh alias)</p>
     </section>
   </main>
 </BaseLayout>
