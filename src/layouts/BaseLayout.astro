@@ -1,6 +1,9 @@
 ---
 // BaseLayout.astro - content2html 主 layout
 // 4 产物 (paper-slide / paper-summary / progress-slide / progress-report) 共用
+//
+// 语言切换按钮: 跟主站 Masthead.astro:77-83 完全同款 (圆形深灰按钮 + translate.svg 图标),
+// 路径算法沿用主站 Masthead.astro:30-34 (剥离当前 locale 前缀, 拼接目标 locale 前缀)
 import "../styles/global.css";
 
 interface Props {
@@ -25,6 +28,7 @@ const targetLang = isCurrentlyEn ? "zh" : "en";
 const targetPrefix = targetLang === "en" ? "/en" : "/zh";
 const switchUrl = `${baseUrl}${targetPrefix}${strippedPath === "/" ? "/" : strippedPath}`;
 const switchTitle = targetLang === "en" ? "Switch to English" : "切换到中文";
+const iconUrl = `${baseUrl}/icons/translate.svg`;
 ---
 <!doctype html>
 <html lang={lang} class={productType === "slide" ? "slide-mode" : "longform-mode"}>
@@ -37,16 +41,23 @@ const switchTitle = targetLang === "en" ? "Switch to English" : "切换到中文
   </head>
   <body class={productType === "slide" ? "slide-deck" : "longform"}>
     <!--
-      语言切换: 跟主站 Masthead 行为一致 (圆形按钮 + 文字 + sticky 顶部),
-      适配 swiss 风格 (Helvetica + 发丝线边框)
+      语言切换: 跟主站 Masthead.astro:79-81 完全同款 (深灰圆形按钮 + translate.svg 图标).
+      因 content2html 没有 navbar, 用 fixed top-4 right-4 浮在右上角 (slide 模式也兼容).
     -->
-    <nav class="lang-toggle" aria-label="Language switcher">
-      <a href={switchUrl} title={switchTitle} aria-label={switchTitle}>
-        <span class={targetLang === "zh" ? "lang-active" : "lang-inactive"}>中</span>
-        <span class="lang-sep">/</span>
-        <span class={targetLang === "en" ? "lang-active" : "lang-inactive"}>EN</span>
-      </a>
-    </nav>
+    <a
+      href={switchUrl}
+      class="lang-toggle fixed top-4 right-4 z-50 flex items-center bg-gray-700 hover:bg-gray-600 text-white rounded-full p-2 transition-colors shadow-md"
+      title={switchTitle}
+      aria-label={switchTitle}
+    >
+      <img
+        src={iconUrl}
+        alt=""
+        class="h-4 w-auto"
+        loading="lazy"
+        decoding="async"
+      />
+    </a>
     <slot />
     {productType === "slide" && (
       <script>
@@ -57,54 +68,10 @@ const switchTitle = targetLang === "en" ? "Switch to English" : "切换到中文
 </html>
 
 <style>
-  /* swiss 风格: 圆形 pill, 0.5pt 黑色边框, 灰白底, 浮在右上角 */
-  .lang-toggle {
-    position: fixed;
-    top: 0.75rem;
-    right: 0.75rem;
-    z-index: 50;
-    background: rgba(250, 250, 250, 0.95);
-    border: 0.5px solid var(--color-black);
-    border-radius: 9999px;
-    padding: 0.25rem 0.625rem;
-    font-family: var(--font-sans);
-    font-size: 0.75rem;
-    line-height: 1.25rem;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
-  .lang-toggle a {
-    text-decoration: none;
-    color: var(--color-black);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.15rem;
-  }
-  .lang-toggle .lang-active {
-    font-weight: 700;
-    color: var(--color-ikb-blue);
-  }
-  .lang-toggle .lang-inactive {
-    color: var(--color-graphite);
-    opacity: 0.55;
-  }
-  .lang-toggle .lang-sep {
-    color: var(--color-gray-rule);
-    margin: 0 0.15rem;
-    user-select: none;
-  }
-  .lang-toggle a:hover .lang-inactive {
-    opacity: 1;
-  }
-  .lang-toggle a:hover .lang-active {
-    color: var(--color-ikb-blue-dark);
-  }
-
-  /* Slide 模式: 不遮顶, 留 padding 兼容 16:9 标题 */
+  /* slide-deck (16:9 全屏) 模式: 不在顶, 留 16px 间距 */
   .slide-deck .lang-toggle {
-    /* slide-deck 是 position: relative, fixed 仍相对 viewport */
+    /* fixed 默认相对 viewport, slide-deck 16:9 顶距 = 0 时按 frame 顶 */
   }
-
   @media print {
     .lang-toggle { display: none; }
   }
