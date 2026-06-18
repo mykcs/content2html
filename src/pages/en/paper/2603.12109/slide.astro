@@ -1,8 +1,7 @@
 ---
 // src/pages/en/paper/2603.12109/slide.astro
 // paper-mode: English slide (horizontal pagination) — 8 Q&A + 4 figures
-// High-res source: arxiv e-print tar.gz → figures/*.pdf → pdftoppm 300dpi PNG
-// + GitHub mykcs/unimpor/T3 figs/ (tau2-AREW etc.)
+// Image source: arxiv e-print tar.gz (300dpi pdftoppm) + GitHub unimpor/T3 figs/
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getEntry } from "astro:content";
 
@@ -47,13 +46,13 @@ const FIG = "/content2html/figures/2603.12109";
     </div>
   </section>
 
-  <!-- Slide 3: Fig 1 core (2396×1890, 4 panels stitched) — r-4x3 (1.27:1) -->
+  <!-- Slide 3: Fig 1 concept (Vanilla SeL + AReW mitigation) — r-2x1 (2.01:1) -->
   <section class="slide-page" data-page="3">
     <div class="col-span-12 flex flex-col gap-3 h-full">
-      <h2 class="text-headline font-sans">Core Figure: SeL and AReW Mitigation</h2>
-      <p class="text-caption text-graphite italic">Fig 1 (4 panels stitched) — vanilla outcome-based RL (top) trapped in self-locking; AReW (bottom) reallocates advantage via directional critiques</p>
-      <figure class="frame-img r-4x3 fit-contain flex-1">
-        <img src={`${FIG}/fig1_full.png`} alt="Fig 1: SeL overview" />
+      <h2 class="text-headline font-sans">Core Figure: Information Self-Locking (SeL) and AReW Mitigation</h2>
+      <p class="text-caption text-graphite italic">Fig 1 — Top: vanilla outcome-based RL trapped in self-locking (Uninformative AS + Anti-aligned BT); Bottom: AReW restores AS-BT alignment via directional critiques (Informative AS + Aligned BT)</p>
+      <figure class="frame-img r-2x1 fit-contain flex-1">
+        <img src={`${FIG}/fig1_pipeline.png`} alt="Fig 1: SeL overview + AReW mitigation" />
       </figure>
     </div>
   </section>
@@ -82,13 +81,13 @@ const FIG = "/content2html/figures/2603.12109";
     </div>
   </section>
 
-  <!-- Slide 7: Fig 2 PE-G testbed (1416×965, asbt1.pdf 300dpi) — r-3x2 (1.47:1) -->
+  <!-- Slide 7: Fig 4 training dynamics 4 panels (PE-G/PE-F/MediQ/FloDial-Hard) — r-16x10 (1.56:1) -->
   <section class="slide-page" data-page="7">
     <div class="col-span-12 flex flex-col gap-3 h-full">
-      <h2 class="text-headline font-sans">Testbed: PE-G Preference Estimation</h2>
-      <p class="text-caption text-graphite italic">Fig 2 — Preference Estimation with gates, attribute subspace size S=2</p>
-      <figure class="frame-img r-3x2 fit-contain flex-1 max-w-4xl mx-auto">
-        <img src={`${FIG}/asbt1.png`} alt="Fig 2: PE-G testbed" />
+      <h2 class="text-headline font-sans">Experiment Results: Training Dynamics on 4 Tasks</h2>
+      <p class="text-caption text-graphite italic">Fig 4 — vanilla PPO (red) vs AReW-AS ONLY (green) vs AReW-AS+BT (blue) Reward vs Training Steps; AReW sustained improvement, vanilla stalls</p>
+      <figure class="frame-img r-16x10 fit-contain flex-1">
+        <img src={`${FIG}/fig4_full.png`} alt="Fig 4: training dynamics" />
       </figure>
     </div>
   </section>
@@ -101,13 +100,13 @@ const FIG = "/content2html/figures/2603.12109";
     </div>
   </section>
 
-  <!-- Slide 9: Fig 3 main results (4230×2100, 2.01:1) — r-2x1 (60vh) -->
+  <!-- Slide 9: Fig 3 algorithm generalization 3 panels (PPO/GRPO/GSPO) — h-30 -->
   <section class="slide-page" data-page="9">
     <div class="col-span-12 flex flex-col gap-3 h-full">
-      <h2 class="text-headline font-sans">Main Results: 7 Datasets</h2>
-      <p class="text-caption text-graphite italic">Fig 3 — vanilla PPO (blue) vs AReW-AS ONLY (orange) vs AReW-AS+BT (red) training results, consistent gains across 7 datasets</p>
-      <figure class="frame-img r-2x1 fit-contain flex-1">
-        <img src={`${FIG}/fig3_main.png`} alt="Fig 3: main results" />
+      <h2 class="text-headline font-sans">Cross-Algorithm Generalization</h2>
+      <p class="text-caption text-graphite italic">Fig 3 — (a) MediQ intervention: outcome-RL reduces feedback sensitivity, increases belief consistency; (b) PE-F under GRPO; (c) FloDial-Easy under GSPO — AReW consistent gains across algorithms</p>
+      <figure class="frame-img h-30 fit-contain">
+        <img src={`${FIG}/fig3_full.png`} alt="Fig 3: algorithm generalization" />
       </figure>
     </div>
   </section>
@@ -120,11 +119,11 @@ const FIG = "/content2html/figures/2603.12109";
     </div>
   </section>
 
-  <!-- Slide 11: Fig 5 lambda (2160×1380, 1.57:1) + Fig 6 τ²-bench (1672×436, 3.83:1) — dual grid-cols-2, h-30 -->
+  <!-- Slide 11: Fig 5 lambda + Fig 6 τ²-bench — dual h-30 -->
   <section class="slide-page" data-page="11">
     <div class="col-span-12 flex flex-col gap-3 h-full">
       <h2 class="text-headline font-sans">Robustness + τ²-bench Customer Service</h2>
-      <p class="text-caption text-graphite italic">Fig 5 (left): reweighting strength λ effect · Fig 6 (right): τ²-bench customer service</p>
+      <p class="text-caption text-graphite italic">Fig 5 (left): reweighting strength λ effect — too small signal insufficient, moderate sustained gains, too large training collapse · Fig 6 (right): τ²-bench customer service — AReW stable in real scenarios</p>
       <div class="flex-1 grid grid-cols-2 gap-4 items-center">
         <figure class="frame-img h-30 fit-contain">
           <img src={`${FIG}/fig5_lambda.png`} alt="Fig 5: lambda effect" />
