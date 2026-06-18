@@ -11,8 +11,8 @@
     "Yu Gong",
     "James Cheng"
   ],
-  "abstract_zh": "基于结果奖励的强化学习 (RL) 已成为训练大语言模型 (LLM) agent 解决复杂任务的主流范式。然而在主动推理场景中, agent 必须主动与环境交互以获取任务相关信息, 我们发现结果奖励 RL 会诱导出一种系统性的失效模式——「信息自锁」(SeL): agent 既无法提出高信息量的问题, 也难以内化已获取的证据。为理解这一现象, 我们将主动推理能力分解为两个耦合子能力: 行动选择 (AS, 决定观察流) 与信念追踪 (BT, 更新 agent 内部任务理解)。理论与实验分析揭示了一个导致 SeL 的双向瓶颈: 弱 BT 模糊了信息性动作的贡献, 弱 AS 又使 BT 缺乏有用证据, 二者相互制约, 最终使学习信号被双向削弱。为解决此问题, 本文提出 AReW——一种轻量化的「优势重加权」方法, 利用易获得的方向性判据 (directional critiques) 在轨迹内重新分配优化信号。该方法无需标定中间奖励, 即可同时提升 AS 与 BT。9 个智能体任务上的广泛实验表明, AReW 能显著缓解 SeL, 在最终性能上取得最多 60 分的提升。代码已开源: https://github.com/unimpor/T3。",
-  "abstract_en": "Reinforcement learning (RL) has become a de facto paradigm for building LLM-based agents that act, interact, and reason over extended task horizons. However, in active reasoning where agents must elicit new observations through interaction with the environment to solve the task, we find that outcome-based RL can induce a systematic failure mode which we call information self-locking (SeL): agents fail both to elicit informative feedback and to internalize obtained evidence. To understand the issue, we trace agentic behaviors into two coupled capabilities: Action Selection (AS), which determines observation streams, and Belief Tracking (BT), which updates the agent's internal task understanding. Theoretical and empirical analyses reveal a bidirectional bottleneck that leads to SeL: weak BT obscures the credit of informative actions, while weak AS deprives BT of useful evidence. This coupling weakens the learning signal for both capabilities and leads to SeL. To mitigate this issue, we propose AReW, a simple yet effective Advantage-Reweighting method that uses easy-to-obtain directional critiques to reallocate credit within trajectories. Extensive experiments across 9 agentic tasks of varying complexity show that AReW significantly mitigates SeL, yielding up to 60-point gains in final performance. Code is available at https://github.com/unimpor/T3.",
+  "abstract_zh": "基于结果奖励的强化学习 (RL) 在训练大语言模型 (LLM) agent 完成复杂推理任务方面已取得显著成功。然而, 在主动推理场景中, agent 需要策略性地提出问题以获取任务相关信息, 我们发现使用 RL 训练的 LLM agent 常常遭遇「信息自锁」现象: agent 不再提出高信息量的问题, 也难以内化已获取的信息。为理解这一现象, 我们将主动推理分解为两个核心能力: 行动选择 (AS, 通过查询决定观察流) 与信念追踪 (BT, 根据收集到的证据更新 agent 的信念)。我们证明, AS 与 BT 能力的不足将限制 RL 训练期间的信息探索; 反之, 信息探索不足又会阻碍 AS 与 BT 能力的提升, 形成正反馈循环, 将 agent 锁定在低信息区域。为解决此问题, 我们提出一种简洁有效的方法, 通过注入易获得的方向性判据 (directional critiques) 来重新分配学习信号, 帮助 agent 摆脱自锁。在 7 个数据集上的广泛实验表明, 我们的方法显著缓解了信息自锁现象, 带来最多 60% 的性能提升。",
+  "abstract_en": "Reinforcement learning (RL) with outcome-based rewards has achieved significant success in training large language model (LLM) agents for complex reasoning tasks. However, in active reasoning where agents need to strategically ask questions to acquire task-relevant information, we find that LLM agents trained with RL often suffer from information self-locking: the agent ceases to ask informative questions and struggles to internalize already-obtained information. To understand the phenomenon, we decompose active reasoning into two core capabilities: Action Selection (AS), which determines the observation stream through queries, and Belief Tracking (BT), which updates the agent's belief based on collected evidence. We show that deficient AS and BT capabilities will limit the information exploration during RL training. Furthermore, insufficient exploration in turn hinders the improvement of AS and BT, creating a feedback loop that locks the agent in a low-information regime. To resolve the issue, we propose a simple yet effective approach that reallocates the learning signal by injecting easy-to-obtain directional critiques to help the agent escape self-locking. Extensive experiments with 7 datasets show that our approach significantly mitigates the information self-locking, bringing up to 60% improvements.",
   "sections_zh": [
     {
       "heading": "1. 引言",
@@ -32,7 +32,7 @@
     },
     {
       "heading": "5. 实验",
-      "body": "我们在 4 个交互领域、共 9 个 agentic 任务上评估 AReW, 包括偏好估计 (PE-G / PE-F)、医疗诊断 (MediQ)、故障排查 (FloDial easy/hard) 与客户服务 (τ²-bench-Telecom)。基线为 PPO 训练下的 Qwen2.5-7B-Instruct。主要结果: (1) AReW 在所有 9 个任务上一致优于 PPO 基线, 最多取得 60 分的最终性能提升; (2) 奖励优化曲线显示 AReW 在不破坏结果奖励的前提下, 显著改善 AS 与 BT 行为指标; (3) 在 τ²-bench 真实客服场景中, AReW 仍能稳定带来 9-12 分的绝对提升, 验证其在 dual-control 环境下的实用性; (4) 对判据噪声的鲁棒性良好, 在随机翻转 30% 判据时性能下降仍 < 5%。"
+      "body": "我们在 4 个交互领域、共 7 个数据集上评估 AReW, 包括偏好估计 (PE-G / PE-F)、医疗诊断 (MediQ)、故障排查 (FloDial easy/hard) 与客户服务 (τ²-bench-Telecom)。基线为 PPO 训练下的 Qwen2.5-7B-Instruct。主要结果: (1) AReW 在所有数据集上一致优于 PPO 基线, 最多取得 60% 的相对性能提升; (2) 奖励优化曲线显示 AReW 在不破坏结果奖励的前提下, 显著改善 AS 与 BT 行为指标; (3) 在 τ²-bench 真实客服场景中, AReW 仍能稳定带来绝对性能提升, 验证其在 dual-control 环境下的实用性; (4) 对判据噪声的鲁棒性良好, 在随机翻转 30% 判据时性能下降仍 < 5%。"
     },
     {
       "heading": "6. 结论",
@@ -58,7 +58,7 @@
     },
     {
       "heading": "5. Experiments",
-      "body": "We evaluate AReW on 9 agentic tasks across 4 interactive domains: preference estimation (PE-G / PE-F), medical diagnosis (MediQ), troubleshooting (FloDial easy/hard), and customer service (τ²-bench-Telecom). The base model is Qwen2.5-7B-Instruct trained with PPO. Key results: (1) AReW consistently outperforms PPO across all 9 tasks, yielding up to 60-point gains in final performance; (2) reward curves show AReW improves AS and BT proxies without breaking outcome-reward optimization; (3) on the realistic τ²-bench customer-service setting, AReW delivers stable absolute gains of 9–12 points, confirming practicality in dual-control environments; (4) the method is robust to critique noise, with <5% degradation under 30% random label flipping."
+      "body": "We evaluate AReW on 7 datasets across 4 interactive domains: preference estimation (PE-G / PE-F), medical diagnosis (MediQ), troubleshooting (FloDial easy/hard), and customer service (τ²-bench-Telecom). The base model is Qwen2.5-7B-Instruct trained with PPO. Key results: (1) AReW consistently outperforms PPO across all datasets, yielding up to 60% relative performance improvements; (2) reward curves show AReW improves AS and BT proxies without breaking outcome-reward optimization; (3) on the realistic τ²-bench customer-service setting, AReW delivers stable absolute gains, confirming practicality in dual-control environments; (4) the method is robust to critique noise, with <5% degradation under 30% random label flipping."
     },
     {
       "heading": "6. Conclusion",
@@ -66,12 +66,12 @@
     }
   ],
   "key_takeaways": [
-    "首次系统命名「信息自锁」(SeL): 结果奖励 RL 在长程主动推理中导致 AS 与 BT 双向退化的系统性失效模式",
-    "理论刻画 2D 锁定区域: AS / BT 信道优化信号被能力指标 C_AS、C_BT 共同上界约束, 解释了「加大奖励权重」为何不能突破 SeL",
-    "AReW 方法: 利用易获得的方向性判据 (+1/0/−1) + 边际感知辅助目标, 在轨迹内重新分配信用, 无需标定中间奖励",
-    "9 个 agentic 任务一致提升, 最多 +60 分绝对性能, 在 τ²-bench 真实客服场景仍稳定 +9~12 分",
-    "对判据噪声鲁棒 (30% 随机翻转性能下降 <5%), 与 PPO 等标准 RL 机制正交, 可作为即插即用模块",
-    "为多轮交互式 agent 的稳健训练提供新视角: 解决 agent 训练「学得会」之后, 仍「问不出关键问题」的根因"
+    "首次系统命名「信息自锁」(SeL): 主动推理场景下, agent 不再提出高信息量问题且难以内化已得信息, 形成低信息正反馈循环",
+    "将主动推理分解为两个核心能力——行动选择 (AS) 与信念追踪 (BT)——揭示其双向耦合是 SeL 的结构性根因",
+    "方法: 通过注入「方向性判据」(directional critiques) 重新分配学习信号, 无需标定中间奖励, 即可让 agent 摆脱自锁",
+    "7 个数据集一致提升, 最多 60% 相对性能改善",
+    "在真实客服场景 (τ²-bench) 仍稳定有效, 验证 dual-control 环境的实用性",
+    "对判据噪声鲁棒 (30% 随机翻转性能下降 <5%), 与 PPO 等标准 RL 机制正交, 可作为即插即用模块"
   ],
   "type": "paper"
 }
