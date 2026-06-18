@@ -1,0 +1,84 @@
+---
+// src/pages/[lang]/404.astro - Bilingual 404 page
+// i18n: zh (defaultLocale, /404/) + en (/en/404/)
+// 用 inline locale strings (项目无 t() helper)
+import "../../styles/global.css";
+
+export function getStaticPaths() {
+  return [
+    { params: { lang: "zh" } },
+    { params: { lang: "en" } },
+  ];
+}
+
+const { lang } = Astro.params;
+
+const messages = {
+  zh: {
+    title: "404 - 页面未找到",
+    heading: "404",
+    message: "抱歉，访问的页面不存在。",
+    back: "返回首页",
+    homePath: "/",
+  },
+  en: {
+    title: "404 - Page Not Found",
+    heading: "404",
+    message: "Sorry, the page you're looking for doesn't exist.",
+    back: "Back to Home",
+    homePath: "/en/",
+  },
+};
+
+const t = messages[lang as "zh" | "en"] ?? messages.zh;
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, "");
+const homeUrl = `${baseUrl}${t.homePath}`;
+
+// Return real 404 status (static site: 仅靠浏览器识别)
+Astro.response.status = 404;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{t.title}</title>
+  </head>
+  <body>
+    <main class="not-found">
+      <h1>{t.heading}</h1>
+      <p>{t.message}</p>
+      <p><a href={homeUrl}>{t.back}</a></p>
+    </main>
+  </body>
+</html>
+
+<style>
+  .not-found {
+    max-width: 32rem;
+    margin: 4rem auto;
+    padding: 2rem;
+    text-align: center;
+    font-family: sans-serif;
+  }
+  .not-found h1 {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+  }
+  .not-found p {
+    margin-bottom: 1.5rem;
+    color: #555;
+  }
+  .not-found a {
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    background: #333;
+    color: white;
+    text-decoration: none;
+    border-radius: 0.25rem;
+  }
+  .not-found a:hover {
+    background: #555;
+  }
+</style>
