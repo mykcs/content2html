@@ -261,3 +261,58 @@ body {
 .longform h1 { font-size: var(--text-headline); }
 .longform h2 { font-size: var(--text-title); }
 .longform h3 { font-size: 1.25rem; }
+
+/* ===== Print: aligned with OSA slides (ADR-0006)
+   Strategy: 1 slide / page, A4 landscape full-bleed, pure CSS (no JS, no iframe).
+   Trade-off: A4 (PowerPoint default) over A3 (OSA slides default) — global PPT familiarity.
+*/
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+
+  /* Force brand colors to print (Chrome default strips backgrounds) */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Reset dark frame + scale transform on slide-deck */
+  html, body,
+  .slide-deck {
+    background: white !important;
+    overflow: visible !important;
+  }
+
+  /* Force all slides visible + natural flow (override .slide-page { opacity: 0; display: grid; position: absolute } default) */
+  .slide-page {
+    display: block !important;
+    opacity: 1 !important;
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 167mm;  /* A4 landscape width (297mm) × 9/16 ≈ 167mm */
+    padding: 12mm 14mm !important;  /* 60px/75px @ 0.21mm/px ≈ scaled for print */
+    box-sizing: border-box;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    page-break-after: always;
+    break-after: page;
+  }
+  .slide-page:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+
+  /* Hide UI overlays (controls bar, slide indicator, language toggle) */
+  .slide-controls,
+  .slide-indicator,
+  .lang-toggle {
+    display: none !important;
+  }
+}
