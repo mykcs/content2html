@@ -339,7 +339,7 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
     transform: none !important;
     width: 100% !important;
     height: 167mm !important;        /* A4 landscape width (297mm) × 9/16 ≈ 167mm, 锁死严格 1 page */
-    padding: 12mm 14mm !important;  /* 60px/75px @ 0.21mm/px ≈ scaled for print */
+    padding: 8mm 10mm !important;    /* 紧凑 padding 让长 Q&A slide 能 fit 1 page */
     box-sizing: border-box;
     box-shadow: none !important;
     border-radius: 0 !important;
@@ -350,6 +350,11 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
     page-break-after: always;        /* slide 之间强制分页 */
     break-after: page;
   }
+  /* Print 紧凑字号: heading 1.4rem, body 0.78rem, line-height 1.35 — 让长 Q&A slide fit 1 page */
+  .slide-page h1, .slide-page .text-display { font-size: 1.8rem !important; }
+  .slide-page h2, .slide-page .text-headline { font-size: 1.2rem !important; margin-bottom: 4mm !important; }
+  .slide-page p, .slide-page li, .slide-page .text-body { font-size: 0.78rem !important; line-height: 1.35 !important; }
+  .slide-page hr.swiss-rule { margin: 3mm 0 !important; }
   .slide-page:last-child {
     page-break-after: auto;
     break-after: auto;
