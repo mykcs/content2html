@@ -1,6 +1,7 @@
 ---
 // src/pages/en/paper/2603.12109/slide.astro
-// paper-mode: English slide version (horizontal pagination) — AReW / Self-Locking
+// paper-mode: English slide version (horizontal pagination) — render N Q&A slides
+// sections_en array drives slide count (Q1-Q7, dynamic N)
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getEntry } from "astro:content";
 
@@ -25,6 +26,7 @@ const paper = entry.data as {
   lang="en"
   productType="slide"
 >
+  <!-- Slide 1: Title -->
   <section class="slide-page active" data-page="1">
     <div class="col-span-12 flex flex-col justify-center">
       <p class="text-caption text-gray-rule">arXiv: {paper.arxiv_id ?? paper.id}</p>
@@ -34,6 +36,7 @@ const paper = entry.data as {
     </div>
   </section>
 
+  <!-- Slide 2: Abstract -->
   <section class="slide-page" data-page="2">
     <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
       <h2 class="col-span-12 text-headline font-sans">Abstract</h2>
@@ -41,7 +44,18 @@ const paper = entry.data as {
     </div>
   </section>
 
-  <section class="slide-page" data-page="3">
+  <!-- Slide 3..N+2: Q&A (one slide per section) -->
+  {paper.sections_en.map((s, i) => (
+    <section class="slide-page" data-page={i + 3}>
+      <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
+        <h2 class="col-span-12 text-headline font-sans">{s.heading}</h2>
+        <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{s.body}</p>
+      </div>
+    </section>
+  ))}
+
+  <!-- Last slide: Key contributions -->
+  <section class="slide-page" data-page={paper.sections_en.length + 3}>
     <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
       <h2 class="col-span-12 text-headline font-sans">Key Contributions</h2>
       <ul class="col-span-10 col-start-2 space-y-3 text-body">
@@ -49,17 +63,6 @@ const paper = entry.data as {
           <li class="border-l-4 border-ikb-blue pl-4">{t}</li>
         ))}
       </ul>
-    </div>
-  </section>
-
-  <section class="slide-page" data-page="4">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
-      <h2 class="col-span-12 text-headline font-sans">Section Overview</h2>
-      <ol class="col-span-10 col-start-2 space-y-2 text-body">
-        {paper.sections_en.map((s) => (
-          <li><strong>{s.heading}</strong> — {s.body.slice(0, 60)}…</li>
-        ))}
-      </ol>
     </div>
   </section>
 </BaseLayout>
