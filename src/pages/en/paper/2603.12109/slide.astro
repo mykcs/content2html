@@ -1,7 +1,7 @@
 ---
 // src/pages/en/paper/2603.12109/slide.astro
-// paper-mode: English slide version (horizontal pagination) — render N Q&A slides
-// sections_en array drives slide count (Q1-Q7, dynamic N)
+// paper-mode: English slide (horizontal pagination) — 8 Q&A + 4 figures
+// Image source: public/figures/2603.12109/ (downloaded from arxiv html)
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getEntry } from "astro:content";
 
@@ -19,6 +19,8 @@ const paper = entry.data as {
   sections_en: { heading: string; body: string }[];
   key_takeaways: string[];
 };
+
+const FIG = "/content2html/figures/2603.12109";
 ---
 <BaseLayout
   title={`${paper.title_en} | paper-slide`}
@@ -44,18 +46,110 @@ const paper = entry.data as {
     </div>
   </section>
 
-  <!-- Slide 3..N+2: Q&A (one slide per section) -->
-  {paper.sections_en.map((s, i) => (
-    <section class="slide-page" data-page={i + 3}>
-      <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
-        <h2 class="col-span-12 text-headline font-sans">{s.heading}</h2>
-        <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{s.body}</p>
-      </div>
-    </section>
-  ))}
+  <!-- Slide 3: Fig 1 overview -->
+  <section class="slide-page" data-page="3">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
+      <h2 class="col-span-12 text-headline font-sans">Core Figure: SeL and AReW Mitigation</h2>
+      <p class="col-span-10 col-start-2 text-caption text-graphite italic">Fig 1 — vanilla outcome-based RL (top) trapped in self-locking; AReW (bottom) reallocates advantage via directional critiques</p>
+      <img src={`${FIG}/x1.png`} class="col-span-10 col-start-2 w-auto max-h-[700px] mx-auto object-contain" alt="Fig 1: SeL overview" />
+    </div>
+  </section>
 
-  <!-- Last slide: Key contributions -->
-  <section class="slide-page" data-page={paper.sections_en.length + 3}>
+  <!-- Slide 4: Q1 -->
+  <section class="slide-page" data-page="4">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
+      <h2 class="col-span-12 text-headline font-sans">{paper.sections_en[0].heading}</h2>
+      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_en[0].body}</p>
+    </div>
+  </section>
+
+  <!-- Slide 5: Q2 -->
+  <section class="slide-page" data-page="5">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
+      <h2 class="col-span-12 text-headline font-sans">{paper.sections_en[1].heading}</h2>
+      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_en[1].body}</p>
+    </div>
+  </section>
+
+  <!-- Slide 6: Q3 -->
+  <section class="slide-page" data-page="6">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
+      <h2 class="col-span-12 text-headline font-sans">{paper.sections_en[2].heading}</h2>
+      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_en[2].body}</p>
+    </div>
+  </section>
+
+  <!-- Slide 7: Fig 2a PE-G testbed -->
+  <section class="slide-page" data-page="7">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
+      <h2 class="col-span-12 text-headline font-sans">Testbed: PE-G Preference Estimation</h2>
+      <p class="col-span-10 col-start-2 text-caption text-graphite italic">Fig 2a — Preference Estimation with gates, attribute subspace size S=2</p>
+      <img src={`${FIG}/x2.png`} class="col-span-6 col-start-4 w-auto max-h-[600px] mx-auto object-contain" alt="Fig 2a: PE-G" />
+    </div>
+  </section>
+
+  <!-- Slide 8: Q4 (1/2) -->
+  <section class="slide-page" data-page="8">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
+      <h2 class="col-span-12 text-headline font-sans">{paper.sections_en[3].heading}</h2>
+      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_en[3].body}</p>
+    </div>
+  </section>
+
+  <!-- Slide 9: Fig 3a + Fig 4a main results + training dynamics -->
+  <section class="slide-page" data-page="9">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
+      <h2 class="col-span-12 text-headline font-sans">Main Results + Training Dynamics</h2>
+      <p class="col-span-10 col-start-2 text-caption text-graphite italic">Fig 3a (left): PE-G results · Fig 4a (right): training dynamics — vanilla stalls, AReW sustained improvement</p>
+      <img src={`${FIG}/x6.png`} class="col-span-5 col-start-1 w-auto max-h-[550px] mx-auto object-contain" alt="Fig 3a" />
+      <img src={`${FIG}/x10.png`} class="col-span-5 col-start-7 w-auto max-h-[550px] mx-auto object-contain" alt="Fig 4a" />
+    </div>
+  </section>
+
+  <!-- Slide 10: Q4 (2/2) -->
+  <section class="slide-page" data-page="10">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
+      <h2 class="col-span-12 text-headline font-sans">{paper.sections_en[4].heading}</h2>
+      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_en[4].body}</p>
+    </div>
+  </section>
+
+  <!-- Slide 11: Fig 5a + Fig 6a robustness + customer service -->
+  <section class="slide-page" data-page="11">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
+      <h2 class="col-span-12 text-headline font-sans">Robustness + τ²-bench Customer Service</h2>
+      <p class="col-span-10 col-start-2 text-caption text-graphite italic">Fig 5a (left): reweighting strength λ effect · Fig 6a (right): τ²-bench customer service</p>
+      <img src={`${FIG}/x14.png`} class="col-span-5 col-start-1 w-auto max-h-[550px] mx-auto object-contain" alt="Fig 5a" />
+      <img src={`${FIG}/x18.png`} class="col-span-5 col-start-7 w-auto max-h-[550px] mx-auto object-contain" alt="Fig 6a" />
+    </div>
+  </section>
+
+  <!-- Slide 12: Q5 -->
+  <section class="slide-page" data-page="12">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
+      <h2 class="col-span-12 text-headline font-sans">{paper.sections_en[5].heading}</h2>
+      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_en[5].body}</p>
+    </div>
+  </section>
+
+  <!-- Slide 13: Q6 -->
+  <section class="slide-page" data-page="13">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
+      <h2 class="col-span-12 text-headline font-sans">{paper.sections_en[6].heading}</h2>
+      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_en[6].body}</p>
+    </div>
+  </section>
+
+  <!-- Slide 14: Q7 -->
+  <section class="slide-page" data-page="14">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
+      <h2 class="col-span-12 text-headline font-sans">{paper.sections_en[7].heading}</h2>
+      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_en[7].body}</p>
+    </div>
+  </section>
+
+  <!-- Slide 15: Key contributions -->
+  <section class="slide-page" data-page="15">
     <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
       <h2 class="col-span-12 text-headline font-sans">Key Contributions</h2>
       <ul class="col-span-10 col-start-2 space-y-3 text-body">

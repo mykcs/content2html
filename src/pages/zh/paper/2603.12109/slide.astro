@@ -1,7 +1,7 @@
 ---
 // src/pages/zh/paper/2603.12109/slide.astro
-// paper-mode: 中文 slide 版本 (横向翻页) — 渲染 N 张 Q&A
-// sections_zh 数组决定 slide 数量 (Q1-Q7, dynamic N)
+// paper-mode: 中文 slide (横向翻页) — 11 Q&A + 4 图穿插
+// 图片源: public/figures/2603.12109/ (从 arxiv html 抓的 x1/x2/x6/x10/x14/x18/x21)
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getEntry } from "astro:content";
 
@@ -19,6 +19,8 @@ const paper = entry.data as {
   sections_en: { heading: string; body: string }[];
   key_takeaways: string[];
 };
+
+const FIG = "/content2html/figures/2603.12109";
 ---
 <BaseLayout
   title={`${paper.title_zh} | paper-slide`}
@@ -44,18 +46,110 @@ const paper = entry.data as {
     </div>
   </section>
 
-  <!-- Slide 3..N+2: Q&A (one slide per section) -->
-  {paper.sections_zh.map((s, i) => (
-    <section class="slide-page" data-page={i + 3}>
-      <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
-        <h2 class="col-span-12 text-headline font-sans">{s.heading}</h2>
-        <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{s.body}</p>
-      </div>
-    </section>
-  ))}
+  <!-- Slide 3: Fig 1 论文核心图 (SeL 概述 + AReW 缓解) -->
+  <section class="slide-page" data-page="3">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
+      <h2 class="col-span-12 text-headline font-sans">论文核心图: SeL 与 AReW 缓解示意</h2>
+      <p class="col-span-10 col-start-2 text-caption text-graphite italic">图 1 — vanilla outcome-based RL (上) 陷入自锁, AReW (下) 通过方向性批评重分配优势</p>
+      <img src={`${FIG}/x1.png`} class="col-span-10 col-start-2 w-auto max-h-[700px] mx-auto object-contain" alt="Fig 1: SeL overview" />
+    </div>
+  </section>
 
-  <!-- Last slide: Key contributions -->
-  <section class="slide-page" data-page={paper.sections_zh.length + 3}>
+  <!-- Slide 4: Q1 -->
+  <section class="slide-page" data-page="4">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
+      <h2 class="col-span-12 text-headline font-sans">{paper.sections_zh[0].heading}</h2>
+      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_zh[0].body}</p>
+    </div>
+  </section>
+
+  <!-- Slide 5: Q2 -->
+  <section class="slide-page" data-page="5">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
+      <h2 class="col-span-12 text-headline font-sans">{paper.sections_zh[1].heading}</h2>
+      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_zh[1].body}</p>
+    </div>
+  </section>
+
+  <!-- Slide 6: Q3 -->
+  <section class="slide-page" data-page="6">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
+      <h2 class="col-span-12 text-headline font-sans">{paper.sections_zh[2].heading}</h2>
+      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_zh[2].body}</p>
+    </div>
+  </section>
+
+  <!-- Slide 7: Fig 2a PE-G 实验设置 -->
+  <section class="slide-page" data-page="7">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
+      <h2 class="col-span-12 text-headline font-sans">实验任务示意: PE-G 偏好估计</h2>
+      <p class="col-span-10 col-start-2 text-caption text-graphite italic">图 2a — Preference Estimation with gates, attribute subspace size S=2</p>
+      <img src={`${FIG}/x2.png`} class="col-span-6 col-start-4 w-auto max-h-[600px] mx-auto object-contain" alt="Fig 2a: PE-G" />
+    </div>
+  </section>
+
+  <!-- Slide 8: Q4 (1/2) -->
+  <section class="slide-page" data-page="8">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
+      <h2 class="col-span-12 text-headline font-sans">{paper.sections_zh[3].heading}</h2>
+      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_zh[3].body}</p>
+    </div>
+  </section>
+
+  <!-- Slide 9: Fig 3a + Fig 4a 主要结果 + 训练动态 -->
+  <section class="slide-page" data-page="9">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
+      <h2 class="col-span-12 text-headline font-sans">主要结果 + 训练动态</h2>
+      <p class="col-span-10 col-start-2 text-caption text-graphite italic">图 3a (左): PE-G 任务结果 · 图 4a (右): 训练动态 — vanilla 停滞, AReW 持续提升</p>
+      <img src={`${FIG}/x6.png`} class="col-span-5 col-start-1 w-auto max-h-[550px] mx-auto object-contain" alt="Fig 3a" />
+      <img src={`${FIG}/x10.png`} class="col-span-5 col-start-7 w-auto max-h-[550px] mx-auto object-contain" alt="Fig 4a" />
+    </div>
+  </section>
+
+  <!-- Slide 10: Q4 (2/2) -->
+  <section class="slide-page" data-page="10">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
+      <h2 class="col-span-12 text-headline font-sans">{paper.sections_zh[4].heading}</h2>
+      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_zh[4].body}</p>
+    </div>
+  </section>
+
+  <!-- Slide 11: Fig 5a + Fig 6a 鲁棒性 + 客服场景 -->
+  <section class="slide-page" data-page="11">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
+      <h2 class="col-span-12 text-headline font-sans">鲁棒性 + τ²-bench 真实客服</h2>
+      <p class="col-span-10 col-start-2 text-caption text-graphite italic">图 5a (左): 重加权强度 λ 影响 · 图 6a (右): τ²-bench 客服场景</p>
+      <img src={`${FIG}/x14.png`} class="col-span-5 col-start-1 w-auto max-h-[550px] mx-auto object-contain" alt="Fig 5a" />
+      <img src={`${FIG}/x18.png`} class="col-span-5 col-start-7 w-auto max-h-[550px] mx-auto object-contain" alt="Fig 6a" />
+    </div>
+  </section>
+
+  <!-- Slide 12: Q5 -->
+  <section class="slide-page" data-page="12">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
+      <h2 class="col-span-12 text-headline font-sans">{paper.sections_zh[5].heading}</h2>
+      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_zh[5].body}</p>
+    </div>
+  </section>
+
+  <!-- Slide 13: Q6 -->
+  <section class="slide-page" data-page="13">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
+      <h2 class="col-span-12 text-headline font-sans">{paper.sections_zh[6].heading}</h2>
+      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_zh[6].body}</p>
+    </div>
+  </section>
+
+  <!-- Slide 14: Q7 -->
+  <section class="slide-page" data-page="14">
+    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
+      <h2 class="col-span-12 text-headline font-sans">{paper.sections_zh[7].heading}</h2>
+      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_zh[7].body}</p>
+    </div>
+  </section>
+
+  <!-- Slide 15: 核心贡献 -->
+  <section class="slide-page" data-page="15">
     <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
       <h2 class="col-span-12 text-headline font-sans">核心贡献</h2>
       <ul class="col-span-10 col-start-2 space-y-3 text-body">
