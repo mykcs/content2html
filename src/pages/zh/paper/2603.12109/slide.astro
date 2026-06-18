@@ -1,7 +1,8 @@
 ---
 // src/pages/zh/paper/2603.12109/slide.astro
 // paper-mode: 中文 slide (横向翻页) — 11 Q&A + 4 图穿插
-// 图片源: public/figures/2603.12109/ (从 arxiv html 抓的 x1/x2/x6/x10/x14/x18/x21)
+// 图片模式: <figure class="frame-img r-X fit-contain"> (guizang-style)
+// 来源: vendor/guizang-ppt-skill/references/{components,layouts}.md
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getEntry } from "astro:content";
 
@@ -46,14 +47,14 @@ const FIG = "/content2html/figures/2603.12109";
     </div>
   </section>
 
-  <!-- Slide 3: Fig 1 论文核心图 (SeL 概述 + AReW 缓解) — 满宽 850px 高 -->
+  <!-- Slide 3: Fig 1 — r-21x9 (2.36:1 匹配) max-h 56vh -->
   <section class="slide-page" data-page="3">
-    <div class="col-span-12 grid grid-rows-[auto_auto_1fr] gap-3 h-full">
-      <h2 class="col-span-12 text-headline font-sans">论文核心图: SeL 与 AReW 缓解示意</h2>
-      <p class="col-span-12 text-caption text-graphite italic">图 1 — vanilla outcome-based RL (上) 陷入自锁, AReW (下) 通过方向性批评重分配优势</p>
-      <div class="col-span-12 flex items-center justify-center overflow-hidden">
-        <img src={`${FIG}/x1.png`} class="w-full max-h-[820px] object-contain" alt="Fig 1: SeL overview" />
-      </div>
+    <div class="col-span-12 flex flex-col gap-3 h-full">
+      <h2 class="text-headline font-sans">论文核心图: SeL 与 AReW 缓解示意</h2>
+      <p class="text-caption text-graphite italic">图 1 — vanilla outcome-based RL (上) 陷入自锁, AReW (下) 通过方向性批评重分配优势</p>
+      <figure class="frame-img r-21x9 fit-contain flex-1">
+        <img src={`${FIG}/x1.png`} alt="Fig 1: SeL overview" />
+      </figure>
     </div>
   </section>
 
@@ -81,14 +82,14 @@ const FIG = "/content2html/figures/2603.12109";
     </div>
   </section>
 
-  <!-- Slide 7: Fig 2a PE-G 实验设置 — 居中 820px 高 -->
+  <!-- Slide 7: Fig 2a — r-4x3 (1.36:1 匹配) max-h 56vh -->
   <section class="slide-page" data-page="7">
-    <div class="col-span-12 grid grid-rows-[auto_auto_1fr] gap-3 h-full">
-      <h2 class="col-span-12 text-headline font-sans">实验任务示意: PE-G 偏好估计</h2>
-      <p class="col-span-12 text-caption text-graphite italic">图 2a — Preference Estimation with gates, attribute subspace size S=2</p>
-      <div class="col-span-12 flex items-center justify-center overflow-hidden">
-        <img src={`${FIG}/x2.png`} class="w-full max-h-[820px] object-contain" alt="Fig 2a: PE-G" />
-      </div>
+    <div class="col-span-12 flex flex-col gap-3 h-full">
+      <h2 class="text-headline font-sans">实验任务示意: PE-G 偏好估计</h2>
+      <p class="text-caption text-graphite italic">图 2a — Preference Estimation with gates, attribute subspace size S=2</p>
+      <figure class="frame-img r-4x3 fit-contain flex-1 max-w-4xl mx-auto">
+        <img src={`${FIG}/x2.png`} alt="Fig 2a: PE-G" />
+      </figure>
     </div>
   </section>
 
@@ -100,18 +101,18 @@ const FIG = "/content2html/figures/2603.12109";
     </div>
   </section>
 
-  <!-- Slide 9: Fig 3a + Fig 4a 主要结果 + 训练动态 — 双图各占 6 列 800px 高 -->
+  <!-- Slide 9: Fig 3a + Fig 4a — 双图 grid-cols-2, h-26 统一高度 -->
   <section class="slide-page" data-page="9">
-    <div class="col-span-12 grid grid-rows-[auto_auto_1fr] gap-3 h-full">
-      <h2 class="col-span-12 text-headline font-sans">主要结果 + 训练动态</h2>
-      <p class="col-span-12 text-caption text-graphite italic">图 3a (左): PE-G 任务结果 · 图 4a (右): 训练动态 — vanilla 停滞, AReW 持续提升</p>
-      <div class="col-span-12 grid grid-cols-2 gap-4 overflow-hidden">
-        <div class="flex items-center justify-center overflow-hidden">
-          <img src={`${FIG}/x6.png`} class="w-full max-h-[800px] object-contain" alt="Fig 3a" />
-        </div>
-        <div class="flex items-center justify-center overflow-hidden">
-          <img src={`${FIG}/x10.png`} class="w-full max-h-[800px] object-contain" alt="Fig 4a" />
-        </div>
+    <div class="col-span-12 flex flex-col gap-3 h-full">
+      <h2 class="text-headline font-sans">主要结果 + 训练动态</h2>
+      <p class="text-caption text-graphite italic">图 3a (左): PE-G 任务结果 · 图 4a (右): 训练动态 — vanilla 停滞, AReW 持续提升</p>
+      <div class="flex-1 grid grid-cols-2 gap-4 items-center">
+        <figure class="frame-img h-30 fit-contain">
+          <img src={`${FIG}/x6.png`} alt="Fig 3a" />
+        </figure>
+        <figure class="frame-img h-30 fit-contain">
+          <img src={`${FIG}/x10.png`} alt="Fig 4a" />
+        </figure>
       </div>
     </div>
   </section>
@@ -124,18 +125,18 @@ const FIG = "/content2html/figures/2603.12109";
     </div>
   </section>
 
-  <!-- Slide 11: Fig 5a + Fig 6a 鲁棒性 + 客服场景 — 双图各占 6 列 800px 高 -->
+  <!-- Slide 11: Fig 5a + Fig 6a — 双图 grid-cols-2, h-30 统一高度 -->
   <section class="slide-page" data-page="11">
-    <div class="col-span-12 grid grid-rows-[auto_auto_1fr] gap-3 h-full">
-      <h2 class="col-span-12 text-headline font-sans">鲁棒性 + τ²-bench 真实客服</h2>
-      <p class="col-span-12 text-caption text-graphite italic">图 5a (左): 重加权强度 λ 影响 · 图 6a (右): τ²-bench 客服场景</p>
-      <div class="col-span-12 grid grid-cols-2 gap-4 overflow-hidden">
-        <div class="flex items-center justify-center overflow-hidden">
-          <img src={`${FIG}/x14.png`} class="w-full max-h-[800px] object-contain" alt="Fig 5a" />
-        </div>
-        <div class="flex items-center justify-center overflow-hidden">
-          <img src={`${FIG}/x18.png`} class="w-full max-h-[800px] object-contain" alt="Fig 6a" />
-        </div>
+    <div class="col-span-12 flex flex-col gap-3 h-full">
+      <h2 class="text-headline font-sans">鲁棒性 + τ²-bench 真实客服</h2>
+      <p class="text-caption text-graphite italic">图 5a (左): 重加权强度 λ 影响 · 图 6a (右): τ²-bench 客服场景</p>
+      <div class="flex-1 grid grid-cols-2 gap-4 items-center">
+        <figure class="frame-img h-30 fit-contain">
+          <img src={`${FIG}/x14.png`} alt="Fig 5a" />
+        </figure>
+        <figure class="frame-img h-30 fit-contain">
+          <img src={`${FIG}/x18.png`} alt="Fig 6a" />
+        </figure>
       </div>
     </div>
   </section>

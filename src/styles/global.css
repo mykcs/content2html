@@ -114,6 +114,48 @@ body {
   z-index: 1;
 }
 
+/* === guizang-style image frame (从 vendor/guizang-ppt-skill/references/components.md 移植) ===
+   标准比例 + fit-contain 避免图片被裁; vh 单位随视口缩放; 同组多图用同高度类 */
+.frame-img {
+  overflow: hidden;
+  position: relative;
+  background: rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+  width: 100%;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.slide-page.dark .frame-img { background: rgba(255, 255, 255, 0.04); }
+.frame-img > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+.frame-img.fit-contain > img {
+  object-fit: contain;
+  object-position: center center;
+}
+
+/* 标准比例 + max-height: 56-64vh (从 layouts.md 移植) */
+.frame-img.r-21x9 { aspect-ratio: 21 / 9; max-height: 56vh; }
+.frame-img.r-16x9 { aspect-ratio: 16 / 9; max-height: 64vh; }
+.frame-img.r-16x10 { aspect-ratio: 16 / 10; max-height: 56vh; }
+.frame-img.r-4x3 { aspect-ratio: 4 / 3; max-height: 56vh; }
+.frame-img.r-3x2 { aspect-ratio: 3 / 2; max-height: 50vh; }
+.frame-img.r-1x1 { aspect-ratio: 1 / 1; max-height: 50vh; }
+
+/* 多图网格: 同组用同高度 (从 layouts.md "图片网格" 规则) */
+.frame-img.h-22 { height: 22vh; }
+.frame-img.h-26 { height: 26vh; }
+.frame-img.h-30 { height: 30vh; }
+
+/* figure 元素 reset (从 components.md figure.tile 移植) */
+figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 0; }
+
 /* Per-slide page number bottom-right (OSA signature) — single ::after, 半透明白底, 避免覆盖 slide 内容 */
 .slide-deck {
   counter-reset: slide-total var(--slide-total, 0);
