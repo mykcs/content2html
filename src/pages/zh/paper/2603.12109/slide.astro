@@ -1,8 +1,8 @@
 ---
 // src/pages/zh/paper/2603.12109/slide.astro
 // paper-mode: 中文 slide (横向翻页) — 11 Q&A + 4 图穿插
-// 图片模式: <figure class="frame-img r-X fit-contain"> (guizang-style)
-// 来源: vendor/guizang-ppt-skill/references/{components,layouts}.md
+// 高清图源: arxiv e-print tar.gz → figures/*.pdf → pdftoppm 300dpi PNG
+// + GitHub mykcs/unimpor/T3 figs/ (tau2-AREW 等)
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getEntry } from "astro:content";
 
@@ -47,13 +47,13 @@ const FIG = "/content2html/figures/2603.12109";
     </div>
   </section>
 
-  <!-- Slide 3: Fig 1 — r-21x9 (2.36:1 匹配) max-h 56vh -->
+  <!-- Slide 3: Fig 1 论文核心图 (2396×1890, 4 panels 拼接) — r-4x3 (1.27:1) -->
   <section class="slide-page" data-page="3">
     <div class="col-span-12 flex flex-col gap-3 h-full">
       <h2 class="text-headline font-sans">论文核心图: SeL 与 AReW 缓解示意</h2>
-      <p class="text-caption text-graphite italic">图 1 — vanilla outcome-based RL (上) 陷入自锁, AReW (下) 通过方向性批评重分配优势</p>
-      <figure class="frame-img r-21x9 fit-contain flex-1">
-        <img src={`${FIG}/x1.png`} alt="Fig 1: SeL overview" />
+      <p class="text-caption text-graphite italic">图 1 (4 panels 拼接) — vanilla outcome-based RL (上) 陷入自锁, AReW (下) 通过方向性批评重分配优势</p>
+      <figure class="frame-img r-4x3 fit-contain flex-1">
+        <img src={`${FIG}/fig1_full.png`} alt="Fig 1: SeL overview" />
       </figure>
     </div>
   </section>
@@ -82,13 +82,13 @@ const FIG = "/content2html/figures/2603.12109";
     </div>
   </section>
 
-  <!-- Slide 7: Fig 2a — r-4x3 (1.36:1 匹配) max-h 56vh -->
+  <!-- Slide 7: Fig 2 PE-G testbed (1416×965, asbt1.pdf 300dpi) — r-3x2 (1.47:1) -->
   <section class="slide-page" data-page="7">
     <div class="col-span-12 flex flex-col gap-3 h-full">
       <h2 class="text-headline font-sans">实验任务示意: PE-G 偏好估计</h2>
-      <p class="text-caption text-graphite italic">图 2a — Preference Estimation with gates, attribute subspace size S=2</p>
-      <figure class="frame-img r-4x3 fit-contain flex-1 max-w-4xl mx-auto">
-        <img src={`${FIG}/x2.png`} alt="Fig 2a: PE-G" />
+      <p class="text-caption text-graphite italic">图 2 — Preference Estimation with gates, attribute subspace size S=2</p>
+      <figure class="frame-img r-3x2 fit-contain flex-1 max-w-4xl mx-auto">
+        <img src={`${FIG}/asbt1.png`} alt="Fig 2: PE-G testbed" />
       </figure>
     </div>
   </section>
@@ -101,19 +101,14 @@ const FIG = "/content2html/figures/2603.12109";
     </div>
   </section>
 
-  <!-- Slide 9: Fig 3a + Fig 4a — 双图 grid-cols-2, h-26 统一高度 -->
+  <!-- Slide 9: Fig 3 main results (4230×2100, 2.01:1) — r-2x1 (新增, 60vh) -->
   <section class="slide-page" data-page="9">
     <div class="col-span-12 flex flex-col gap-3 h-full">
-      <h2 class="text-headline font-sans">主要结果 + 训练动态</h2>
-      <p class="text-caption text-graphite italic">图 3a (左): PE-G 任务结果 · 图 4a (右): 训练动态 — vanilla 停滞, AReW 持续提升</p>
-      <div class="flex-1 grid grid-cols-2 gap-4 items-center">
-        <figure class="frame-img h-30 fit-contain">
-          <img src={`${FIG}/x6.png`} alt="Fig 3a" />
-        </figure>
-        <figure class="frame-img h-30 fit-contain">
-          <img src={`${FIG}/x10.png`} alt="Fig 4a" />
-        </figure>
-      </div>
+      <h2 class="text-headline font-sans">主要结果: 7 个数据集</h2>
+      <p class="text-caption text-graphite italic">图 3 — vanilla PPO (蓝) vs AReW-AS ONLY (橙) vs AReW-AS+BT (红) 训练结果, 7 个数据集一致提升</p>
+      <figure class="frame-img r-2x1 fit-contain flex-1">
+        <img src={`${FIG}/fig3_main.png`} alt="Fig 3: main results" />
+      </figure>
     </div>
   </section>
 
@@ -125,17 +120,17 @@ const FIG = "/content2html/figures/2603.12109";
     </div>
   </section>
 
-  <!-- Slide 11: Fig 5a + Fig 6a — 双图 grid-cols-2, h-30 统一高度 -->
+  <!-- Slide 11: Fig 5 lambda effect (2160×1380, 1.57:1) + Fig 6 τ²-bench (1672×436, 3.83:1) — 双图 grid-cols-2, h-30 -->
   <section class="slide-page" data-page="11">
     <div class="col-span-12 flex flex-col gap-3 h-full">
       <h2 class="text-headline font-sans">鲁棒性 + τ²-bench 真实客服</h2>
-      <p class="text-caption text-graphite italic">图 5a (左): 重加权强度 λ 影响 · 图 6a (右): τ²-bench 客服场景</p>
+      <p class="text-caption text-graphite italic">图 5 (左): 重加权强度 λ 影响 · 图 6 (右): τ²-bench 客服场景</p>
       <div class="flex-1 grid grid-cols-2 gap-4 items-center">
         <figure class="frame-img h-30 fit-contain">
-          <img src={`${FIG}/x14.png`} alt="Fig 5a" />
+          <img src={`${FIG}/fig5_lambda.png`} alt="Fig 5: lambda effect" />
         </figure>
         <figure class="frame-img h-30 fit-contain">
-          <img src={`${FIG}/x18.png`} alt="Fig 6a" />
+          <img src={`${FIG}/gh-tau2-AREW.png`} alt="Fig 6: tau2-bench" />
         </figure>
       </div>
     </div>

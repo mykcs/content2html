@@ -147,6 +147,8 @@ body {
 .frame-img.r-4x3 { aspect-ratio: 4 / 3; max-height: 56vh; }
 .frame-img.r-3x2 { aspect-ratio: 3 / 2; max-height: 50vh; }
 .frame-img.r-1x1 { aspect-ratio: 1 / 1; max-height: 50vh; }
+.frame-img.r-2x1 { aspect-ratio: 2 / 1; max-height: 60vh; }    /* arxiv Fig 3 main 2.01:1 */
+.frame-img.r-4x1 { aspect-ratio: 4 / 1; max-height: 40vh; }    /* arxiv Fig 6 τ²-bench 3.83:1 */
 
 /* 多图网格: 同组用同高度 (从 layouts.md "图片网格" 规则) */
 .frame-img.h-22 { height: 22vh; }
@@ -336,14 +338,16 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
     left: auto !important;
     transform: none !important;
     width: 100% !important;
-    height: auto !important;
-    min-height: 167mm;  /* A4 landscape width (297mm) × 9/16 ≈ 167mm */
+    height: 167mm !important;        /* A4 landscape width (297mm) × 9/16 ≈ 167mm, 锁死严格 1 page */
     padding: 12mm 14mm !important;  /* 60px/75px @ 0.21mm/px ≈ scaled for print */
     box-sizing: border-box;
     box-shadow: none !important;
     border-radius: 0 !important;
     margin: 0 !important;
-    page-break-after: always;
+    overflow: hidden !important;     /* 内容超出 slide 边界 = 裁, 不跨页 */
+    break-inside: avoid;             /* 浏览器不要把单张 slide 切到 2 页 (新 spec) */
+    page-break-inside: avoid;        /* legacy 兼容 (Firefox / 旧 Chrome) */
+    page-break-after: always;        /* slide 之间强制分页 */
     break-after: page;
   }
   .slide-page:last-child {

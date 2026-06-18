@@ -1,8 +1,8 @@
 ---
 // src/pages/en/paper/2603.12109/slide.astro
 // paper-mode: English slide (horizontal pagination) — 8 Q&A + 4 figures
-// Image pattern: <figure class="frame-img r-X fit-contain"> (guizang-style)
-// Source: vendor/guizang-ppt-skill/references/{components,layouts}.md
+// High-res source: arxiv e-print tar.gz → figures/*.pdf → pdftoppm 300dpi PNG
+// + GitHub mykcs/unimpor/T3 figs/ (tau2-AREW etc.)
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getEntry } from "astro:content";
 
@@ -47,13 +47,13 @@ const FIG = "/content2html/figures/2603.12109";
     </div>
   </section>
 
-  <!-- Slide 3: Fig 1 — r-21x9 (matches 2.36:1) max-h 56vh -->
+  <!-- Slide 3: Fig 1 core (2396×1890, 4 panels stitched) — r-4x3 (1.27:1) -->
   <section class="slide-page" data-page="3">
     <div class="col-span-12 flex flex-col gap-3 h-full">
       <h2 class="text-headline font-sans">Core Figure: SeL and AReW Mitigation</h2>
-      <p class="text-caption text-graphite italic">Fig 1 — vanilla outcome-based RL (top) trapped in self-locking; AReW (bottom) reallocates advantage via directional critiques</p>
-      <figure class="frame-img r-21x9 fit-contain flex-1">
-        <img src={`${FIG}/x1.png`} alt="Fig 1: SeL overview" />
+      <p class="text-caption text-graphite italic">Fig 1 (4 panels stitched) — vanilla outcome-based RL (top) trapped in self-locking; AReW (bottom) reallocates advantage via directional critiques</p>
+      <figure class="frame-img r-4x3 fit-contain flex-1">
+        <img src={`${FIG}/fig1_full.png`} alt="Fig 1: SeL overview" />
       </figure>
     </div>
   </section>
@@ -82,13 +82,13 @@ const FIG = "/content2html/figures/2603.12109";
     </div>
   </section>
 
-  <!-- Slide 7: Fig 2a — r-4x3 (matches 1.36:1) max-h 56vh -->
+  <!-- Slide 7: Fig 2 PE-G testbed (1416×965, asbt1.pdf 300dpi) — r-3x2 (1.47:1) -->
   <section class="slide-page" data-page="7">
     <div class="col-span-12 flex flex-col gap-3 h-full">
       <h2 class="text-headline font-sans">Testbed: PE-G Preference Estimation</h2>
-      <p class="text-caption text-graphite italic">Fig 2a — Preference Estimation with gates, attribute subspace size S=2</p>
-      <figure class="frame-img r-4x3 fit-contain flex-1 max-w-4xl mx-auto">
-        <img src={`${FIG}/x2.png`} alt="Fig 2a: PE-G" />
+      <p class="text-caption text-graphite italic">Fig 2 — Preference Estimation with gates, attribute subspace size S=2</p>
+      <figure class="frame-img r-3x2 fit-contain flex-1 max-w-4xl mx-auto">
+        <img src={`${FIG}/asbt1.png`} alt="Fig 2: PE-G testbed" />
       </figure>
     </div>
   </section>
@@ -101,19 +101,14 @@ const FIG = "/content2html/figures/2603.12109";
     </div>
   </section>
 
-  <!-- Slide 9: Fig 3a + Fig 4a — dual grid-cols-2, h-30 unified height -->
+  <!-- Slide 9: Fig 3 main results (4230×2100, 2.01:1) — r-2x1 (60vh) -->
   <section class="slide-page" data-page="9">
     <div class="col-span-12 flex flex-col gap-3 h-full">
-      <h2 class="text-headline font-sans">Main Results + Training Dynamics</h2>
-      <p class="text-caption text-graphite italic">Fig 3a (left): PE-G results · Fig 4a (right): training dynamics — vanilla stalls, AReW sustained improvement</p>
-      <div class="flex-1 grid grid-cols-2 gap-4 items-center">
-        <figure class="frame-img h-30 fit-contain">
-          <img src={`${FIG}/x6.png`} alt="Fig 3a" />
-        </figure>
-        <figure class="frame-img h-30 fit-contain">
-          <img src={`${FIG}/x10.png`} alt="Fig 4a" />
-        </figure>
-      </div>
+      <h2 class="text-headline font-sans">Main Results: 7 Datasets</h2>
+      <p class="text-caption text-graphite italic">Fig 3 — vanilla PPO (blue) vs AReW-AS ONLY (orange) vs AReW-AS+BT (red) training results, consistent gains across 7 datasets</p>
+      <figure class="frame-img r-2x1 fit-contain flex-1">
+        <img src={`${FIG}/fig3_main.png`} alt="Fig 3: main results" />
+      </figure>
     </div>
   </section>
 
@@ -125,17 +120,17 @@ const FIG = "/content2html/figures/2603.12109";
     </div>
   </section>
 
-  <!-- Slide 11: Fig 5a + Fig 6a — dual grid-cols-2, h-30 -->
+  <!-- Slide 11: Fig 5 lambda (2160×1380, 1.57:1) + Fig 6 τ²-bench (1672×436, 3.83:1) — dual grid-cols-2, h-30 -->
   <section class="slide-page" data-page="11">
     <div class="col-span-12 flex flex-col gap-3 h-full">
       <h2 class="text-headline font-sans">Robustness + τ²-bench Customer Service</h2>
-      <p class="text-caption text-graphite italic">Fig 5a (left): reweighting strength λ effect · Fig 6a (right): τ²-bench customer service</p>
+      <p class="text-caption text-graphite italic">Fig 5 (left): reweighting strength λ effect · Fig 6 (right): τ²-bench customer service</p>
       <div class="flex-1 grid grid-cols-2 gap-4 items-center">
         <figure class="frame-img h-30 fit-contain">
-          <img src={`${FIG}/x14.png`} alt="Fig 5a" />
+          <img src={`${FIG}/fig5_lambda.png`} alt="Fig 5: lambda effect" />
         </figure>
         <figure class="frame-img h-30 fit-contain">
-          <img src={`${FIG}/x18.png`} alt="Fig 6a" />
+          <img src={`${FIG}/gh-tau2-AREW.png`} alt="Fig 6: tau2-bench" />
         </figure>
       </div>
     </div>
