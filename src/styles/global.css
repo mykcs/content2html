@@ -114,33 +114,28 @@ body {
   z-index: 1;
 }
 
-/* Per-slide page number bottom-right (OSA signature) */
-.slide-page::after {
-  content: attr(data-page);
-  position: absolute;
-  bottom: 30px;
-  right: 75px;
-  font-family: var(--font-sans);
-  font-size: 28px;
-  font-weight: 700;
-  color: rgba(0, 0, 0, 0.35);
-  letter-spacing: 0.02em;
-  pointer-events: none;
-  user-select: none;
+/* Per-slide page number bottom-right (OSA signature) — single ::after, 半透明白底, 避免覆盖 slide 内容 */
+.slide-deck {
+  counter-reset: slide-total var(--slide-total, 0);
 }
 
-.slide-page::before {
-  content: "/ " counter(slide-total, decimal-leading-zero);
-  counter-reset: slide-total var(--slide-total, 0);
+.slide-page::after {
+  content: attr(data-page) " / " counter(slide-total);
   position: absolute;
-  bottom: 30px;
-  right: 45px;
+  bottom: 28px;
+  right: 70px;
   font-family: var(--font-sans);
-  font-size: 28px;
-  font-weight: 500;
-  color: rgba(0, 0, 0, 0.25);
+  font-size: 22px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.55);
+  letter-spacing: 0.04em;
   pointer-events: none;
   user-select: none;
+  background: rgba(255, 255, 255, 0.78);
+  padding: 4px 10px;
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 /* Slide 页码指示器 (左下角, 半透明深底白字, 由 slide-nav.ts 注入) */
