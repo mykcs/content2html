@@ -485,40 +485,68 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
   /* Force all slides visible (override .slide-page { opacity: 0; visibility: hidden; display: grid; position: absolute } screen default)
      ⚠️ visibility 必须显式覆盖: 屏幕模式默认 .slide-page { visibility: hidden } 只有 .active 显示,
      打印模式下若漏覆盖, 13 张 slide 中仅 1 张可见 (slide 1 唯一带 .active 类) (2026-06-21 fix)
-     Strategy: 用 zoom: 0.5846 (Chromium 支持, 同时缩放 layout + visual) 把屏幕 1920×1080 slide
-     整体缩放到 print page 297×167mm. zoom 比 transform: scale 优势: 同步缩放 layout box,
-     page-break-after 才能正常按缩放后尺寸分页. (transform: scale 只缩放 visual, layout box
-     仍是 1920×1080, page-break 仍按原尺寸判定, 13 张全在同一 page)
-     scale 计算: 297mm / (1920px / 96dpi × 25.4) = 297/508 ≈ 0.5846 */
+     ⚠️ 不用 zoom 不用 transform: scale: 两者在 print-to-PDF 跨浏览器管线均不生效 (Edge/Chrome
+     save-as-PDF 都忽略), visual 仍按 1920×1080 渲染, 但 page 仅 1122×631 → content 溢出
+     跨多页 / 缩在左上角 (2026-06-21 反馈, Playwright 复现 26 pages = 13 × 2)
+     → 改用 mm + 显式缩放所有尺寸: page = 297×167mm, padding/font/gap/absolute 全部按
+     scale = 0.5846 (= 297mm / 508mm) 缩放, 写死 px 值, 100% 跨浏览器兼容 */
   .slide-page {
-    /* Match print page size in LAYOUT (so page-break-after: always works per page) */
+    /* Page-sized (与 @page size 一致) */
     width: 297mm !important;
     height: 167mm !important;
-    /* Uniform scale to fit screen design (1920×1080) into print page (297×167mm) */
-    zoom: 0.5846 !important;
-    /* Preserve screen layout */
+    /* Scaled padding: 80px × 0.5846 ≈ 47px, 100px × 0.5846 ≈ 58px */
+    padding: 47px 58px !important;
+    /* Grid 12 cols (跟屏幕一致) */
     display: grid !important;
     grid-template-columns: repeat(12, 1fr) !important;
-    padding: 80px 100px !important;  /* keep screen padding (scaled with zoom) */
+    /* Scaled gap: 1.5rem = 24px, × 0.5846 ≈ 14px */
+    gap: 14px !important;
+    /* Reset screen font-size: 16px (root default) → 9.37px (= 16 × 0.5846) */
+    /* 让所有 em 引用 (e.g. em-based override) 同步缩放 */
+    font-size: 9.37px !important;
+    /* Override theme variables (in em 单位, 引用上面 font-size 9.37px) */
+    --text-display: 5em;       /* 5 × 9.37 = 46.85px (屏 80px × 0.585) */
+    --text-headline: 3.5em;    /* 32.8px (屏 56px × 0.585) */
+    --text-title: 2em;         /* 18.74px (屏 32px × 0.585) */
+    --text-body: 1.125em;      /* 10.55px (屏 18px × 0.585) */
+    --text-caption: 0.9375em;  /* 8.78px (屏 15px × 0.585) */
+    --text-kicker: 0.8125em;   /* 7.61px (屏 13px × 0.585) */
+    --spacing: 0.25em;         /* Tailwind gap base: 0.25 × 9.37 = 2.34px (屏 4px × 0.585) */
+    --spacing-baseline: 0.5em; /* 屏 8px × 0.585 */
     /* Visibility + opacity (override screen hide) */
     visibility: visible !important;
     opacity: 1 !important;
-    /* No shadow/border-radius in print */
+    /* No shadow/radius in print */
     box-shadow: none !important;
     border-radius: 0 !important;
-    /* No margin, content cropped to slide box */
     margin: 0 !important;
     overflow: hidden !important;
-    /* Page break control */
-    break-inside: avoid;
-    page-break-inside: avoid;
-    page-break-after: always;
-    break-after: page;
-    /* Override screen position: relative (not absolute) for proper page flow */
+    /* Page break */
+    page-break-after: always !important;
+    break-after: page !important;
+    /* Position override (screen 是 absolute + translate) */
     position: relative !important;
     top: auto !important;
     left: auto !important;
     transform: none !important;
+  }
+
+  /* Absolute-positioned 装饰元素: 按 scale 0.5846 缩放 (override screen px 值) */
+  .slide-page .slide-top-accent {
+    top: 19px !important;       /* 屏 32 × 0.585 */
+    left: 58px !important;      /* 屏 100 × 0.585 */
+    width: 35px !important;     /* 屏 60 × 0.585 */
+    height: 1.2px !important;   /* 屏 2 × 0.585 */
+  }
+  .slide-page .slide-info-corner {
+    bottom: 53px !important;    /* 屏 90 × 0.585 */
+    left: 33px !important;      /* 屏 56 × 0.585 */
+    max-width: 246px !important; /* 屏 420 × 0.585 */
+  }
+  .slide-page .slide-meta-bar {
+    bottom: 21px !important;    /* 屏 36 × 0.585 */
+    left: 58px !important;      /* 屏 100 × 0.585 */
+    right: 58px !important;
   }
 
   .slide-page:last-child {
