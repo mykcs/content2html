@@ -1,6 +1,21 @@
 ---
 name: content2html
 description: 内容 (arxiv paper / DOI / PDF / 本地 progress) → 4 个 HTML 产物 (paper-slide / paper-summary / progress-slide / progress-report)。统一 fork guizang-ppt-skill v1.1.0 Style B 视觉 (IKB 蓝 / 柠檬黄 / 柠檬绿 / 安全橙)。双语支持, 默认中文 (zh), 可切英文 (en)。独立 Astro project, 部署到 mykcs.github.io/content2html/。
+metadata:
+  version: 0.1.0
+  status: live
+  created: 2026-06-17
+  updated: 2026-06-21
+  changelog: |
+    v0.1.0 (2026-06-21) — 补 metadata frontmatter (skill-as-code 协议), 5 commit audit fix push (c0cd24f/1a41d23/a6aa0d0/1c27e7e/be41989/bbea560)
+    v0.0.1 (2026-06-17) — 初版, fork guizang Style B, 4 产物 (paper-slide/paper-summary/progress-slide/progress-report), 双语, 默认 zh
+triggers:
+  - /content2html
+  - /c2h
+  - content2html
+  - 内容转html
+  - 论文转slide
+  - 进度报告
 ---
 
 # content2html
