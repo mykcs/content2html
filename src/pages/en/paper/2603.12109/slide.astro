@@ -51,13 +51,13 @@ function extractBullets(body: string): string[] {
   productType="slide"
 >
   <!-- Slide 1: Title (full English title + English authors + English affiliations) -->
-  <section class="slide-page active" data-page="1">
-    <div class="slide-kicker-bar">
-    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
-    <span>Title · 01 / 14</span>
-  </div>
+  <section class="slide-page active" data-page="1">    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span><a href="https://arxiv.org/abs/2603.12109" target="_blank" rel="noopener">arXiv:2603.12109</a><span class="meta-date">· 2026-03-12</span></span>
+      <span class="meta-page">01 / 15</span>
+    </div>
+
     <div class="col-span-12 flex flex-col justify-center items-center text-center gap-6">
-      <p class="kicker">arXiv:{paper.arxiv_id} · v2 · 2026-03-12</p>
       <hr class="accent-bar" />
       <h1 class="text-headline font-sans font-bold leading-tight max-w-6xl">{TITLE_EN}</h1>
       <hr class="swiss-rule w-40" />
@@ -68,15 +68,15 @@ function extractBullets(body: string): string[] {
         {AFFILS_EN.map((aff, idx) => <li><sup class="text-ikb-blue font-semibold">{idx + 1}</sup> {aff}</li>)}
       </ol>
     </div>
-    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 2: Abstract -->
-  <section class="slide-page" data-page="2">
-    <div class="slide-kicker-bar">
-    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
-    <span>Abstract · 02 / 14</span>
-  </div>
+  <section class="slide-page" data-page="2">    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span><a href="https://arxiv.org/abs/2603.12109" target="_blank" rel="noopener">arXiv:2603.12109</a><span class="meta-date">· 2026-03-12</span></span>
+      <span class="meta-page">02 / 15</span>
+    </div>
+
     <div class="col-span-12 flex flex-col gap-6 h-full">
       <div>
         <p class="kicker mb-3">Abstract</p>
@@ -87,15 +87,15 @@ function extractBullets(body: string): string[] {
       </div>
       <p class="lead flex-1">{paper.abstract_en}</p>
     </div>
-    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 3: Fig 1 concept — r-2x1 (2.01:1) -->
-  <section class="slide-page" data-page="3">
-    <div class="slide-kicker-bar">
-    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
-    <span>Figure 1 · 03 / 14</span>
-  </div>
+  <section class="slide-page" data-page="3">    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span><a href="https://arxiv.org/abs/2603.12109" target="_blank" rel="noopener">arXiv:2603.12109</a><span class="meta-date">· 2026-03-12</span></span>
+      <span class="meta-page">03 / 15</span>
+    </div>
+
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
         <p class="kicker mb-3">Figure 1 · Core Diagram</p>
@@ -107,15 +107,15 @@ function extractBullets(body: string): string[] {
         <img src={`${FIG}/fig1_pipeline.png`} alt="Fig 1: SeL overview + AReW mitigation" />
       </figure>
     </div>
-    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 4: Q1 -->
-  <section class="slide-page" data-page="4">
-    <div class="slide-kicker-bar">
-    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
-    <span>Q1 · 04 / 14</span>
-  </div>
+  <section class="slide-page" data-page="4">    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span><a href="https://arxiv.org/abs/2603.12109" target="_blank" rel="noopener">arXiv:2603.12109</a><span class="meta-date">· 2026-03-12</span></span>
+      <span class="meta-page">04 / 15</span>
+    </div>
+
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
         <p class="kicker mb-3">Q1 · Problem</p>
@@ -128,15 +128,15 @@ function extractBullets(body: string): string[] {
         ))}
       </ul>
     </div>
-    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 5: Q2 -->
-  <section class="slide-page" data-page="5">
-    <div class="slide-kicker-bar">
-    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
-    <span>Q2 · 05 / 14</span>
-  </div>
+  <section class="slide-page" data-page="5">    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span><a href="https://arxiv.org/abs/2603.12109" target="_blank" rel="noopener">arXiv:2603.12109</a><span class="meta-date">· 2026-03-12</span></span>
+      <span class="meta-page">05 / 15</span>
+    </div>
+
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
         <p class="kicker mb-3">Q2 · Related Work</p>
@@ -149,15 +149,15 @@ function extractBullets(body: string): string[] {
         ))}
       </ul>
     </div>
-    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 6: Q3 -->
-  <section class="slide-page" data-page="6">
-    <div class="slide-kicker-bar">
-    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
-    <span>Q3 · 06 / 14</span>
-  </div>
+  <section class="slide-page" data-page="6">    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span><a href="https://arxiv.org/abs/2603.12109" target="_blank" rel="noopener">arXiv:2603.12109</a><span class="meta-date">· 2026-03-12</span></span>
+      <span class="meta-page">06 / 15</span>
+    </div>
+
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
         <p class="kicker mb-3">Q3 · Method</p>
@@ -170,15 +170,15 @@ function extractBullets(body: string): string[] {
         ))}
       </ul>
     </div>
-    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 7: Fig 4 training dynamics 4 panels — r-16x10 (1.56:1) -->
-  <section class="slide-page" data-page="7">
-    <div class="slide-kicker-bar">
-    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
-    <span>Figure 4 · 07 / 14</span>
-  </div>
+  <section class="slide-page" data-page="7">    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span><a href="https://arxiv.org/abs/2603.12109" target="_blank" rel="noopener">arXiv:2603.12109</a><span class="meta-date">· 2026-03-12</span></span>
+      <span class="meta-page">07 / 15</span>
+    </div>
+
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
         <p class="kicker mb-3">Figure 4 · Training Dynamics (4 tasks)</p>
@@ -190,15 +190,15 @@ function extractBullets(body: string): string[] {
         <img src={`${FIG}/fig4_full.png`} alt="Fig 4: training dynamics" />
       </figure>
     </div>
-    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 8: Q4 (1/2) -->
-  <section class="slide-page" data-page="8">
-    <div class="slide-kicker-bar">
-    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
-    <span>Q4.1 · 08 / 14</span>
-  </div>
+  <section class="slide-page" data-page="8">    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span><a href="https://arxiv.org/abs/2603.12109" target="_blank" rel="noopener">arXiv:2603.12109</a><span class="meta-date">· 2026-03-12</span></span>
+      <span class="meta-page">08 / 15</span>
+    </div>
+
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
         <p class="kicker mb-3">Q4.1 · Experiments (Setup + Table 1)</p>
@@ -211,15 +211,15 @@ function extractBullets(body: string): string[] {
         ))}
       </ul>
     </div>
-    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 9: Fig 3 algorithm generalization 3 panels — h-30 -->
-  <section class="slide-page" data-page="9">
-    <div class="slide-kicker-bar">
-    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
-    <span>Figure 3 · 09 / 14</span>
-  </div>
+  <section class="slide-page" data-page="9">    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span><a href="https://arxiv.org/abs/2603.12109" target="_blank" rel="noopener">arXiv:2603.12109</a><span class="meta-date">· 2026-03-12</span></span>
+      <span class="meta-page">09 / 15</span>
+    </div>
+
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
         <p class="kicker mb-3">Figure 3 · Cross-Algorithm Generalization</p>
@@ -231,15 +231,15 @@ function extractBullets(body: string): string[] {
         <img src={`${FIG}/fig3_full.png`} alt="Fig 3: algorithm generalization" />
       </figure>
     </div>
-    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 10: Q4 (2/2) -->
-  <section class="slide-page" data-page="10">
-    <div class="slide-kicker-bar">
-    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
-    <span>Q4.2 · 10 / 14</span>
-  </div>
+  <section class="slide-page" data-page="10">    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span><a href="https://arxiv.org/abs/2603.12109" target="_blank" rel="noopener">arXiv:2603.12109</a><span class="meta-date">· 2026-03-12</span></span>
+      <span class="meta-page">10 / 15</span>
+    </div>
+
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
         <p class="kicker mb-3">Q4.2 · Experiments (Dynamics + Robustness + λ)</p>
@@ -252,15 +252,15 @@ function extractBullets(body: string): string[] {
         ))}
       </ul>
     </div>
-    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 11: Fig 5 lambda + Fig 6 τ²-bench — dual h-30 -->
-  <section class="slide-page" data-page="11">
-    <div class="slide-kicker-bar">
-    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
-    <span>Figures 5+6 · 11 / 14</span>
-  </div>
+  <section class="slide-page" data-page="11">    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span><a href="https://arxiv.org/abs/2603.12109" target="_blank" rel="noopener">arXiv:2603.12109</a><span class="meta-date">· 2026-03-12</span></span>
+      <span class="meta-page">11 / 15</span>
+    </div>
+
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
         <p class="kicker mb-3">Figures 5+6 · Robustness + Real Scenario</p>
@@ -277,15 +277,15 @@ function extractBullets(body: string): string[] {
         </figure>
       </div>
     </div>
-    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 12: Q5 -->
-  <section class="slide-page" data-page="12">
-    <div class="slide-kicker-bar">
-    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
-    <span>Q5 · 12 / 14</span>
-  </div>
+  <section class="slide-page" data-page="12">    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span><a href="https://arxiv.org/abs/2603.12109" target="_blank" rel="noopener">arXiv:2603.12109</a><span class="meta-date">· 2026-03-12</span></span>
+      <span class="meta-page">12 / 15</span>
+    </div>
+
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
         <p class="kicker mb-3">Q5 · Future Work</p>
@@ -298,15 +298,15 @@ function extractBullets(body: string): string[] {
         ))}
       </ul>
     </div>
-    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 13: Q6 -->
-  <section class="slide-page" data-page="13">
-    <div class="slide-kicker-bar">
-    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
-    <span>Q6 · 13 / 14</span>
-  </div>
+  <section class="slide-page" data-page="13">    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span><a href="https://arxiv.org/abs/2603.12109" target="_blank" rel="noopener">arXiv:2603.12109</a><span class="meta-date">· 2026-03-12</span></span>
+      <span class="meta-page">13 / 15</span>
+    </div>
+
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
         <p class="kicker mb-3">Q6 · Summary</p>
@@ -319,15 +319,32 @@ function extractBullets(body: string): string[] {
         ))}
       </ul>
     </div>
-    <div class="slide-accent-bottom"></div>
+  </section>
+
+  <!-- Slide 14: Q7 (restored) -->
+  <section class="slide-page" data-page="14">    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span><a href="https://arxiv.org/abs/2603.12109" target="_blank" rel="noopener">arXiv:2603.12109</a><span class="meta-date">· 2026-03-12</span></span>
+      <span class="meta-page">14 / 15</span>
+    </div>
+
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Q7 · Learn More</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_en[7].heading}</h2>
+      </div>
+      <p class="qa-body flex-1 whitespace-pre-line">{paper.sections_en[7].body}</p>
+    </div>
   </section>
 
   <!-- Slide 15: Key contributions -->
-  <section class="slide-page" data-page="15">
-    <div class="slide-kicker-bar">
-    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
-    <span>Key Takeaways · 14 / 14</span>
-  </div>
+  <section class="slide-page" data-page="15">    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span><a href="https://arxiv.org/abs/2603.12109" target="_blank" rel="noopener">arXiv:2603.12109</a><span class="meta-date">· 2026-03-12</span></span>
+      <span class="meta-page">15 / 15</span>
+    </div>
+
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
         <p class="kicker mb-3">Key Takeaways</p>
@@ -340,6 +357,5 @@ function extractBullets(body: string): string[] {
         ))}
       </ul>
     </div>
-    <div class="slide-accent-bottom"></div>
   </section>
 </BaseLayout>

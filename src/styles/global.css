@@ -217,32 +217,53 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
   letter-spacing: 0.01em;
 }
 
-/* 顶部 kicker bar (Swiss 风 — 论文编号 + 类型 + 页码) */
-.slide-kicker-bar {
+/* === Bottom meta bar (v3 layout: 顶部 kicker 全部删, arXiv + 日期到左下, 页码右下) === */
+.slide-meta-bar {
   position: absolute;
-  top: 28px;
+  bottom: 36px;
   left: 100px;
   right: 100px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
   font-family: var(--font-sans);
   font-size: var(--text-kicker);
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
+  text-transform: lowercase;
+  letter-spacing: 0.1em;
   color: var(--color-graphite);
   pointer-events: none;
 }
 
-.slide-kicker-bar .kicker-paper { color: var(--color-ikb-blue); }
+.slide-meta-bar a {
+  color: var(--color-ikb-blue);
+  text-decoration: none;
+  pointer-events: auto;
+  font-weight: 700;
+  transition: color 0.15s;
+}
 
-/* 底部 accent 细线 (Swiss 风 — 每页底部 IKB-blue 1px 装饰) */
-.slide-accent-bottom {
+.slide-meta-bar a:hover { text-decoration: underline; }
+
+.slide-meta-bar .meta-date {
+  margin-left: 1ch;
+  color: var(--color-graphite);
+  font-weight: 500;
+}
+
+.slide-meta-bar .meta-page {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--color-black);
+  letter-spacing: 0.08em;
+}
+
+/* 顶部细线 (薄 1px IKB-blue 装饰, 替代原 kicker bar) */
+.slide-top-accent {
   position: absolute;
-  bottom: 24px;
+  top: 32px;
   left: 100px;
-  width: 40px;
+  width: 60px;
   height: 2px;
   background: var(--color-ikb-blue);
   pointer-events: none;
