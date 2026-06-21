@@ -12,7 +12,10 @@ const paper = entry.data as {
   arxiv_id?: string;
   title_zh: string;
   title_en: string;
+  title_full_en?: string;
   authors: string[];
+  authors_with_affil_en?: { name: string; affil: string[] }[];
+  affiliations_en?: string[];
   abstract_zh: string;
   abstract_en: string;
   sections_zh: { heading: string; body: string }[];
@@ -21,6 +24,9 @@ const paper = entry.data as {
 };
 
 const FIG = "/content2html/figures/2603.12109";
+const TITLE_EN = paper.title_full_en ?? paper.title_en;
+const AUTHORS_EN = paper.authors_with_affil_en ?? paper.authors.map((n) => ({ name: n, affil: [] as string[] }));
+const AFFILS_EN = paper.affiliations_en ?? Array.from(new Set(AUTHORS_EN.flatMap((a) => a.affil)));
 ---
 <BaseLayout
   title={`${paper.title_en} | paper-slide`}
@@ -28,20 +34,23 @@ const FIG = "/content2html/figures/2603.12109";
   lang="en"
   productType="slide"
 >
-  <!-- Slide 1: Title -->
+  <!-- Slide 1: Title (full English title + English authors + English affiliations) -->
   <section class="slide-page active" data-page="1">
     <div class="slide-kicker-bar">
     <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
     <span>Title · 01 / 15</span>
   </div>
-    <div class="col-span-12 flex flex-col justify-center items-center text-center">
-      <p class="kicker mb-6">arXiv:{paper.arxiv_id} · v2 · 2026-03-12</p>
-      <hr class="accent-bar mb-10" />
-      <h1 class="text-display font-sans font-bold leading-tight mb-10 max-w-5xl">{paper.title_en}</h1>
-      <hr class="swiss-rule w-32 mb-10" />
-      <p class="text-body text-graphite">
-        {paper.authors.map((a, i) => <><span class="author-name">{a}</span>{i < paper.authors.length - 1 ? " · " : ""}</>)}
+    <div class="col-span-12 flex flex-col justify-center items-center text-center gap-6">
+      <p class="kicker">arXiv:{paper.arxiv_id} · v2 · 2026-03-12</p>
+      <hr class="accent-bar" />
+      <h1 class="text-headline font-sans font-bold leading-tight max-w-6xl">{TITLE_EN}</h1>
+      <hr class="swiss-rule w-40" />
+      <p class="text-body leading-relaxed max-w-6xl">
+        {AUTHORS_EN.map((a, i) => <><span class="author-name">{a.name}</span><sup class="text-caption text-ikb-blue">{a.affil.map((_, idx) => AFFILS_EN.indexOf(a.affil[idx]) + 1).join(",")}</sup>{i < AUTHORS_EN.length - 1 ? " · " : ""}</>)}
       </p>
+      <ol class="text-caption text-graphite leading-relaxed list-none max-w-6xl text-left mt-2">
+        {AFFILS_EN.map((aff, idx) => <li><sup class="text-ikb-blue font-semibold">{idx + 1}</sup> {aff}</li>)}
+      </ol>
     </div>
     <div class="slide-accent-bottom"></div>
   </section>

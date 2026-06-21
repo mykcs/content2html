@@ -2,6 +2,7 @@
   "arxiv_id": "2603.12109",
   "title_zh": "大语言模型主动推理强化学习中的信息自锁现象",
   "title_en": "On Information Self-Locking in Reinforcement Learning for Active Reasoning of LLM agents",
+  "title_full_en": "On Information Self-Locking in Reinforcement Learning for Active Reasoning of LLM agents",
   "authors": [
     "Deyu Zou",
     "Yongqiang Chen",
@@ -10,6 +11,21 @@
     "Pan Li",
     "Yu Gong",
     "James Cheng"
+  ],
+  "authors_with_affil_en": [
+    { "name": "Deyu Zou", "affil": ["The Chinese University of Hong Kong"] },
+    { "name": "Yongqiang Chen", "affil": ["The Chinese University of Hong Kong"] },
+    { "name": "Fan Feng", "affil": ["University of California San Diego"] },
+    { "name": "Mufei Li", "affil": ["Georgia Institute of Technology"] },
+    { "name": "Pan Li", "affil": ["Georgia Institute of Technology"] },
+    { "name": "Yu Gong", "affil": ["ByteDance"] },
+    { "name": "James Cheng", "affil": ["The Chinese University of Hong Kong"] }
+  ],
+  "affiliations_en": [
+    "The Chinese University of Hong Kong",
+    "University of California San Diego",
+    "Georgia Institute of Technology",
+    "ByteDance"
   ],
   "abstract_zh": "基于结果奖励的强化学习 (RL) 在训练大语言模型 (LLM) agent 完成复杂推理任务方面已取得显著成功。然而, 在主动推理场景中, agent 需要策略性地提出问题以获取任务相关信息, 我们发现使用 RL 训练的 LLM agent 常常遭遇「信息自锁」现象: agent 不再提出高信息量的问题, 也难以内化已获取的信息。为理解这一现象, 我们将主动推理分解为两个核心能力: 行动选择 (AS, 通过查询决定观察流) 与信念追踪 (BT, 根据收集到的证据更新 agent 的信念)。我们证明, AS 与 BT 能力的不足将限制 RL 训练期间的信息探索; 反之, 信息探索不足又会阻碍 AS 与 BT 能力的提升, 形成正反馈循环, 将 agent 锁定在低信息区域。为解决此问题, 我们提出一种简洁有效的方法, 通过注入易获得的方向性判据 (directional critiques) 来重新分配学习信号, 帮助 agent 摆脱自锁。在 7 个数据集上的广泛实验表明, 我们的方法显著缓解了信息自锁现象, 带来最多 60% 的性能提升。",
   "abstract_en": "Reinforcement learning (RL) with outcome-based rewards has achieved significant success in training large language model (LLM) agents for complex reasoning tasks. However, in active reasoning where agents need to strategically ask questions to acquire task-relevant information, we find that LLM agents trained with RL often suffer from information self-locking: the agent ceases to ask informative questions and struggles to internalize already-obtained information. To understand the phenomenon, we decompose active reasoning into two core capabilities: Action Selection (AS), which determines the observation stream through queries, and Belief Tracking (BT), which updates the agent's belief based on collected evidence. We show that deficient AS and BT capabilities will limit the information exploration during RL training. Furthermore, insufficient exploration in turn hinders the improvement of AS and BT, creating a feedback loop that locks the agent in a low-information regime. To resolve the issue, we propose a simple yet effective approach that reallocates the learning signal by injecting easy-to-obtain directional critiques to help the agent escape self-locking. Extensive experiments with 7 datasets show that our approach significantly mitigates the information self-locking, bringing up to 60% improvements.",
