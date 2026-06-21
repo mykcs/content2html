@@ -269,13 +269,13 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
   pointer-events: none;
 }
 
-/* Slide 1 右下角元信息块: arxiv / Published / Code / Field / Tech (Swiss editorial 风格) */
-.slide-info-corner {
+/* Slide 1 左下角元信息块: arxiv / Published / Code / Field / Tech (Swiss editorial 风格) */
+.sllide-info-corner {
   position: absolute;
   bottom: 36px;
-  right: 56px;
-  max-width: 380px;
-  text-align: right;
+  left: 56px;
+  max-width: 420px;
+  text-align: left;
   font-family: var(--font-sans);
   pointer-events: auto;
   user-select: text;
@@ -287,7 +287,7 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
   grid-template-columns: max-content 1fr;
   column-gap: 14px;
   row-gap: 6px;
-  justify-content: end;
+  justify-content: start;
   align-items: baseline;
 }
 .slide-info-corner dt {
@@ -304,7 +304,7 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
   color: var(--color-graphite);
   font-weight: 500;
   line-height: 1.4;
-  text-align: right;
+  text-align: left;
   word-break: break-word;
 }
 .slide-info-corner dd a {
