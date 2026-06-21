@@ -251,10 +251,10 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
 /* Key takeaways — 6 条 list 加粗 + 更大 padding */
 .slide-page .takeaway-item {
   font-family: var(--font-serif);
-  font-size: var(--text-body);
-  line-height: 1.6;
+  font-size: 1.5rem;       /* bumped from --text-body (1.125rem) for screen legibility on 1920px slide */
+  line-height: 1.45;
   border-left: 6px solid var(--color-ikb-blue);
-  padding: 0.25rem 0 0.25rem 1.25rem;
+  padding: 0.5rem 0 0.5rem 1.5rem;
   font-weight: 500;
 }
 
