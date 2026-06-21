@@ -227,7 +227,7 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
   left: 100px;
   right: 100px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;  /* 2026-06-21: 删 arxiv+date 后单 child (page) 仍贴右 */
   align-items: baseline;
   font-family: var(--font-sans);
   font-size: var(--text-kicker);
