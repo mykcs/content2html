@@ -321,6 +321,12 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
 .slide-info-corner dd a:hover {
   border-bottom-color: var(--color-ikb-blue);
 }
+.slide-info-corner dd .venue-rank {
+  color: var(--color-graphite);
+  font-weight: 500;
+  margin-left: 4px;
+  opacity: 0.85;
+}
 
 /* Key takeaways — 6 条 list 加粗 + 更大 padding */
 .slide-page .takeaway-item {

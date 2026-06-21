@@ -24,6 +24,8 @@ const paper = entry.data as {
   published_date?: string;
   code_url?: string;
   venue?: string;
+  venue_rank?: string;
+  venue_url?: string;
   category?: string;
   field_large_zh?: string;
   field_large_en?: string;
@@ -99,6 +101,13 @@ function cleanHeading(heading: string): string {
           {paper.code_url
             ? <a href={paper.code_url} target="_blank" rel="noopener noreferrer">{paper.code_url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}</a>
             : <span>N/A</span>}
+        </dd>
+        <dt>Venue</dt>
+        <dd>
+          {paper.venue_url
+            ? <a href={paper.venue_url} target="_blank" rel="noopener noreferrer">{paper.venue ?? "—"}</a>
+            : <>{paper.venue ?? "—"}</>}
+          {paper.venue_rank && <span class="venue-rank">({paper.venue_rank})</span>}
         </dd>
         <dt>Field</dt>
         <dd>{paper.field_large_en ?? "—"} / {paper.field_medium_en ?? "—"} / {paper.field_small_en ?? "—"}</dd>
