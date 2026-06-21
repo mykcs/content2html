@@ -549,6 +549,24 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
     right: 58px !important;
   }
 
+  /* Figure slides: 取消 max-height: 60vh (屏 60% = 100mm, 远小于 slide content 区 537mm)
+     → 让 figure 真填 flex-1 可用空间, 消除图片 slide 底部 25% 空白 */
+  .slide-page .frame-img.r-21x9,
+  .slide-page .frame-img.r-16x9,
+  .slide-page .frame-img.r-16x10,
+  .slide-page .frame-img.r-4x3,
+  .slide-page .frame-img.r-3x2,
+  .slide-page .frame-img.r-1x1,
+  .slide-page .frame-img.r-2x1,
+  .slide-page .frame-img.r-4x1 {
+    max-height: none !important;  /* 取消 screen 60vh cap, 让 flex-1 决定 */
+  }
+  .slide-page .frame-img.h-22,
+  .slide-page .frame-img.h-26,
+  .slide-page .frame-img.h-30 {
+    height: auto !important;     /* 取消 screen 固定 vh, 让 flex-1 决定 */
+  }
+
   .slide-page:last-child {
     page-break-after: auto;
     break-after: auto;
