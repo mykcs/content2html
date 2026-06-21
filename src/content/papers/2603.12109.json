@@ -98,12 +98,10 @@
     }
   ],
   "key_takeaways": [
-    "首次系统命名「信息自锁定」(SeL): 主动推理场景下, agent 不再提出高信息量问题且难以内化已得信息, 形成低信息正反馈循环",
-    "将主动推理分解为两个核心能力——行动选择 (AS) 与信念追踪 (BT)——揭示其双向耦合是 SeL 的结构性根因",
-    "AREW 方法: 通过注入「方向性判据」(directional critiques) 重新分配学习信号, 无需标定中间奖励, 即可让 agent 摆脱自锁",
-    "7 个数据集一致提升, 最多 60% 性能改善 (如 PE-G(S=3) 从 18.3 提升至 80.3)",
-    "在 PPO/GRPO/GSPO 三种 RL 算法上均有效, 跨模型 (Qwen-2.5-7B / LLaMA-3.1-8B) 一致",
-    "对判据噪声鲁棒 (50% 随机翻转仍优于 vanilla PPO), 理论保证 Acc_Q(ω) > 1/2 即有效"
+    "识别并命名「信息自锁定」(Information Self-Locking, SeL) 现象: 主动推理场景下, agent 不再提出高信息量问题且难以内化已获取的信息",
+    "将主动推理分解为行动选择 (Action Selection, AS) 与信念追踪 (Belief Tracking, BT) 两个核心能力, 揭示二者双向负反馈耦合是 SeL 的结构性根因",
+    "提出 AREW (Advantage Reweighing) 方法: 通过注入方向性批评 (directional critiques) 重新分配学习信号, 帮助 agent 摆脱自锁, 无需修改奖励函数或训练额外奖励模型",
+    "在 7 个数据集上一致验证, 最多 60% 性能提升 (如 PE-G(S=3) 从 18.3 提升至 80.3)"
   ],
   "published_date": "2026-03-12",
   "code_url": "https://github.com/unimpor/T3",
