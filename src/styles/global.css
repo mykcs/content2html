@@ -98,7 +98,8 @@ body {
   transform: translate(-50%, -50%) scale(var(--slide-scale));
   transform-origin: center center;
   opacity: 0;
-  transition: opacity 0.35s ease-in-out;
+  visibility: hidden;
+  transition: opacity 0.35s ease-in-out, visibility 0s linear 0.35s;
   background: #ffffff;
   color: var(--color-black);
   padding: 80px 100px;  /* v2: 加大呼吸空间 (user 反馈 缺审美) */
@@ -112,6 +113,8 @@ body {
 
 .slide-page.active {
   opacity: 1;
+  visibility: visible;
+  transition: opacity 0.35s ease-in-out, visibility 0s linear 0s;
   z-index: 1;
 }
 
