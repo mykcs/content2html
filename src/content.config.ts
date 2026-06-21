@@ -19,7 +19,10 @@ const papers = defineCollection({
     arxiv_id: z.string().optional(),
     title_zh: z.string(),
     title_en: z.string(),
+    title_full_en: z.string().optional(),
     authors: z.array(z.string()),
+    authors_with_affil_en: z.array(z.object({ name: z.string(), affil: z.array(z.string()) })).optional(),
+    affiliations_en: z.array(z.string()).optional(),
     abstract_zh: z.string(),
     abstract_en: z.string(),
     sections_zh: z.array(
