@@ -1,7 +1,7 @@
 ---
 // src/pages/en/paper/2603.12109/slide.astro
 // paper-mode: English slide (horizontal pagination) — 8 Q&A + 4 figures
-// Image source: arxiv e-print tar.gz (300dpi pdftoppm) + GitHub unimpor/T3 figs/
+// v2 aesthetic upgrade: typography +25%, Swiss editorial signature
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getEntry } from "astro:content";
 
@@ -30,101 +30,200 @@ const FIG = "/content2html/figures/2603.12109";
 >
   <!-- Slide 1: Title -->
   <section class="slide-page active" data-page="1">
-    <div class="col-span-12 flex flex-col justify-center">
-      <p class="text-caption text-gray-rule">arXiv: {paper.arxiv_id ?? paper.id}</p>
-      <h1 class="text-display font-sans font-bold mt-4">{paper.title_en}</h1>
-      <hr class="swiss-rule my-6" />
-      <p class="text-body text-graphite">{paper.authors.join(" · ")}</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Title · 01 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col justify-center items-center text-center">
+      <p class="kicker mb-6">arXiv:{paper.arxiv_id} · v2 · 2026-03-12</p>
+      <hr class="accent-bar mb-10" />
+      <h1 class="text-display font-sans font-bold leading-tight mb-10 max-w-5xl">{paper.title_en}</h1>
+      <hr class="swiss-rule w-32 mb-10" />
+      <p class="text-body text-graphite">
+        {paper.authors.map((a, i) => <><span class="author-name">{a}</span>{i < paper.authors.length - 1 ? " · " : ""}</>)}
+      </p>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 2: Abstract -->
   <section class="slide-page" data-page="2">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
-      <h2 class="col-span-12 text-headline font-sans">Abstract</h2>
-      <p class="col-span-10 col-start-2 text-body leading-relaxed">{paper.abstract_en}</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Abstract · 02 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-6 h-full">
+      <div>
+        <p class="kicker mb-3">Abstract</p>
+        <hr class="accent-bar mb-8" />
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl mb-8">
+          {paper.title_en}
+        </h2>
+      </div>
+      <p class="lead flex-1">{paper.abstract_en}</p>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
-  <!-- Slide 3: Fig 1 concept (Vanilla SeL + AReW mitigation) — r-2x1 (2.01:1) -->
+  <!-- Slide 3: Fig 1 concept — r-2x1 (2.01:1) -->
   <section class="slide-page" data-page="3">
-    <div class="col-span-12 flex flex-col gap-3 h-full">
-      <h2 class="text-headline font-sans">Core Figure: Information Self-Locking (SeL) and AReW Mitigation</h2>
-      <p class="text-caption text-graphite italic">Fig 1 — Top: vanilla outcome-based RL trapped in self-locking (Uninformative AS + Anti-aligned BT); Bottom: AReW restores AS-BT alignment via directional critiques (Informative AS + Aligned BT)</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Figure 1 · 03 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Figure 1 · Core Diagram</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight mb-4 max-w-5xl">Information Self-Locking (SeL) and AReW Mitigation</h2>
+      </div>
+      <p class="caption flex-shrink-0">Top: vanilla outcome-based RL trapped in self-locking (Uninformative AS + Anti-aligned BT); Bottom: AReW restores AS-BT alignment via directional critiques (Informative AS + Aligned BT)</p>
       <figure class="frame-img r-2x1 fit-contain flex-1">
         <img src={`${FIG}/fig1_pipeline.png`} alt="Fig 1: SeL overview + AReW mitigation" />
       </figure>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 4: Q1 -->
   <section class="slide-page" data-page="4">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
-      <h2 class="col-span-12 text-headline font-sans">{paper.sections_en[0].heading}</h2>
-      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_en[0].body}</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Q1 · 04 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Q1 · Problem</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_en[0].heading}</h2>
+      </div>
+      <p class="qa-body flex-1 whitespace-pre-line">{paper.sections_en[0].body}</p>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 5: Q2 -->
   <section class="slide-page" data-page="5">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
-      <h2 class="col-span-12 text-headline font-sans">{paper.sections_en[1].heading}</h2>
-      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_en[1].body}</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Q2 · 05 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Q2 · Related Work</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_en[1].heading}</h2>
+      </div>
+      <p class="qa-body flex-1 whitespace-pre-line">{paper.sections_en[1].body}</p>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 6: Q3 -->
   <section class="slide-page" data-page="6">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
-      <h2 class="col-span-12 text-headline font-sans">{paper.sections_en[2].heading}</h2>
-      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_en[2].body}</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Q3 · 06 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Q3 · Method</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_en[2].heading}</h2>
+      </div>
+      <p class="qa-body flex-1 whitespace-pre-line">{paper.sections_en[2].body}</p>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
-  <!-- Slide 7: Fig 4 training dynamics 4 panels (PE-G/PE-F/MediQ/FloDial-Hard) — r-16x10 (1.56:1) -->
+  <!-- Slide 7: Fig 4 training dynamics 4 panels — r-16x10 (1.56:1) -->
   <section class="slide-page" data-page="7">
-    <div class="col-span-12 flex flex-col gap-3 h-full">
-      <h2 class="text-headline font-sans">Experiment Results: Training Dynamics on 4 Tasks</h2>
-      <p class="text-caption text-graphite italic">Fig 4 — vanilla PPO (red) vs AReW-AS ONLY (green) vs AReW-AS+BT (blue) Reward vs Training Steps; AReW sustained improvement, vanilla stalls</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Figure 4 · 07 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Figure 4 · Training Dynamics (4 tasks)</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight mb-4">Experiment Results: Training Dynamics on 4 Tasks</h2>
+      </div>
+      <p class="caption flex-shrink-0">vanilla PPO (red) vs AReW-AS ONLY (green) vs AReW-AS+BT (blue) Reward vs Training Steps; AReW sustained improvement, vanilla stalls</p>
       <figure class="frame-img r-16x10 fit-contain flex-1">
         <img src={`${FIG}/fig4_full.png`} alt="Fig 4: training dynamics" />
       </figure>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 8: Q4 (1/2) -->
   <section class="slide-page" data-page="8">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
-      <h2 class="col-span-12 text-headline font-sans">{paper.sections_en[3].heading}</h2>
-      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_en[3].body}</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Q4.1 · 08 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Q4.1 · Experiments (Setup + Table 1)</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_en[3].heading}</h2>
+      </div>
+      <p class="qa-body flex-1 whitespace-pre-line">{paper.sections_en[3].body}</p>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
-  <!-- Slide 9: Fig 3 algorithm generalization 3 panels (PPO/GRPO/GSPO) — h-30 -->
+  <!-- Slide 9: Fig 3 algorithm generalization 3 panels — h-30 -->
   <section class="slide-page" data-page="9">
-    <div class="col-span-12 flex flex-col gap-3 h-full">
-      <h2 class="text-headline font-sans">Cross-Algorithm Generalization</h2>
-      <p class="text-caption text-graphite italic">Fig 3 — (a) MediQ intervention: outcome-RL reduces feedback sensitivity, increases belief consistency; (b) PE-F under GRPO; (c) FloDial-Easy under GSPO — AReW consistent gains across algorithms</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Figure 3 · 09 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Figure 3 · Cross-Algorithm Generalization</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight mb-4">PPO / GRPO / GSPO — Consistent Gains</h2>
+      </div>
+      <p class="caption flex-shrink-0">(a) MediQ intervention: outcome-RL reduces feedback sensitivity, increases belief consistency; (b) PE-F under GRPO; (c) FloDial-Easy under GSPO</p>
       <figure class="frame-img h-30 fit-contain">
         <img src={`${FIG}/fig3_full.png`} alt="Fig 3: algorithm generalization" />
       </figure>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 10: Q4 (2/2) -->
   <section class="slide-page" data-page="10">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
-      <h2 class="col-span-12 text-headline font-sans">{paper.sections_en[4].heading}</h2>
-      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_en[4].body}</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Q4.2 · 10 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Q4.2 · Experiments (Dynamics + Robustness + λ)</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_en[4].heading}</h2>
+      </div>
+      <p class="qa-body flex-1 whitespace-pre-line">{paper.sections_en[4].body}</p>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 11: Fig 5 lambda + Fig 6 τ²-bench — dual h-30 -->
   <section class="slide-page" data-page="11">
-    <div class="col-span-12 flex flex-col gap-3 h-full">
-      <h2 class="text-headline font-sans">Robustness + τ²-bench Customer Service</h2>
-      <p class="text-caption text-graphite italic">Fig 5 (left): reweighting strength λ effect — too small signal insufficient, moderate sustained gains, too large training collapse · Fig 6 (right): τ²-bench customer service — AReW stable in real scenarios</p>
-      <div class="flex-1 grid grid-cols-2 gap-4 items-center">
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Figures 5+6 · 11 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Figures 5+6 · Robustness + Real Scenario</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight mb-4">λ Effect + τ²-bench Customer Service</h2>
+      </div>
+      <p class="caption flex-shrink-0">Fig 5 (left): reweighting strength λ effect · Fig 6 (right): τ²-bench customer service scenario</p>
+      <div class="flex-1 grid grid-cols-2 gap-6 items-center">
         <figure class="frame-img h-30 fit-contain">
           <img src={`${FIG}/fig5_lambda.png`} alt="Fig 5: lambda effect" />
         </figure>
@@ -133,41 +232,78 @@ const FIG = "/content2html/figures/2603.12109";
         </figure>
       </div>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 12: Q5 -->
   <section class="slide-page" data-page="12">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
-      <h2 class="col-span-12 text-headline font-sans">{paper.sections_en[5].heading}</h2>
-      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_en[5].body}</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Q5 · 12 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Q5 · Future Work</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_en[5].heading}</h2>
+      </div>
+      <p class="qa-body flex-1 whitespace-pre-line">{paper.sections_en[5].body}</p>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 13: Q6 -->
   <section class="slide-page" data-page="13">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
-      <h2 class="col-span-12 text-headline font-sans">{paper.sections_en[6].heading}</h2>
-      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_en[6].body}</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Q6 · 13 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Q6 · Summary</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_en[6].heading}</h2>
+      </div>
+      <p class="qa-body flex-1 whitespace-pre-line">{paper.sections_en[6].body}</p>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 14: Q7 -->
   <section class="slide-page" data-page="14">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
-      <h2 class="col-span-12 text-headline font-sans">{paper.sections_en[7].heading}</h2>
-      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_en[7].body}</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Q7 · 14 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Q7 · Learn More</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_en[7].heading}</h2>
+      </div>
+      <p class="qa-body flex-1 whitespace-pre-line">{paper.sections_en[7].body}</p>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 15: Key contributions -->
   <section class="slide-page" data-page="15">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
-      <h2 class="col-span-12 text-headline font-sans">Key Contributions</h2>
-      <ul class="col-span-10 col-start-2 space-y-3 text-body">
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Key Takeaways · 15 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Key Takeaways</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight">6 Core Contributions</h2>
+      </div>
+      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-5xl">
         {paper.key_takeaways.map((t) => (
-          <li class="border-l-4 border-ikb-blue pl-4">{t}</li>
+          <li class="takeaway-item">{t}</li>
         ))}
       </ul>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 </BaseLayout>

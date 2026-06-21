@@ -1,13 +1,7 @@
 ---
 // src/pages/zh/paper/2603.12109/slide.astro
 // paper-mode: 中文 slide (横向翻页) — 11 Q&A + 4 图穿插
-// 图源 (arxiv e-print tar.gz → pdftoppm 300dpi + GitHub unimpor/T3 figs/):
-//   fig1_pipeline.png  = Fig 1 概念图 (Vanilla SeL + AReW 修复示意) [main.pdf]
-//   fig2_full.png       = Fig 2 AS/BT capability eval 4 panels [asbt1-4.pdf 拼接]
-//   fig3_full.png       = Fig 3 算法泛化 3 panels (PPO/GRPO/GSPO) [intervention+asbt5+6]
-//   fig4_full.png       = Fig 4 训练动态 4 panels (PE-G/PE-F/MediQ/FloDial) [reward1-4.pdf]
-//   fig5_lambda.png     = Fig 5 λ 重加权强度影响 [sign.pdf]
-//   gh-tau2-AREW.png    = Fig 6 τ²-bench 客服 [GitHub unimpor/T3/figs/]
+// v2 美学升级: 字号 +25%, Swiss editorial 签名 (accent-bar + kicker + 顶 kicker bar)
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getEntry } from "astro:content";
 
@@ -36,101 +30,200 @@ const FIG = "/content2html/figures/2603.12109";
 >
   <!-- Slide 1: Title -->
   <section class="slide-page active" data-page="1">
-    <div class="col-span-12 flex flex-col justify-center">
-      <p class="text-caption text-gray-rule">arXiv: {paper.arxiv_id ?? paper.id}</p>
-      <h1 class="text-display font-sans font-bold mt-4">{paper.title_zh}</h1>
-      <hr class="swiss-rule my-6" />
-      <p class="text-body text-graphite">{paper.authors.join(" · ")}</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>标题 · 01 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col justify-center items-center text-center">
+      <p class="kicker mb-6">arXiv:{paper.arxiv_id} · v2 · 2026-03-12</p>
+      <hr class="accent-bar mb-10" />
+      <h1 class="text-display font-sans font-bold leading-tight mb-10 max-w-5xl">{paper.title_zh}</h1>
+      <hr class="swiss-rule w-32 mb-10" />
+      <p class="text-body text-graphite">
+        {paper.authors.map((a, i) => <><span class="author-name">{a}</span>{i < paper.authors.length - 1 ? " · " : ""}</>)}
+      </p>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 2: Abstract -->
   <section class="slide-page" data-page="2">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
-      <h2 class="col-span-12 text-headline font-sans">摘要</h2>
-      <p class="col-span-10 col-start-2 text-body leading-relaxed">{paper.abstract_zh}</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>摘要 · 02 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-6 h-full">
+      <div>
+        <p class="kicker mb-3">Abstract · 摘要</p>
+        <hr class="accent-bar mb-8" />
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl mb-8">
+          {paper.title_zh}
+        </h2>
+      </div>
+      <p class="lead flex-1">{paper.abstract_zh}</p>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 3: Fig 1 概念图 (Vanilla SeL + AReW 修复示意) — r-2x1 (2.01:1) -->
   <section class="slide-page" data-page="3">
-    <div class="col-span-12 flex flex-col gap-3 h-full">
-      <h2 class="text-headline font-sans">论文核心图: 信息自锁 (SeL) 与 AReW 缓解</h2>
-      <p class="text-caption text-graphite italic">图 1 — 上半: vanilla outcome-based RL 陷入自锁 (Uninformative AS + Anti-aligned BT); 下半: AReW 通过方向性批评恢复 AS-BT 对齐 (Informative AS + Aligned BT)</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Figure 1 · 03 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Figure 1 · 论文核心图</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight mb-4 max-w-5xl">信息自锁 (SeL) 与 AReW 缓解</h2>
+      </div>
+      <p class="caption flex-shrink-0">上: vanilla outcome-based RL 陷入自锁 (Uninformative AS + Anti-aligned BT); 下: AReW 通过方向性批评恢复 AS-BT 对齐 (Informative AS + Aligned BT)</p>
       <figure class="frame-img r-2x1 fit-contain flex-1">
         <img src={`${FIG}/fig1_pipeline.png`} alt="Fig 1: SeL overview + AReW mitigation" />
       </figure>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 4: Q1 -->
   <section class="slide-page" data-page="4">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
-      <h2 class="col-span-12 text-headline font-sans">{paper.sections_zh[0].heading}</h2>
-      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_zh[0].body}</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Q1 · 04 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Q1 · 试图解决什么问题</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_zh[0].heading}</h2>
+      </div>
+      <p class="qa-body flex-1 whitespace-pre-line">{paper.sections_zh[0].body}</p>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 5: Q2 -->
   <section class="slide-page" data-page="5">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
-      <h2 class="col-span-12 text-headline font-sans">{paper.sections_zh[1].heading}</h2>
-      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_zh[1].body}</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Q2 · 05 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Q2 · 相关研究</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_zh[1].heading}</h2>
+      </div>
+      <p class="qa-body flex-1 whitespace-pre-line">{paper.sections_zh[1].body}</p>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 6: Q3 -->
   <section class="slide-page" data-page="6">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
-      <h2 class="col-span-12 text-headline font-sans">{paper.sections_zh[2].heading}</h2>
-      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_zh[2].body}</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Q3 · 06 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Q3 · 如何解决</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_zh[2].heading}</h2>
+      </div>
+      <p class="qa-body flex-1 whitespace-pre-line">{paper.sections_zh[2].body}</p>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
-  <!-- Slide 7: Fig 4 训练动态 4 panels (PE-G/PE-F/MediQ/FloDial-Hard) — r-16x10 (1.56:1) -->
+  <!-- Slide 7: Fig 4 训练动态 4 panels — r-16x10 (1.56:1) -->
   <section class="slide-page" data-page="7">
-    <div class="col-span-12 flex flex-col gap-3 h-full">
-      <h2 class="text-headline font-sans">实验结果: 4 个任务的训练动态</h2>
-      <p class="text-caption text-graphite italic">图 4 — vanilla PPO (红) vs AReW-AS ONLY (绿) vs AReW-AS+BT (蓝) Reward vs Training Steps; AReW 持续提升, vanilla 停滞</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Figure 4 · 07 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Figure 4 · 训练动态 4 tasks</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight mb-4">实验结果: 4 个任务的训练动态</h2>
+      </div>
+      <p class="caption flex-shrink-0">vanilla PPO (红) vs AReW-AS ONLY (绿) vs AReW-AS+BT (蓝) Reward vs Training Steps; AReW 持续提升, vanilla 停滞</p>
       <figure class="frame-img r-16x10 fit-contain flex-1">
         <img src={`${FIG}/fig4_full.png`} alt="Fig 4: training dynamics" />
       </figure>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 8: Q4 (1/2) -->
   <section class="slide-page" data-page="8">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
-      <h2 class="col-span-12 text-headline font-sans">{paper.sections_zh[3].heading}</h2>
-      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_zh[3].body}</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Q4.1 · 08 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Q4.1 · 实验 (设置 + Table 1)</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_zh[3].heading}</h2>
+      </div>
+      <p class="qa-body flex-1 whitespace-pre-line">{paper.sections_zh[3].body}</p>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
-  <!-- Slide 9: Fig 3 算法泛化 3 panels (PPO/GRPO/GSPO) — h-30 (太宽 4.46:1, 强制高度) -->
+  <!-- Slide 9: Fig 3 跨算法泛化 3 panels — h-30 -->
   <section class="slide-page" data-page="9">
-    <div class="col-span-12 flex flex-col gap-3 h-full">
-      <h2 class="text-headline font-sans">跨 RL 算法泛化</h2>
-      <p class="text-caption text-graphite italic">图 3 — (a) MediQ 干预实验: outcome-RL 削弱反馈敏感性, 提升 belief consistency; (b) PE-F 在 GRPO; (c) FloDial-Easy 在 GSPO — AReW 跨算法一致提升</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Figure 3 · 09 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Figure 3 · 跨 RL 算法泛化</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight mb-4">PPO / GRPO / GSPO 三算法一致提升</h2>
+      </div>
+      <p class="caption flex-shrink-0">(a) MediQ 干预: outcome-RL 削弱反馈敏感性, 提升 belief consistency; (b) PE-F 在 GRPO; (c) FloDial-Easy 在 GSPO</p>
       <figure class="frame-img h-30 fit-contain">
         <img src={`${FIG}/fig3_full.png`} alt="Fig 3: algorithm generalization" />
       </figure>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 10: Q4 (2/2) -->
   <section class="slide-page" data-page="10">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
-      <h2 class="col-span-12 text-headline font-sans">{paper.sections_zh[4].heading}</h2>
-      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_zh[4].body}</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Q4.2 · 10 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Q4.2 · 实验 (动态 + 鲁棒性 + λ)</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_zh[4].heading}</h2>
+      </div>
+      <p class="qa-body flex-1 whitespace-pre-line">{paper.sections_zh[4].body}</p>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 11: Fig 5 lambda + Fig 6 τ²-bench — 双图 h-30 -->
   <section class="slide-page" data-page="11">
-    <div class="col-span-12 flex flex-col gap-3 h-full">
-      <h2 class="text-headline font-sans">鲁棒性 + τ²-bench 真实客服</h2>
-      <p class="text-caption text-graphite italic">图 5 (左): 重加权强度 λ 影响 — 过小信号不足, 适中稳定提升, 过大训练崩溃 · 图 6 (右): τ²-bench 客服场景 — AReW 真实场景稳定提升</p>
-      <div class="flex-1 grid grid-cols-2 gap-4 items-center">
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Figures 5+6 · 11 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Figures 5+6 · 鲁棒性 + 真实场景</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight mb-4">λ 影响 + τ²-bench 客服</h2>
+      </div>
+      <p class="caption flex-shrink-0">图 5 (左): 重加权强度 λ 影响 · 图 6 (右): τ²-bench 客服场景</p>
+      <div class="flex-1 grid grid-cols-2 gap-6 items-center">
         <figure class="frame-img h-30 fit-contain">
           <img src={`${FIG}/fig5_lambda.png`} alt="Fig 5: lambda effect" />
         </figure>
@@ -139,41 +232,78 @@ const FIG = "/content2html/figures/2603.12109";
         </figure>
       </div>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 12: Q5 -->
   <section class="slide-page" data-page="12">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
-      <h2 class="col-span-12 text-headline font-sans">{paper.sections_zh[5].heading}</h2>
-      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_zh[5].body}</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Q5 · 12 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Q5 · 进一步探索</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_zh[5].heading}</h2>
+      </div>
+      <p class="qa-body flex-1 whitespace-pre-line">{paper.sections_zh[5].body}</p>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 13: Q6 -->
   <section class="slide-page" data-page="13">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
-      <h2 class="col-span-12 text-headline font-sans">{paper.sections_zh[6].heading}</h2>
-      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_zh[6].body}</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Q6 · 13 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Q6 · 总结</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_zh[6].heading}</h2>
+      </div>
+      <p class="qa-body flex-1 whitespace-pre-line">{paper.sections_zh[6].body}</p>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 14: Q7 -->
   <section class="slide-page" data-page="14">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-start pt-4">
-      <h2 class="col-span-12 text-headline font-sans">{paper.sections_zh[7].heading}</h2>
-      <p class="col-span-12 text-body leading-relaxed whitespace-pre-line">{paper.sections_zh[7].body}</p>
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Q7 · 14 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Q7 · 进一步了解</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_zh[7].heading}</h2>
+      </div>
+      <p class="qa-body flex-1 whitespace-pre-line">{paper.sections_zh[7].body}</p>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 
   <!-- Slide 15: 核心贡献 -->
   <section class="slide-page" data-page="15">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
-      <h2 class="col-span-12 text-headline font-sans">核心贡献</h2>
-      <ul class="col-span-10 col-start-2 space-y-3 text-body">
+    <div class="slide-kicker-bar">
+    <span><span class="kicker-paper">AReW · Information Self-Locking</span> · arXiv:2603.12109</span>
+    <span>Key Takeaways · 15 / 15</span>
+  </div>
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Key Takeaways · 核心贡献</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight">论文 6 大核心贡献</h2>
+      </div>
+      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-5xl">
         {paper.key_takeaways.map((t) => (
-          <li class="border-l-4 border-ikb-blue pl-4">{t}</li>
+          <li class="takeaway-item">{t}</li>
         ))}
       </ul>
     </div>
+    <div class="slide-accent-bottom"></div>
   </section>
 </BaseLayout>

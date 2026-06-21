@@ -41,12 +41,13 @@
   --grid-rule-width: 0.5px;  /* 发丝线 */
   --grid-rule-style: solid;
 
-  /* 字号层级 (极致字号对比) */
-  --text-display: 4.5rem;     /* 72pt — slide title */
-  --text-headline: 2.25rem;   /* 36pt — section heading */
-  --text-title: 1.5rem;       /* 24pt — sub-section */
-  --text-body: 1rem;          /* 16pt — body */
-  --text-caption: 0.75rem;    /* 12pt — caption / footer */
+  /* 字号层级 (v2: 整体放大 ~25% — user 反馈 "文字都太小了") */
+  --text-display: 5rem;        /* 80pt — slide title (Slide 1) */
+  --text-headline: 3.5rem;     /* 56pt — H2 节标题 (Q&A / image) */
+  --text-title: 2rem;          /* 32pt — H3 子标题 / lead 段 */
+  --text-body: 1.125rem;       /* 18pt — body (Q&A) */
+  --text-caption: 0.9375rem;   /* 15pt — caption / 斜体注释 */
+  --text-kicker: 0.8125rem;    /* 13pt — 大写小标签 (AReW · 2603.12109) */
 }
 
 /* ============ Swiss grid baseline (8pt) ============ */
@@ -100,7 +101,7 @@ body {
   transition: opacity 0.35s ease-in-out;
   background: #ffffff;
   color: var(--color-black);
-  padding: 60px 75px;  /* OSA signature: 75px 左右, 60px 顶 */
+  padding: 80px 100px;  /* v2: 加大呼吸空间 (user 反馈 缺审美) */
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 1.5rem;
@@ -157,6 +158,111 @@ body {
 
 /* figure 元素 reset (从 components.md figure.tile 移植) */
 figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 0; }
+
+/* === v2: Typography signatures (Swiss editorial 风) === */
+.kicker {
+  font-family: var(--font-sans);
+  font-size: var(--text-kicker);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-ikb-blue);
+  line-height: 1.2;
+}
+
+.accent-bar {
+  width: 60px;
+  height: 4px;
+  background: var(--color-ikb-blue);
+  border: 0;
+  margin: 0;
+  border-radius: 2px;
+}
+
+.accent-bar-wide { width: 120px; height: 6px; }
+
+/* H2 标题 (Q&A + image slide) 统一用 sans-serif + IKB-blue + 加粗 + tracking */
+.slide-page h2.text-headline {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--color-black);
+}
+
+/* Lead paragraph (abstract / 图 caption 强调) */
+.slide-page .lead {
+  font-family: var(--font-serif);
+  font-size: var(--text-title);
+  line-height: 1.5;
+  color: var(--color-graphite);
+}
+
+/* Q&A body — serif + 大行高 (阅读体验) */
+.slide-page .qa-body {
+  font-family: var(--font-serif);
+  font-size: var(--text-body);
+  line-height: 1.75;
+  color: var(--color-black);
+  letter-spacing: 0.005em;
+}
+
+/* Caption (图注) — sans + 斜体 + IKB 灰 */
+.slide-page .caption {
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  font-style: italic;
+  line-height: 1.4;
+  color: var(--color-graphite);
+  letter-spacing: 0.01em;
+}
+
+/* 顶部 kicker bar (Swiss 风 — 论文编号 + 类型 + 页码) */
+.slide-kicker-bar {
+  position: absolute;
+  top: 28px;
+  left: 100px;
+  right: 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: var(--text-kicker);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--color-graphite);
+  pointer-events: none;
+}
+
+.slide-kicker-bar .kicker-paper { color: var(--color-ikb-blue); }
+
+/* 底部 accent 细线 (Swiss 风 — 每页底部 IKB-blue 1px 装饰) */
+.slide-accent-bottom {
+  position: absolute;
+  bottom: 24px;
+  left: 100px;
+  width: 40px;
+  height: 2px;
+  background: var(--color-ikb-blue);
+  pointer-events: none;
+}
+
+/* Key takeaways — 6 条 list 加粗 + 更大 padding */
+.slide-page .takeaway-item {
+  font-family: var(--font-serif);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  border-left: 6px solid var(--color-ikb-blue);
+  padding: 0.25rem 0 0.25rem 1.25rem;
+  font-weight: 500;
+}
+
+/* Title slide 装饰: IKB-blue 巨数字 + 作者高亮 */
+.slide-page .author-name {
+  color: var(--color-ikb-blue);
+  font-weight: 600;
+}
 
 /* Per-slide page number bottom-right (OSA signature) — single ::after, 半透明白底, 避免覆盖 slide 内容 */
 .slide-deck {
