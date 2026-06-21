@@ -273,7 +273,7 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
 }
 
 /* Slide 1 左下角元信息块: arxiv / Published / Code / Field / Tech (Swiss editorial 风格) */
-.sllide-info-corner {
+.slide-info-corner {
   position: absolute;
   bottom: 36px;
   left: 56px;
