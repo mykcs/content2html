@@ -21,6 +21,18 @@ const paper = entry.data as {
   sections_zh: { heading: string; body: string }[];
   sections_en: { heading: string; body: string }[];
   key_takeaways: string[];
+  published_date?: string;
+  code_url?: string;
+  venue?: string;
+  category?: string;
+  field_large_zh?: string;
+  field_large_en?: string;
+  field_medium_zh?: string;
+  field_medium_en?: string;
+  field_small_zh?: string;
+  field_small_en?: string;
+  technologies_zh?: string[];
+  technologies_en?: string[];
 };
 
 const FIG = "/content2html/figures/2603.12109";
@@ -75,6 +87,26 @@ function cleanHeading(heading: string): string {
         {AFFILS_EN.map((aff, idx) => <li><sup class="text-ikb-blue font-semibold">{idx + 1}</sup> {aff}</li>)}
       </ol>
     </div>
+
+    <!-- Slide 1 right-bottom metadata corner: arxiv / publish date / code / fields / techs -->
+    <aside class="slide-info-corner" aria-label="Paper metadata">
+      <dl>
+        <dt>arXiv</dt>
+        <dd><a href={`https://arxiv.org/abs/${paper.arxiv_id ?? paper.id}`} target="_blank" rel="noopener noreferrer">{paper.arxiv_id ?? paper.id}</a></dd>
+        <dt>Published</dt>
+        <dd>{paper.published_date ?? "N/A"}</dd>
+        <dt>Code</dt>
+        <dd>
+          {paper.code_url
+            ? <a href={paper.code_url} target="_blank" rel="noopener noreferrer">{paper.code_url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}</a>
+            : <span>N/A</span>}
+        </dd>
+        <dt>Field</dt>
+        <dd>{paper.field_large_en ?? "—"} / {paper.field_medium_en ?? "—"} / {paper.field_small_en ?? "—"}</dd>
+        <dt>Tech</dt>
+        <dd>{(paper.technologies_en ?? []).join(" · ") || "—"}</dd>
+      </dl>
+    </aside>
   </section>
 
   <!-- Slide 2: Abstract -->

@@ -15,7 +15,6 @@
 //   → 首次加载 init() 不 fire → 键盘没反应。本版补 DOMContentLoaded + 直接调用。
 
 const ACTIVE_CLASS = "active";
-const INDICATOR_CLASS = "slide-indicator";
 const CONTROLS_CLASS = "slide-controls";
 const WHEEL_DEBOUNCE_MS = 700;
 const TOUCH_SWIPE_THRESHOLD = 50;
@@ -27,6 +26,8 @@ type ZoomLevel = (typeof ZOOM_LEVELS)[number];
 type ZoomAction = ZoomLevel | "print";
 
 // === Navigation ===
+// Page number is shown once in top-right .slide-meta-bar .meta-page (e.g. "01 / 14").
+// Previously also rendered bottom-right (CSS ::after) + bottom-left (slide-indicator JS) — REMOVED 2026-06-21.
 function navigate(shift: number): void {
   const pages = Array.from(
     document.querySelectorAll<HTMLElement>(".slide-page")
@@ -36,7 +37,6 @@ function navigate(shift: number): void {
   const current = pages.findIndex((p) => p.classList.contains(ACTIVE_CLASS));
   if (current < 0) {
     pages[0]?.classList.add(ACTIVE_CLASS);
-    updateIndicator(0, pages.length);
     return;
   }
 
@@ -45,17 +45,6 @@ function navigate(shift: number): void {
 
   pages[current].classList.remove(ACTIVE_CLASS);
   pages[next].classList.add(ACTIVE_CLASS);
-  updateIndicator(next, pages.length);
-}
-
-function updateIndicator(current: number, total: number): void {
-  let el = document.querySelector<HTMLElement>(`.${INDICATOR_CLASS}`);
-  if (!el) {
-    el = document.createElement("div");
-    el.className = INDICATOR_CLASS;
-    document.querySelector(".slide-deck")?.appendChild(el);
-  }
-  el.textContent = `${current + 1} / ${total}`;
 }
 
 function ensureFirstPageActive(): void {
@@ -65,10 +54,6 @@ function ensureFirstPageActive(): void {
   if (pages.length === 0) return;
   const hasActive = pages.some((p) => p.classList.contains(ACTIVE_CLASS));
   if (!hasActive) pages[0].classList.add(ACTIVE_CLASS);
-  const current = pages.findIndex((p) => p.classList.contains(ACTIVE_CLASS));
-  updateIndicator(Math.max(0, current), pages.length);
-  // Set --slide-total for ::before counter
-  document.documentElement.style.setProperty("--slide-total", String(pages.length));
 }
 
 // === Scaling (OSA-style fit-to-viewport + 3 manual levels) ===
@@ -170,7 +155,6 @@ function onKeyDown(e: KeyboardEvent): void {
           );
           if (current >= 0) pages[current].classList.remove(ACTIVE_CLASS);
           pages[target].classList.add(ACTIVE_CLASS);
-          updateIndicator(target, pages.length);
         }
       }
   }
@@ -247,7 +231,6 @@ function detach(): void {
   window.removeEventListener("resize", onResize);
   const controls = document.querySelector(`.${CONTROLS_CLASS}`);
   if (controls) controls.removeEventListener("click", onControlsClick as EventListener);
-  document.querySelector(`.${INDICATOR_CLASS}`)?.remove();
 }
 
 // 3 重保险: 立即 attach (module defer) + DOMContentLoaded 兜底 + ViewTransitions 兼容

@@ -105,5 +105,17 @@
     "在 PPO/GRPO/GSPO 三种 RL 算法上均有效, 跨模型 (Qwen-2.5-7B / LLaMA-3.1-8B) 一致",
     "对判据噪声鲁棒 (50% 随机翻转仍优于 vanilla PPO), 理论保证 Acc_Q(ω) > 1/2 即有效"
   ],
+  "published_date": "2026-03-12",
+  "code_url": "https://github.com/unimpor/T3",
+  "venue": "ICML 2026",
+  "category": "cs.AI",
+  "field_large_zh": "计算机科学",
+  "field_large_en": "Computer Science",
+  "field_medium_zh": "人工智能 / 强化学习",
+  "field_medium_en": "AI / Reinforcement Learning",
+  "field_small_zh": "LLM 智能体主动推理",
+  "field_small_en": "LLM Agent Active Reasoning",
+  "technologies_zh": ["PPO", "GRPO", "GSPO", "方向性批评", "优势重加权", "Qwen-2.5-7B", "LLaMA-3.1-8B", "7 数据集"],
+  "technologies_en": ["PPO", "GRPO", "GSPO", "Directional Critiques", "Advantage Reweighting", "Qwen-2.5-7B", "LLaMA-3.1-8B", "7 Datasets"],
   "type": "paper"
 }

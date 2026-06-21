@@ -32,6 +32,19 @@ const papers = defineCollection({
       z.object({ heading: z.string(), body: z.string() })
     ),
     key_takeaways: z.array(z.string()),
+    // Paper metadata (slide 1 右下角元信息块用)
+    published_date: z.string().optional(),         // YYYY-MM-DD
+    code_url: z.string().url().optional(),         // 公开代码仓库
+    venue: z.string().optional(),                   // e.g. "ICML 2026"
+    category: z.string().optional(),                // arXiv primary category, e.g. "cs.AI"
+    field_large_zh: z.string().optional(),
+    field_large_en: z.string().optional(),
+    field_medium_zh: z.string().optional(),
+    field_medium_en: z.string().optional(),
+    field_small_zh: z.string().optional(),
+    field_small_en: z.string().optional(),
+    technologies_zh: z.array(z.string()).optional(),
+    technologies_en: z.array(z.string()).optional(),
   }),
 });
 
