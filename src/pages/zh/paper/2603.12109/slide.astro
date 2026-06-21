@@ -306,13 +306,13 @@ function cleanHeading(heading: string): string {
         <hr class="accent-bar mb-6" />
         <h2 class="text-headline font-sans font-bold leading-tight mb-4">λ 重加权与跨场景泛化</h2>
       </div>
-      <p class="caption flex-shrink-0">图 5 (左): 重加权强度 λ 影响 · 图 6 (右): τ²-bench 客服场景</p>
+      <p class="caption flex-shrink-0">图 5 (左): τ²-bench 训练动态 (a) reward (b) tool error (c) response token (d) instruction turn · 图 6 (右): τ²-bench AReW 客服场景</p>
       <div class="flex-1 grid grid-cols-2 gap-6 items-center">
         <figure class="frame-img h-30 fit-contain">
-          <img src={`${FIG}/fig5_lambda.png`} alt="Fig 5: lambda effect" />
+          <img src={`${FIG}/fig5_taubench.png`} alt="Fig 5: τ²-bench training dynamics — (a) rewards (b) tool execution errors (c) consumed response tokens (d) instruction turns" />
         </figure>
         <figure class="frame-img h-30 fit-contain">
-          <img src={`${FIG}/gh-tau2-AREW.png`} alt="Fig 6: tau2-bench" />
+          <img src={`${FIG}/gh-tau2-AREW.png`} alt="Fig 6: τ²-bench AReW customer service" />
         </figure>
       </div>
     </div>
