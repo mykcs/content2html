@@ -477,6 +477,10 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
   html, body {
     background: white !important;
     overflow: visible !important;
+    /* ⚠️ html root font-size: 缩 rem 引用 (2f0e7dd 漏修 → .takeaway-item { font-size: 2rem }
+       在 print mode 渲染为 32px (屏 100%), 因 rem 引用 root html 16px 而非 .slide-page 9.37px.
+       强制 html root = 9.37px → 所有 rem 同步缩 0.585× */
+    font-size: 9.37px !important;
   }
   .slide-deck {
     display: contents !important;
@@ -494,8 +498,9 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
     /* Page-sized (与 @page size 一致) */
     width: 297mm !important;
     height: 167mm !important;
-    /* Scaled padding: 80px × 0.5846 ≈ 47px, 100px × 0.5846 ≈ 58px */
-    padding: 47px 58px !important;
+    /* Scaled padding: 80px × 0.5846 ≈ 47px, 100px × 0.5846 ≈ 58px
+       (减小到 35/40 给 figure slide 更多垂直空间, 避免 r-2x1 503px overflow) */
+    padding: 35px 40px !important;
     /* Grid 12 cols (跟屏幕一致) */
     display: grid !important;
     grid-template-columns: repeat(12, 1fr) !important;
@@ -549,8 +554,10 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
     right: 58px !important;
   }
 
-  /* Figure slides: 取消 max-height: 60vh (屏 60% = 100mm, 远小于 slide content 区 537mm)
-     → 让 figure 真填 flex-1 可用空间, 消除图片 slide 底部 25% 空白 */
+  /* Figure slides: 取消 flex: 1 (flex-1 让 figure grow 到 flex container, 覆盖 max-height)
+     → 改 flex: 0 1 auto 让 figure 按 aspect-ratio / 自身高度决定
+     + max-height 75% (~420px) 防止 overflow
+     ⚠️ 不用 max-height: 80% (v6): flex-1 仍 dominate, figure 撑到 621px (slide 631, overflow) */
   .slide-page .frame-img.r-21x9,
   .slide-page .frame-img.r-16x9,
   .slide-page .frame-img.r-16x10,
@@ -558,18 +565,35 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
   .slide-page .frame-img.r-3x2,
   .slide-page .frame-img.r-1x1,
   .slide-page .frame-img.r-2x1,
-  .slide-page .frame-img.r-4x1 {
-    max-height: none !important;  /* 取消 screen 60vh cap, 让 flex-1 决定 */
-  }
+  .slide-page .frame-img.r-4x1,
   .slide-page .frame-img.h-22,
   .slide-page .frame-img.h-26,
   .slide-page .frame-img.h-30 {
-    height: auto !important;     /* 取消 screen 固定 vh, 让 flex-1 决定 */
+    flex: 0 1 auto !important;  /* 取消 flex-1 grow, 让 aspect-ratio 决定 size */
+    max-height: 75% !important;  /* 420px, 防 overflow (slide 631 × 0.75 ≈ 473, but containing block 是 col-span-12 561px, 0.75 × 561 = 420) */
+    height: auto !important;
   }
 
   .slide-page:last-child {
     page-break-after: auto;
     break-after: auto;
+  }
+
+  /* Scale px-based borders/padding/widths that don't cascade from html font-size
+     ⚠️ html font-size 9.37px fixes rem/em (e.g. .takeaway-item font-size: 2rem → 18.74px)
+     but px-based values (border-left: 8px, padding, etc.) still need explicit scaling
+     (2026-06-21 fix: html root scaling 漏覆盖 border-left) */
+  .slide-page .takeaway-item {
+    border-left-width: 5px !important;  /* 屏 8 × 0.585 = 4.68, browser rounds sub-pixel; 5px ≈ visual 4.68 */
+  }
+  .slide-page .slide-info-corner dt {
+    font-size: 0.7rem !important;  /* em-based, 重写一遍保险 */
+  }
+  .slide-page .slide-info-corner dd {
+    font-size: 0.85rem !important;
+  }
+  .slide-page .meta-page {
+    font-size: var(--text-kicker) !important;
   }
 
   /* Hide UI overlays (controls bar, language toggle, dev button) */
