@@ -43,6 +43,13 @@ function extractBullets(body: string): string[] {
   if (sol) out.push(...sol.map((s) => s.trim()));
   return out;
 }
+
+// Strip "Q1." / "Q4.1" prefix from Q&A section headings.
+// kicker already labels position (e.g. "Q1 · Problem"), so H2 only needs the question text.
+// summary.astro keeps Q-prefix (FAQ enumeration style), only slide.astro strips here.
+function cleanHeading(heading: string): string {
+  return heading.replace(/^Q\d+(?:\.\d+)?\.\s*/, "");
+}
 ---
 <BaseLayout
   title={`${paper.title_en} | paper-slide`}
@@ -82,7 +89,7 @@ function extractBullets(body: string): string[] {
         <p class="kicker mb-3">Abstract</p>
         <hr class="accent-bar mb-8" />
         <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl mb-8">
-          {paper.title_en}
+          Abstract
         </h2>
       </div>
       <p class="lead flex-1">{paper.abstract_en}</p>
@@ -120,7 +127,7 @@ function extractBullets(body: string): string[] {
       <div>
         <p class="kicker mb-3">Q1 · Problem</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_en[0].heading}</h2>
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[0].heading)}</h2>
       </div>
       <ul class="flex-1 flex flex-col gap-2 justify-center max-w-5xl">
         {extractBullets(paper.sections_en[0].body).map((b) => (
@@ -141,7 +148,7 @@ function extractBullets(body: string): string[] {
       <div>
         <p class="kicker mb-3">Q2 · Related Work</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_en[1].heading}</h2>
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[1].heading)}</h2>
       </div>
       <ul class="flex-1 flex flex-col gap-2 justify-center max-w-5xl">
         {extractBullets(paper.sections_en[1].body).map((b) => (
@@ -162,7 +169,7 @@ function extractBullets(body: string): string[] {
       <div>
         <p class="kicker mb-3">Q3 · Method</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_en[2].heading}</h2>
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[2].heading)}</h2>
       </div>
       <ul class="flex-1 flex flex-col gap-2 justify-center max-w-5xl">
         {extractBullets(paper.sections_en[2].body).map((b) => (
@@ -183,7 +190,7 @@ function extractBullets(body: string): string[] {
       <div>
         <p class="kicker mb-3">Figure 4 · Training Dynamics (4 tasks)</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight mb-4">Experiment Results: Training Dynamics on 4 Tasks</h2>
+        <h2 class="text-headline font-sans font-bold leading-tight mb-4">Training Dynamics Results</h2>
       </div>
       <p class="caption flex-shrink-0">vanilla PPO (red) vs AReW-AS ONLY (green) vs AReW-AS+BT (blue) Reward vs Training Steps; AReW sustained improvement, vanilla stalls</p>
       <figure class="frame-img r-16x10 fit-contain flex-1">
@@ -203,7 +210,7 @@ function extractBullets(body: string): string[] {
       <div>
         <p class="kicker mb-3">Q4.1 · Experiments (Setup + Table 1)</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_en[3].heading}</h2>
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[3].heading)}</h2>
       </div>
       <ul class="flex-1 flex flex-col gap-2 justify-center max-w-5xl">
         {extractBullets(paper.sections_en[3].body).map((b) => (
@@ -244,7 +251,7 @@ function extractBullets(body: string): string[] {
       <div>
         <p class="kicker mb-3">Q4.2 · Experiments (Dynamics + Robustness + λ)</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_en[4].heading}</h2>
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[4].heading)}</h2>
       </div>
       <ul class="flex-1 flex flex-col gap-2 justify-center max-w-5xl">
         {extractBullets(paper.sections_en[4].body).map((b) => (
@@ -265,7 +272,7 @@ function extractBullets(body: string): string[] {
       <div>
         <p class="kicker mb-3">Figures 5+6 · Robustness + Real Scenario</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight mb-4">λ Effect + τ²-bench Customer Service</h2>
+        <h2 class="text-headline font-sans font-bold leading-tight mb-4">λ Reweighting Strength and Cross-Scenario Generalization</h2>
       </div>
       <p class="caption flex-shrink-0">Fig 5 (left): reweighting strength λ effect · Fig 6 (right): τ²-bench customer service scenario</p>
       <div class="flex-1 grid grid-cols-2 gap-6 items-center">
@@ -290,7 +297,7 @@ function extractBullets(body: string): string[] {
       <div>
         <p class="kicker mb-3">Q5 · Future Work</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_en[5].heading}</h2>
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[5].heading)}</h2>
       </div>
       <ul class="flex-1 flex flex-col gap-2 justify-center max-w-5xl">
         {extractBullets(paper.sections_en[5].body).map((b) => (
@@ -311,7 +318,7 @@ function extractBullets(body: string): string[] {
       <div>
         <p class="kicker mb-3">Q6 · Summary</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_en[6].heading}</h2>
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[6].heading)}</h2>
       </div>
       <ul class="flex-1 flex flex-col gap-2 justify-center max-w-5xl">
         {extractBullets(paper.sections_en[6].body).map((b) => (
@@ -332,7 +339,7 @@ function extractBullets(body: string): string[] {
       <div>
         <p class="kicker mb-3">Q7 · Learn More</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_en[7].heading}</h2>
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[7].heading)}</h2>
       </div>
       <p class="qa-body flex-1 whitespace-pre-line">{paper.sections_en[7].body}</p>
     </div>

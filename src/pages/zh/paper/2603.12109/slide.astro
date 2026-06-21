@@ -44,6 +44,12 @@ function extractBullets(body: string): string[] {
   if (solZh) out.push(...solZh.map((s) => s.trim()));
   return out;
 }
+
+// 精简 Q&A H2: 去掉 "Q1." / "Q4.1" 等前缀, kicker 已担任定位 (e.g. "Q1 · 试图解决什么问题")
+// summary.astro 仍保留 Q-prefix (FAQ 风格需要); slide.astro 此处去掉避免与 kicker 重复
+function cleanHeading(heading: string): string {
+  return heading.replace(/^Q\d+(?:\.\d+)?\.\s*/, "");
+}
 ---
 <BaseLayout
   title={`${paper.title_zh} | paper-slide`}
@@ -83,7 +89,7 @@ function extractBullets(body: string): string[] {
         <p class="kicker mb-3">Abstract · 摘要</p>
         <hr class="accent-bar mb-8" />
         <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl mb-8">
-          {paper.title_zh}
+          摘要
         </h2>
       </div>
       <p class="lead flex-1">{paper.abstract_zh}</p>
@@ -121,7 +127,7 @@ function extractBullets(body: string): string[] {
       <div>
         <p class="kicker mb-3">Q1 · 试图解决什么问题</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_zh[0].heading}</h2>
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_zh[0].heading)}</h2>
       </div>
       <ul class="flex-1 flex flex-col gap-2 justify-center max-w-5xl">
         {extractBullets(paper.sections_zh[0].body).map((b) => (
@@ -142,7 +148,7 @@ function extractBullets(body: string): string[] {
       <div>
         <p class="kicker mb-3">Q2 · 相关研究</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_zh[1].heading}</h2>
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_zh[1].heading)}</h2>
       </div>
       <ul class="flex-1 flex flex-col gap-2 justify-center max-w-5xl">
         {extractBullets(paper.sections_zh[1].body).map((b) => (
@@ -163,7 +169,7 @@ function extractBullets(body: string): string[] {
       <div>
         <p class="kicker mb-3">Q3 · 如何解决</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_zh[2].heading}</h2>
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_zh[2].heading)}</h2>
       </div>
       <ul class="flex-1 flex flex-col gap-2 justify-center max-w-5xl">
         {extractBullets(paper.sections_zh[2].body).map((b) => (
@@ -184,7 +190,7 @@ function extractBullets(body: string): string[] {
       <div>
         <p class="kicker mb-3">Figure 4 · 训练动态 4 tasks</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight mb-4">实验结果: 4 个任务的训练动态</h2>
+        <h2 class="text-headline font-sans font-bold leading-tight mb-4">训练动态结果</h2>
       </div>
       <p class="caption flex-shrink-0">vanilla PPO (红) vs AReW-AS ONLY (绿) vs AReW-AS+BT (蓝) Reward vs Training Steps; AReW 持续提升, vanilla 停滞</p>
       <figure class="frame-img r-16x10 fit-contain flex-1">
@@ -204,7 +210,7 @@ function extractBullets(body: string): string[] {
       <div>
         <p class="kicker mb-3">Q4.1 · 实验 (设置 + Table 1)</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_zh[3].heading}</h2>
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_zh[3].heading)}</h2>
       </div>
       <ul class="flex-1 flex flex-col gap-2 justify-center max-w-5xl">
         {extractBullets(paper.sections_zh[3].body).map((b) => (
@@ -245,7 +251,7 @@ function extractBullets(body: string): string[] {
       <div>
         <p class="kicker mb-3">Q4.2 · 实验 (动态 + 鲁棒性 + λ)</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_zh[4].heading}</h2>
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_zh[4].heading)}</h2>
       </div>
       <ul class="flex-1 flex flex-col gap-2 justify-center max-w-5xl">
         {extractBullets(paper.sections_zh[4].body).map((b) => (
@@ -266,7 +272,7 @@ function extractBullets(body: string): string[] {
       <div>
         <p class="kicker mb-3">Figures 5+6 · 鲁棒性 + 真实场景</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight mb-4">λ 影响 + τ²-bench 客服</h2>
+        <h2 class="text-headline font-sans font-bold leading-tight mb-4">λ 重加权与跨场景泛化</h2>
       </div>
       <p class="caption flex-shrink-0">图 5 (左): 重加权强度 λ 影响 · 图 6 (右): τ²-bench 客服场景</p>
       <div class="flex-1 grid grid-cols-2 gap-6 items-center">
@@ -291,7 +297,7 @@ function extractBullets(body: string): string[] {
       <div>
         <p class="kicker mb-3">Q5 · 进一步探索</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_zh[5].heading}</h2>
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_zh[5].heading)}</h2>
       </div>
       <ul class="flex-1 flex flex-col gap-2 justify-center max-w-5xl">
         {extractBullets(paper.sections_zh[5].body).map((b) => (
@@ -312,7 +318,7 @@ function extractBullets(body: string): string[] {
       <div>
         <p class="kicker mb-3">Q6 · 总结</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{paper.sections_zh[6].heading}</h2>
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_zh[6].heading)}</h2>
       </div>
       <ul class="flex-1 flex flex-col gap-2 justify-center max-w-5xl">
         {extractBullets(paper.sections_zh[6].body).map((b) => (
@@ -333,7 +339,7 @@ function extractBullets(body: string): string[] {
       <div>
         <p class="kicker mb-3">Key Takeaways · 核心贡献</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight">论文 6 大核心贡献</h2>
+        <h2 class="text-headline font-sans font-bold leading-tight">核心贡献</h2>
       </div>
       <ul class="flex-1 flex flex-col gap-3 justify-center max-w-5xl">
         {paper.key_takeaways.map((t) => (
