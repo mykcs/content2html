@@ -77,7 +77,10 @@ const iconUrl = `${baseUrl}/icons/translate.svg`;
     <!--
       右上角浮动工具栏 (跟主站 CVActionBar.astro:22 模式一致: flex 容器 + 多按钮 gap-2).
       - lang-toggle: 跟主站 Masthead.astro:79-81 同款 (深灰圆形 + translate.svg), 中英文切换
-      - dev-btn: 仅 slide 模式显示, GitHub Actions 链接, 跟主站 CVActionBar.astro:26-30 同款 (GitHub octocat SVG)
+      - dev-btn (slide-only): Lucide play-circle 图标 + "开发" 标签 + shields.io badge
+        · 图标: 语义化"运行", 替代通用 octocat
+        · badge: GH Actions 官方 API (deploy.yml/badge.svg), 自动随 build 状态变色 (绿/红/灰)
+        · 整块 click → /actions; badge 区域显示当前 build 状态
     -->
     <div class="fixed top-4 right-4 z-50 flex items-center gap-2">
       {productType === "slide" && (
@@ -85,13 +88,23 @@ const iconUrl = `${baseUrl}/icons/translate.svg`;
           href="https://github.com/mykcs/content2html/actions"
           target="_blank"
           rel="noopener noreferrer"
-          class="dev-btn flex items-center px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors shadow-md no-underline"
-          title="开发 (GitHub Actions)"
-          aria-label="GitHub Actions"
+          class="dev-btn flex items-center gap-2 px-2.5 py-1.5 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors shadow-md no-underline"
+          title="开发 (GitHub Actions) — 点击查看 build 状态"
+          aria-label="GitHub Actions build status"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polygon points="10 8 16 12 10 16 10 8"></polygon>
           </svg>
+          <span class="text-[11px] font-semibold uppercase tracking-wider">开发</span>
+          <span class="h-3.5 w-px bg-white/25" aria-hidden="true"></span>
+          <img
+            src="https://github.com/mykcs/content2html/actions/workflows/deploy.yml/badge.svg?branch=main&style=flat-square"
+            alt="build status"
+            class="h-3.5 -mr-1"
+            loading="lazy"
+            decoding="async"
+          />
         </a>
       )}
       <a
