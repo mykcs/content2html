@@ -328,11 +328,11 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
   opacity: 0.85;
 }
 
-/* Key takeaways — 6 条 list 加粗 + 更大 padding */
+/* Key takeaways — Q&A slide bullets (slide 3, 5, 7, 9, 11, 12 等) */
 .slide-page .takeaway-item {
   font-family: var(--font-serif);
-  font-size: 1.5rem;       /* bumped from --text-body (1.125rem) for screen legibility on 1920px slide */
-  line-height: 1.45;
+  font-size: 1.75rem;      /* 2026-06-21: bumped 1.5rem → 1.75rem (user 反馈 slide 5/7 文字偏小) */
+  line-height: 1.4;
   border-left: 6px solid var(--color-ikb-blue);
   padding: 0.5rem 0 0.5rem 1.5rem;
   font-weight: 500;
@@ -479,9 +479,14 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
   /* Force all slides visible + natural flow (override .slide-page { opacity: 0; visibility: hidden; display: grid; position: absolute } default)
      ⚠️ visibility 必须显式覆盖: 屏幕模式默认 .slide-page { visibility: hidden } 只有 .active 显示,
      打印模式下若漏覆盖, 14 张 slide 中仅 1 张可见 (slide 1 唯一带 .active 类),
-     其余 13 张 visibility: hidden 仍生效 → Edge print-to-PDF 几乎全空白 (2026-06-21 fix) */
+     其余 13 张 visibility: hidden 仍生效 → Edge print-to-PDF 几乎全空白 (2026-06-21 fix)
+     ⚠️ display 不用 block: 屏幕 slide 用 display:grid + col-span-12, 改 block 会破 grid context,
+     导致 .col-span-12 flex flex-col h-full child 顶部对齐不填满, 短 Q&A slide 底部大量空白
+     → 用 flex column + justify-content: center 让短 content 垂直居中, 长 content 自动填满 */
   .slide-page {
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
     visibility: visible !important;
     opacity: 1 !important;
     position: relative !important;
