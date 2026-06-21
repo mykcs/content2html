@@ -75,23 +75,40 @@ const iconUrl = `${baseUrl}/icons/translate.svg`;
   </head>
   <body class={productType === "slide" ? "slide-deck" : "longform"}>
     <!--
-      语言切换: 跟主站 Masthead.astro:79-81 完全同款 (深灰圆形按钮 + translate.svg 图标).
-      因 content2html 没有 navbar, 用 fixed top-4 right-4 浮在右上角 (slide 模式也兼容).
+      右上角浮动工具栏 (跟主站 CVActionBar.astro:22 模式一致: flex 容器 + 多按钮 gap-2).
+      - lang-toggle: 跟主站 Masthead.astro:79-81 同款 (深灰圆形 + translate.svg), 中英文切换
+      - dev-btn: 仅 slide 模式显示, GitHub Actions 链接, 跟主站 CVActionBar.astro:26-30 同款 (GitHub octocat SVG)
     -->
-    <a
-      href={switchUrl}
-      class="lang-toggle fixed top-4 right-4 z-50 flex items-center bg-gray-700 hover:bg-gray-600 text-white rounded-full p-2 transition-colors shadow-md"
-      title={switchTitle}
-      aria-label={switchTitle}
-    >
-      <img
-        src={iconUrl}
-        alt=""
-        class="h-4 w-auto"
-        loading="lazy"
-        decoding="async"
-      />
-    </a>
+    <div class="fixed top-4 right-4 z-50 flex items-center gap-2">
+      {productType === "slide" && (
+        <a
+          href="https://github.com/mykcs/content2html/actions"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="dev-btn flex items-center px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors shadow-md no-underline"
+          title="开发 (GitHub Actions)"
+          aria-label="GitHub Actions"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+          </svg>
+        </a>
+      )}
+      <a
+        href={switchUrl}
+        class="lang-toggle flex items-center bg-gray-700 hover:bg-gray-600 text-white rounded-full p-2 transition-colors shadow-md"
+        title={switchTitle}
+        aria-label={switchTitle}
+      >
+        <img
+          src={iconUrl}
+          alt=""
+          class="h-4 w-auto"
+          loading="lazy"
+          decoding="async"
+        />
+      </a>
+    </div>
     <slot />
     {productType === "slide" && (
       <div class="slide-controls" role="toolbar" aria-label="Slide controls">
@@ -120,6 +137,6 @@ const iconUrl = `${baseUrl}/icons/translate.svg`;
     /* fixed 默认相对 viewport, slide-deck 16:9 顶距 = 0 时按 frame 顶 */
   }
   @media print {
-    .lang-toggle { display: none; }
+    .lang-toggle, .dev-btn { display: none; }
   }
 </style>

@@ -466,10 +466,11 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
     break-after: auto;
   }
 
-  /* Hide UI overlays (controls bar, slide indicator, language toggle) */
+  /* Hide UI overlays (controls bar, slide indicator, language toggle, dev button) */
   .slide-controls,
   .slide-indicator,
-  .lang-toggle {
+  .lang-toggle,
+  .dev-btn {
     display: none !important;
   }
 }
