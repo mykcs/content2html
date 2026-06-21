@@ -455,8 +455,9 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
 
 /* ===== Print: aligned with OSA slides (ADR-0006)
    Strategy: 1 slide / page, custom 297mm × 167mm (16:9 A4-landscape-width), pure CSS (no JS, no iframe).
+   关键设计: print = screen slide (1920×1080) × scale 0.5846, 整体缩放而非硬编码小字号
+   → 排版、字号、间距、相对位置 100% 跟屏幕一致 (user 反馈 2026-06-21)
    ⚠️ 不用 A4 landscape (297×210mm): slide 高度 167mm (16:9) ≠ page 高度 210mm → bottom 43mm 全空白
-   (2026-06-21 fix: 把 page size 改为 slide 实际 aspect, 让 slide 填满 PDF page)
 */
 @media print {
   @page {
@@ -470,48 +471,56 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
     print-color-adjust: exact !important;
   }
 
-  /* Reset dark frame + scale transform on slide-deck */
-  html, body,
-  .slide-deck {
+  /* Reset dark frame + slide-deck container — print 是 white-only, slide 本身就是 page
+     ⚠️ display: contents 让 .slide-page 直接成为 body children (无 deck wrapper 约束),
+     否则 absolute 定位的 .slide-page 被 deck 截断, page-break-after 失效 */
+  html, body {
     background: white !important;
     overflow: visible !important;
   }
+  .slide-deck {
+    display: contents !important;
+  }
 
-  /* Force all slides visible + natural flow (override .slide-page { opacity: 0; visibility: hidden; display: grid; position: absolute } default)
+  /* Force all slides visible (override .slide-page { opacity: 0; visibility: hidden; display: grid; position: absolute } screen default)
      ⚠️ visibility 必须显式覆盖: 屏幕模式默认 .slide-page { visibility: hidden } 只有 .active 显示,
-     打印模式下若漏覆盖, 14 张 slide 中仅 1 张可见 (slide 1 唯一带 .active 类),
-     其余 13 张 visibility: hidden 仍生效 → Edge print-to-PDF 几乎全空白 (2026-06-21 fix)
-     ⚠️ display 不用 block: 屏幕 slide 用 display:grid + col-span-12, 改 block 会破 grid context,
-     导致 .col-span-12 flex flex-col h-full child 顶部对齐不填满, 短 Q&A slide 底部大量空白
-     → 用 flex column + justify-content: center 让短 content 垂直居中, 长 content 自动填满 */
+     打印模式下若漏覆盖, 13 张 slide 中仅 1 张可见 (slide 1 唯一带 .active 类) (2026-06-21 fix)
+     Strategy: 用 zoom: 0.5846 (Chromium 支持, 同时缩放 layout + visual) 把屏幕 1920×1080 slide
+     整体缩放到 print page 297×167mm. zoom 比 transform: scale 优势: 同步缩放 layout box,
+     page-break-after 才能正常按缩放后尺寸分页. (transform: scale 只缩放 visual, layout box
+     仍是 1920×1080, page-break 仍按原尺寸判定, 13 张全在同一 page)
+     scale 计算: 297mm / (1920px / 96dpi × 25.4) = 297/508 ≈ 0.5846 */
   .slide-page {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
+    /* Match print page size in LAYOUT (so page-break-after: always works per page) */
+    width: 297mm !important;
+    height: 167mm !important;
+    /* Uniform scale to fit screen design (1920×1080) into print page (297×167mm) */
+    zoom: 0.5846 !important;
+    /* Preserve screen layout */
+    display: grid !important;
+    grid-template-columns: repeat(12, 1fr) !important;
+    padding: 80px 100px !important;  /* keep screen padding (scaled with zoom) */
+    /* Visibility + opacity (override screen hide) */
     visibility: visible !important;
     opacity: 1 !important;
+    /* No shadow/border-radius in print */
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    /* No margin, content cropped to slide box */
+    margin: 0 !important;
+    overflow: hidden !important;
+    /* Page break control */
+    break-inside: avoid;
+    page-break-inside: avoid;
+    page-break-after: always;
+    break-after: page;
+    /* Override screen position: relative (not absolute) for proper page flow */
     position: relative !important;
     top: auto !important;
     left: auto !important;
     transform: none !important;
-    width: 100% !important;
-    height: 167mm !important;        /* A4 landscape width (297mm) × 9/16 ≈ 167mm, 锁死严格 1 page */
-    padding: 8mm 10mm !important;    /* 紧凑 padding 让长 Q&A slide 能 fit 1 page */
-    box-sizing: border-box;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    margin: 0 !important;
-    overflow: hidden !important;     /* 内容超出 slide 边界 = 裁, 不跨页 */
-    break-inside: avoid;             /* 浏览器不要把单张 slide 切到 2 页 (新 spec) */
-    page-break-inside: avoid;        /* legacy 兼容 (Firefox / 旧 Chrome) */
-    page-break-after: always;        /* slide 之间强制分页 */
-    break-after: page;
   }
-  /* Print 紧凑字号: heading 1.4rem, body 0.78rem, line-height 1.35 — 让长 Q&A slide fit 1 page */
-  .slide-page h1, .slide-page .text-display { font-size: 1.8rem !important; }
-  .slide-page h2, .slide-page .text-headline { font-size: 1.2rem !important; margin-bottom: 4mm !important; }
-  .slide-page p, .slide-page li, .slide-page .text-body { font-size: 0.78rem !important; line-height: 1.35 !important; }
-  .slide-page hr.swiss-rule { margin: 3mm 0 !important; }
+
   .slide-page:last-child {
     page-break-after: auto;
     break-after: auto;
