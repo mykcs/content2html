@@ -476,9 +476,13 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
     overflow: visible !important;
   }
 
-  /* Force all slides visible + natural flow (override .slide-page { opacity: 0; display: grid; position: absolute } default) */
+  /* Force all slides visible + natural flow (override .slide-page { opacity: 0; visibility: hidden; display: grid; position: absolute } default)
+     ⚠️ visibility 必须显式覆盖: 屏幕模式默认 .slide-page { visibility: hidden } 只有 .active 显示,
+     打印模式下若漏覆盖, 14 张 slide 中仅 1 张可见 (slide 1 唯一带 .active 类),
+     其余 13 张 visibility: hidden 仍生效 → Edge print-to-PDF 几乎全空白 (2026-06-21 fix) */
   .slide-page {
     display: block !important;
+    visibility: visible !important;
     opacity: 1 !important;
     position: relative !important;
     top: auto !important;
