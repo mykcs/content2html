@@ -272,10 +272,12 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
   pointer-events: none;
 }
 
-/* Slide 1 左下角元信息块: arxiv / Published / Code / Field / Tech (Swiss editorial 风格) */
+/* Slide 1 左下角元信息块: arxiv / Published / Code / Field / Tech (Swiss editorial 风格)
+   ⚠️ 避开 v3 meta-bar 碰撞: meta-bar 在 bottom:36px (高 ~18px, 顶 y=1026),
+   info-corner 设 bottom:90px (底 y=990) → 36px 安全间距 */
 .slide-info-corner {
   position: absolute;
-  bottom: 36px;
+  bottom: 90px;
   left: 56px;
   max-width: 420px;
   text-align: left;
