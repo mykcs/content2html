@@ -223,8 +223,7 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
 /* === Bottom meta bar (v3 layout: 顶部 kicker 全部删, arXiv + 日期到左下, 页码右下) === */
 .slide-meta-bar {
   position: absolute;
-  bottom: 36px;
-  left: 100px;
+  top: 32px;             /* 2026-06-21 fix: 移到 top-right (瑞士 editorial 风格, 跟 slide-top-accent 左上对称) */
   right: 100px;
   display: flex;
   justify-content: flex-end;  /* 2026-06-21: 删 arxiv+date 后单 child (page) 仍贴右 */
@@ -273,8 +272,8 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
 }
 
 /* Slide 1 左下角元信息块: arxiv / Published / Code / Field / Tech (Swiss editorial 风格)
-   ⚠️ 避开 v3 meta-bar 碰撞: meta-bar 在 bottom:36px (高 ~18px, 顶 y=1026),
-   info-corner 设 bottom:90px (底 y=990) → 36px 安全间距 */
+   ⚠️ 避开 2026-06-21 前 meta-bar 碰撞 (meta-bar 原在 bottom:36px, 现在 top:32px → 无碰撞)
+   info-corner 留在 bottom:90px (左下, 跟 top-right meta-bar 完全分离) */
 .slide-info-corner {
   position: absolute;
   bottom: 90px;
@@ -549,9 +548,10 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
     max-width: 246px !important; /* 屏 420 × 0.585 */
   }
   .slide-page .slide-meta-bar {
-    bottom: 21px !important;    /* 屏 36 × 0.585 */
-    left: 58px !important;      /* 屏 100 × 0.585 */
-    right: 58px !important;
+    top: 19px !important;       /* 屏 32 × 0.585 (跟屏幕 top-right 对齐) */
+    right: 58px !important;     /* 屏 100 × 0.585 */
+    left: auto !important;
+    bottom: auto !important;
   }
 
   /* Figure slides: 取消 flex: 1 (flex-1 让 figure grow 到 flex container, 覆盖 max-height)
