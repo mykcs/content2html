@@ -331,9 +331,9 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
 /* Key takeaways — Q&A slide bullets (slide 3, 5, 7, 9, 11, 12 等) */
 .slide-page .takeaway-item {
   font-family: var(--font-serif);
-  font-size: 1.75rem;      /* 2026-06-21: bumped 1.5rem → 1.75rem (user 反馈 slide 5/7 文字偏小) */
-  line-height: 1.4;
-  border-left: 6px solid var(--color-ikb-blue);
+  font-size: 2.25rem;      /* 2026-06-21: bumped 1.5→1.75→2.25rem (user 反馈 slide 5/7 偏小, vision 4/10 → 需更激进) */
+  line-height: 1.35;
+  border-left: 8px solid var(--color-ikb-blue);  /* 字号放大 → border 也加宽 */
   padding: 0.5rem 0 0.5rem 1.5rem;
   font-weight: 500;
 }
@@ -454,12 +454,13 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
 .longform h3 { font-size: 1.25rem; }
 
 /* ===== Print: aligned with OSA slides (ADR-0006)
-   Strategy: 1 slide / page, A4 landscape full-bleed, pure CSS (no JS, no iframe).
-   Trade-off: A4 (PowerPoint default) over A3 (OSA slides default) — global PPT familiarity.
+   Strategy: 1 slide / page, custom 297mm × 167mm (16:9 A4-landscape-width), pure CSS (no JS, no iframe).
+   ⚠️ 不用 A4 landscape (297×210mm): slide 高度 167mm (16:9) ≠ page 高度 210mm → bottom 43mm 全空白
+   (2026-06-21 fix: 把 page size 改为 slide 实际 aspect, 让 slide 填满 PDF page)
 */
 @media print {
   @page {
-    size: A4 landscape;
+    size: 297mm 167mm;  /* A4 landscape width × 16:9 height — 锁死 1:1 slide ↔ page */
     margin: 0;
   }
 
