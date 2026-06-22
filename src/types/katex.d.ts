@@ -8,6 +8,7 @@ declare module "katex" {
 declare module "katex/contrib/auto-render" {
   interface RenderMathOptions {
     delimiters?: { left: string; right: string; display: boolean }[];
+    ignoredTags?: string[];  // v4 修: 默认含 "code", 我们要排除 (option 名是 ignoredTags, 不是 ignoredElements)
     throwOnError?: boolean;
     strict?: boolean | "ignore" | "warn" | "error";
     trust?: boolean;
