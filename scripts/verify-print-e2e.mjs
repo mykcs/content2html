@@ -50,19 +50,20 @@ const audit = await page.evaluate(() => {
   const html = document.documentElement;
   results.layers.rem_scaling = getComputedStyle(html).fontSize === '9.37px' ? '✓' : `✗ (got ${getComputedStyle(html).fontSize})`;
 
-  // Layer 3: slide 13 should NOT have break-after: page (which caused 14-page bug).
+  // Layer 3: last slide should NOT have break-after: page (which caused 14-page bug).
   // It SHOULD have break-before: page (from .slide-page + .slide-page adjacent sibling
   // combinator) — that's the correct fix from bef1017.
-  const slide13 = document.querySelectorAll('.slide-page')[12];
-  const lastCs = getComputedStyle(slide13);
+  const allSlides = document.querySelectorAll('.slide-page');
+  const lastSlide = allSlides[allSlides.length - 1];
+  const lastCs = getComputedStyle(lastSlide);
   const breakAfterOnLast = lastCs.breakAfter;
   const breakBeforeOnLast = lastCs.breakBefore;
   results.layers.no_trailing = (breakAfterOnLast === 'auto' && breakBeforeOnLast === 'page')
-    ? '✓' : `✗ (slide 13: break-after=${breakAfterOnLast}, break-before=${breakBeforeOnLast})`;
+    ? '✓' : `✗ (last slide: break-after=${breakAfterOnLast}, break-before=${breakBeforeOnLast})`;
 
-  // Layer 4: page break strategy = break-before on slides 2-13
-  const slide2 = document.querySelectorAll('.slide-page')[1];
-  const slide2BreakBefore = getComputedStyle(slide2).breakBefore;
+  // Layer 4: page break strategy = break-before on slides 2-N
+  const secondSlide = allSlides[1];
+  const slide2BreakBefore = getComputedStyle(secondSlide).breakBefore;
   results.layers.break_before = slide2BreakBefore === 'page' ? '✓' : `✗ (slide 2 has ${slide2BreakBefore})`;
 
   // Bonus: takeaway-item font-size scaled

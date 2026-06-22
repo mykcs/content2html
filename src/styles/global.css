@@ -5,6 +5,15 @@
  */
 @import "tailwindcss";
 
+/* =============================================================
+ * Print stylesheet template — 抽取自 global.css 的 @media print 块 (2026-06-22)
+ * 4 产物 (paper-slide / paper-summary / progress-slide / progress-report) 自动应用
+ * 设计契约 + 添加新元素指引: 见 src/styles/print.css 顶部注释
+ * 关联 ADR: ~/.claude/docs/adr/0006-content2html-print-strategy.md
+ * E2E verifier: scripts/verify-print-e2e.mjs
+ * ============================================================= */
+@import "./print.css";
+
 /* ============ IKB 蓝 / 柠檬黄 / 柠檬绿 / 安全橙 (Style B 4 套主题色) ============ */
 @theme {
   /* IKB 蓝 (默认学术稳重) */
@@ -513,168 +522,3 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
 .longform h1 { font-size: var(--text-headline); }
 .longform h2 { font-size: var(--text-title); }
 .longform h3 { font-size: 1.25rem; }
-
-/* ===== Print: aligned with OSA slides (ADR-0006)
-   Strategy: 1 slide / page, custom 297mm × 167mm (16:9 A4-landscape-width), pure CSS (no JS, no iframe).
-   关键设计: print = screen slide (1920×1080) × scale 0.5846, 整体缩放而非硬编码小字号
-   → 排版、字号、间距、相对位置 100% 跟屏幕一致 (user 反馈 2026-06-21)
-   ⚠️ 不用 A4 landscape (297×210mm): slide 高度 167mm (16:9) ≠ page 高度 210mm → bottom 43mm 全空白
-*/
-@media print {
-  @page {
-    size: 297mm 167mm;  /* A4 landscape width × 16:9 height — 锁死 1:1 slide ↔ page */
-    margin: 0;
-  }
-
-  /* Force brand colors to print (Chrome default strips backgrounds) */
-  * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  /* Reset dark frame + slide-deck container — print 是 white-only, slide 本身就是 page
-     ⚠️ display: contents 让 .slide-page 直接成为 body children (无 deck wrapper 约束),
-     否则 absolute 定位的 .slide-page 被 deck 截断, page-break-after 失效 */
-  html, body {
-    background: white !important;
-    overflow: visible !important;
-    /* ⚠️ html root font-size: 缩 rem 引用 (2f0e7dd 漏修 → .takeaway-item { font-size: 2rem }
-       在 print mode 渲染为 32px (屏 100%), 因 rem 引用 root html 16px 而非 .slide-page 9.37px.
-       强制 html root = 9.37px → 所有 rem 同步缩 0.585× */
-    font-size: 9.37px !important;
-  }
-  .slide-deck {
-    display: contents !important;
-  }
-
-  /* Force all slides visible (override .slide-page { opacity: 0; visibility: hidden; display: grid; position: absolute } screen default)
-     ⚠️ visibility 必须显式覆盖: 屏幕模式默认 .slide-page { visibility: hidden } 只有 .active 显示,
-     打印模式下若漏覆盖, 13 张 slide 中仅 1 张可见 (slide 1 唯一带 .active 类) (2026-06-21 fix)
-     ⚠️ 不用 zoom 不用 transform: scale: 两者在 print-to-PDF 跨浏览器管线均不生效 (Edge/Chrome
-     save-as-PDF 都忽略), visual 仍按 1920×1080 渲染, 但 page 仅 1122×631 → content 溢出
-     跨多页 / 缩在左上角 (2026-06-21 反馈, Playwright 复现 26 pages = 13 × 2)
-     → 改用 mm + 显式缩放所有尺寸: page = 297×167mm, padding/font/gap/absolute 全部按
-     scale = 0.5846 (= 297mm / 508mm) 缩放, 写死 px 值, 100% 跨浏览器兼容 */
-  .slide-page {
-    /* Page-sized (与 @page size 一致) */
-    width: 297mm !important;
-    height: 167mm !important;
-    /* Scaled padding: 80px × 0.5846 ≈ 47px, 100px × 0.5846 ≈ 58px
-       (减小到 35/40 给 figure slide 更多垂直空间, 避免 r-2x1 503px overflow) */
-    padding: 35px 40px !important;
-    /* Grid 12 cols (跟屏幕一致) */
-    display: grid !important;
-    grid-template-columns: repeat(12, 1fr) !important;
-    /* Scaled gap: 1.5rem = 24px, × 0.5846 ≈ 14px */
-    gap: 14px !important;
-    /* Reset screen font-size: 16px (root default) → 9.37px (= 16 × 0.5846) */
-    /* 让所有 em 引用 (e.g. em-based override) 同步缩放 */
-    font-size: 9.37px !important;
-    /* Override theme variables (in em 单位, 引用上面 font-size 9.37px) */
-    --text-display: 5em;       /* 5 × 9.37 = 46.85px (屏 80px × 0.585) */
-    --text-headline: 3.5em;    /* 32.8px (屏 56px × 0.585) */
-    --text-title: 2em;         /* 18.74px (屏 32px × 0.585) */
-    --text-body: 1.125em;      /* 10.55px (屏 18px × 0.585) */
-    --text-caption: 0.9375em;  /* 8.78px (屏 15px × 0.585) */
-    --text-kicker: 0.8125em;   /* 7.61px (屏 13px × 0.585) */
-    --spacing: 0.25em;         /* Tailwind gap base: 0.25 × 9.37 = 2.34px (屏 4px × 0.585) */
-    --spacing-baseline: 0.5em; /* 屏 8px × 0.585 */
-    /* Visibility + opacity (override screen hide) */
-    visibility: visible !important;
-    opacity: 1 !important;
-    /* No shadow/radius in print */
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    margin: 0 !important;
-    overflow: hidden !important;
-    /* ⚠️ 2026-06-22 fix: Use `break-before: page` on slides 2-13 instead of
-       `break-after: page` on all slides. The latter forces a trailing blank
-       page in real browser print pipeline (user reports 14 pages, expected 13).
-       Same visual result, no trailing blank. */
-    page-break-after: auto !important;
-    break-after: auto !important;
-    /* Position override (screen 是 absolute + translate) */
-    position: relative !important;
-    top: auto !important;
-    left: auto !important;
-    transform: none !important;
-  }
-
-  /* Force page break BEFORE slides 2-13 (skip first slide via adjacent sibling).
-     Adjacent sibling combinator `+` only matches if both are .slide-page.
-     break-before on first slide does nothing (already at page 1). */
-  .slide-page + .slide-page {
-    page-break-before: always !important;
-    break-before: page !important;
-  }
-
-  /* Absolute-positioned 装饰元素: 按 scale 0.5846 缩放 (override screen px 值) */
-  .slide-page .slide-top-accent {
-    top: 19px !important;       /* 屏 32 × 0.585 */
-    left: 58px !important;      /* 屏 100 × 0.585 */
-    width: 35px !important;     /* 屏 60 × 0.585 */
-    height: 1.2px !important;   /* 屏 2 × 0.585 */
-  }
-  .slide-page .slide-info-corner {
-    bottom: 53px !important;    /* 屏 90 × 0.585 */
-    left: 33px !important;      /* 屏 56 × 0.585 */
-    max-width: 246px !important; /* 屏 420 × 0.585 */
-  }
-  .slide-page .slide-meta-bar {
-    top: auto !important;        /* 2026-06-22 fix: 屏幕 + print 都 bottom-right */
-    bottom: 19px !important;     /* 屏 32 × 0.585 */
-    right: 58px !important;      /* 屏 100 × 0.585 */
-    left: auto !important;
-  }
-
-  /* Figure slides: 取消 flex: 1 (flex-1 让 figure grow 到 flex container, 覆盖 max-height)
-     → 改 flex: 0 1 auto 让 figure 按 aspect-ratio / 自身高度决定
-     + max-height 75% (~420px) 防止 overflow
-     ⚠️ 不用 max-height: 80% (v6): flex-1 仍 dominate, figure 撑到 621px (slide 631, overflow) */
-  .slide-page .frame-img.r-21x9,
-  .slide-page .frame-img.r-16x9,
-  .slide-page .frame-img.r-16x10,
-  .slide-page .frame-img.r-4x3,
-  .slide-page .frame-img.r-3x2,
-  .slide-page .frame-img.r-1x1,
-  .slide-page .frame-img.r-2x1,
-  .slide-page .frame-img.r-4x1,
-  .slide-page .frame-img.h-22,
-  .slide-page .frame-img.h-26,
-  .slide-page .frame-img.h-30 {
-    flex: 0 1 auto !important;  /* 取消 flex-1 grow, 让 aspect-ratio 决定 size */
-    max-height: 75% !important;  /* 420px, 防 overflow (slide 631 × 0.75 ≈ 473, but containing block 是 col-span-12 561px, 0.75 × 561 = 420) */
-    height: auto !important;
-  }
-
-  .slide-page:last-child {
-    /* Default: allow natural end (slide 13 = last page). Don't force break-after here
-       to avoid creating trailing blank page in some browser print pipelines. */
-    page-break-after: auto;
-    break-after: auto;
-  }
-
-  /* Scale px-based borders/padding/widths that don't cascade from html font-size
-     ⚠️ html font-size 9.37px fixes rem/em (e.g. .takeaway-item font-size: 2rem → 18.74px)
-     but px-based values (border-left: 8px, padding, etc.) still need explicit scaling
-     (2026-06-21 fix: html root scaling 漏覆盖 border-left) */
-  .slide-page .takeaway-item {
-    border-left-width: 5px !important;  /* 屏 8 × 0.585 = 4.68, browser rounds sub-pixel; 5px ≈ visual 4.68 */
-  }
-  .slide-page .slide-info-corner dt {
-    font-size: 0.7rem !important;  /* em-based, 重写一遍保险 */
-  }
-  .slide-page .slide-info-corner dd {
-    font-size: 0.85rem !important;
-  }
-  .slide-page .meta-page {
-    font-size: var(--text-kicker) !important;
-  }
-
-  /* Hide UI overlays (controls bar, language toggle, dev button) */
-  .slide-controls,
-  .lang-toggle,
-  .dev-btn {
-    display: none !important;
-  }
-}

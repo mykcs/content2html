@@ -1,0 +1,198 @@
+/* =============================================================
+ * content2html — Print Stylesheet Template
+ * =============================================================
+ *
+ * Purpose: Provide a print-optimized layout that mirrors the on-screen
+ * slide deck.  All rules are scoped under `@media print` so screen
+ * rendering is unaffected.  The stylesheet is intentionally
+ * self-contained — adding new paper or progress slides requires no
+ * changes here.
+ *
+ * Design contract (locked by ADR-0006 + CASE-CONTENT2HTML-PRINT-PAGE-COUNT-DVR-20260622):
+ *   1. One slide per page (1:1 slide ↔ PDF page, no trailing blank)
+ *   2. Page size = 297 × 167 mm (16:9, matches A4-landscape width)
+ *   3. Scale = 0.5846 = 297mm / (1920px / 96dpi × 25.4)
+ *   4. Sizing strategy = mm + em + px (NO `transform: scale`, NO `zoom`)
+ *      → cross-browser print pipelines (Edge/Chrome/Firefox save-as-PDF)
+ *        all apply these correctly, unlike transform/zoom which are
+ *        silently ignored.
+ *   5. Page break strategy = `break-before: page` on adjacent siblings
+ *      (NOT `break-after: page` on every slide — that forces a
+ *      trailing blank page in real browser print pipeline).
+ *   6. `html { font-size: 9.37px }` so every `rem` cascades 0.585×;
+ *      px-based values are scaled manually.
+ *
+ * Verification (E2E):
+ *   node scripts/verify-print-e2e.mjs
+ *     checks: pageCount === slideCount, no_trailing_blank,
+ *             mm-based sizing, rem cascading, page-break strategy.
+ *
+ * Adding new slide types:
+ *   This file applies to every `.slide-page` and its descendants.
+ *   If you introduce a new absolute-positioned element (e.g. a
+ *   logo, watermark), add a scaled override in §4 below.
+ *   If you add a new figure aspect class (e.g. r-3x4), add it to
+ *   the figure rule list in §5 below.
+ * ============================================================= */
+
+/* §1 — @page: lock to 16:9 paper size matching screen aspect */
+@media print {
+  @page {
+    size: 297mm 167mm;
+    margin: 0;
+  }
+
+  /* §1b — Force brand colors to print (Chrome strips backgrounds by default) */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* §2 — Reset slide-deck wrapper, force root font-size for rem cascade.
+       html font-size = 16 × 0.5846 = 9.37px so every `rem` inside
+       .slide-page automatically renders at 0.585× of screen size. */
+  html, body {
+    background: white !important;
+    overflow: visible !important;
+    font-size: 9.37px !important;
+  }
+  .slide-deck {
+    display: contents !important;  /* let .slide-page become direct body children */
+  }
+
+  /* §3 — Core slide sizing. Override screen-mode `opacity:0` +
+         absolute positioning + scale transform.  All values are
+         either mm (page-relative) or px scaled by 0.5846 from screen. */
+  .slide-page {
+    /* Page-sized: 297 × 167 mm = 1122.5 × 631.2 px @ 96 DPI */
+    width: 297mm !important;
+    height: 167mm !important;
+
+    /* Padding: 80 × 0.585 ≈ 47, 100 × 0.585 ≈ 58.  Trimmed to 35/40
+       to give figure slides enough vertical room for 2:1 images. */
+    padding: 35px 40px !important;
+
+    /* Preserve screen grid layout */
+    display: grid !important;
+    grid-template-columns: repeat(12, 1fr) !important;
+    gap: 14px !important;  /* 1.5rem × 0.585 ≈ 14 */
+
+    /* Scaled base font-size so all `em` references inside .slide-page
+       cascade correctly.  Combined with html font-size 9.37px, both
+       em and rem are scaled. */
+    font-size: 9.37px !important;
+
+    /* Override Tailwind v4 @theme design tokens in `em` units so they
+       scale with .slide-page font-size. Original values are in rem at
+       html root 16px; here at 9.37px, the value × 0.585 = print size. */
+    --text-display: 5em;       /* was 5rem = 80px  → 5 × 9.37 = 46.85px */
+    --text-headline: 3.5em;    /* was 3.5rem = 56px → 32.80px */
+    --text-title: 2em;         /* was 2rem = 32px  → 18.74px */
+    --text-body: 1.125em;      /* was 1.125rem = 18px → 10.55px */
+    --text-caption: 0.9375em;  /* was 0.9375rem = 15px → 8.78px */
+    --text-kicker: 0.8125em;   /* was 0.8125rem = 13px → 7.61px */
+    --spacing: 0.25em;         /* Tailwind gap base: 0.25 × 9.37 = 2.34px */
+    --spacing-baseline: 0.5em; /* was 8px → 4.68px */
+
+    /* Visibility override: screen-mode default is visibility:hidden for
+       non-active slides.  Without this override, only the .active
+       slide prints. */
+    visibility: visible !important;
+    opacity: 1 !important;
+
+    /* Strip screen-only chrome */
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+
+    /* Position override: screen uses absolute + translate(-50%, -50%)
+       scale().  Switch to natural flow + relative so page-break works. */
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+
+    /* Page-break: use `break-before` on the NEXT slide instead of
+       `break-after` here.  `break-after: page` on every slide forces
+       a trailing blank page in real browser print pipeline (Chrome/Edge
+       Cmd+P), even if the last slide is the document end. */
+    page-break-after: auto !important;
+    break-after: auto !important;
+  }
+
+  /* Page-break strategy: adjacent-sibling combinator `+` matches every
+     .slide-page that follows another .slide-page (slides 2-13).  The
+     first slide has no preceding .slide-page, so no break-before is
+     applied — it stays at page 1. */
+  .slide-page + .slide-page {
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+
+  /* §4 — Absolute-positioned decorative elements.  Every `top/left/
+         bottom/right/width/height` in screen px is scaled by 0.5846
+         and rounded.  Add new rules here when adding new screen
+         absolute elements. */
+  .slide-page .slide-top-accent {
+    top: 19px !important;        /* screen 32 × 0.585 */
+    left: 58px !important;       /* screen 100 × 0.585 */
+    width: 35px !important;      /* screen 60 × 0.585 */
+    height: 1.2px !important;    /* screen 2 × 0.585 */
+  }
+  .slide-page .slide-info-corner {
+    bottom: 53px !important;     /* screen 90 × 0.585 */
+    left: 33px !important;       /* screen 56 × 0.585 */
+    max-width: 246px !important; /* screen 420 × 0.585 */
+  }
+  .slide-page .slide-meta-bar {
+    top: auto !important;
+    bottom: 19px !important;     /* screen 32 × 0.585 (moved from top→bottom for print consistency) */
+    right: 58px !important;      /* screen 100 × 0.585 */
+    left: auto !important;
+  }
+
+  /* §5 — Figure slides.  Override screen `flex: 1` (which grows
+         figure to fill flex container, ignoring max-height).  Use
+         `flex: 0 1 auto` + `max-height: 75%` so aspect-ratio determines
+         size and overflow is prevented.
+         When you add a new frame-img aspect class (e.g. r-3x4), add it
+         to this list. */
+  .slide-page .frame-img.r-21x9,
+  .slide-page .frame-img.r-16x9,
+  .slide-page .frame-img.r-16x10,
+  .slide-page .frame-img.r-4x3,
+  .slide-page .frame-img.r-3x2,
+  .slide-page .frame-img.r-1x1,
+  .slide-page .frame-img.r-2x1,
+  .slide-page .frame-img.r-4x1,
+  .slide-page .frame-img.h-22,
+  .slide-page .frame-img.h-26,
+  .slide-page .frame-img.h-30 {
+    flex: 0 1 auto !important;
+    max-height: 75% !important;
+    height: auto !important;
+  }
+
+  /* §6 — Per-element px scaling for things html font-size doesn't
+         cascade to (border widths, inline sizes). */
+  .slide-page .takeaway-item {
+    border-left-width: 5px !important;  /* screen 8 × 0.585 ≈ 4.68, round to 5 */
+  }
+  .slide-page .slide-info-corner dt {
+    font-size: 0.7rem !important;  /* em-based, repeat for safety */
+  }
+  .slide-page .slide-info-corner dd {
+    font-size: 0.85rem !important;
+  }
+  .slide-page .meta-page {
+    font-size: var(--text-kicker) !important;
+  }
+
+  /* §7 — Hide UI overlays (controls bar, language toggle, dev button) */
+  .slide-controls,
+  .lang-toggle,
+  .dev-btn {
+    display: none !important;
+  }
+}
