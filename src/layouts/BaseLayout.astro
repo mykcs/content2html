@@ -5,6 +5,9 @@
 // 语言切换按钮: 跟主站 Masthead.astro:77-83 完全同款 (圆形深灰按钮 + translate.svg 图标),
 // 路径算法沿用主站 Masthead.astro:30-34 (剥离当前 locale 前缀, 拼接目标 locale 前缀)
 import "../styles/global.css";
+// KaTeX (math rendering) — slide-only (2026-06-22 加, paper slide 缺公式修复)
+// npm dep: katex@0.16.11. CSS 通过 frontmatter 静态打包; JS 通过 <script> 动态加载.
+import "katex/dist/katex.min.css";
 
 interface Props {
   title: string;
@@ -139,6 +142,32 @@ const iconUrl = `${baseUrl}/icons/translate.svg`;
     {productType === "slide" && (
       <script>
         import "../scripts/slide-nav";
+      </script>
+    )}
+    {productType === "slide" && (
+      <script>
+        // KaTeX auto-render: 扫描 .slide-page 里的 $...$ (inline) 和 $$...$$ (display) 公式
+        // 并替换为排版好的 HTML。**渲染所有 .slide-page (不仅 active)**, 否则打印 PDF 时
+        // 非 active slide 的公式没渲染。slide-nav 切换时也重渲染 active (为多余保险)。
+        // auto-render 是 default export (不是 window global), 用 import 然后直接调用
+        import renderMathInElement from "katex/contrib/auto-render";
+        const renderMath = () => {
+          // 渲染所有 .slide-page (打印时需要每个 slide 都有公式)
+          document.querySelectorAll(".slide-page").forEach((slide) => {
+            renderMathInElement(slide, {
+              delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+              ],
+              throwOnError: false,
+              strict: false,
+            });
+          });
+        };
+        if (document.readyState === "complete") renderMath();
+        else window.addEventListener("load", renderMath);
+        // 切页时也重渲染 (保险; 上面已渲染过所有 slide, 切页无需再跑)
+        window.addEventListener("slidechange", renderMath);
       </script>
     )}
   </body>
