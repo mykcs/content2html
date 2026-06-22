@@ -175,7 +175,14 @@
   }
 
   /* §6 — Per-element px scaling for things html font-size doesn't
-         cascade to (border widths, inline sizes). */
+         cascade to (border widths, inline sizes).
+         Design contract:
+         - Main typography (display/headline/title/body/caption/kicker)
+           uses var(--text-*) from @theme (defined in §3 above).
+         - Component-specific values (info-corner dt/dd 0.7rem/0.85rem,
+           takeaway-item border-left 5px) stay as raw values — these
+           are scoped to ONE component each, adding them to @theme
+           would over-engineer. */
   .slide-page .takeaway-item {
     border-left-width: 5px !important;  /* screen 8 × 0.585 ≈ 4.68, round to 5 */
   }
