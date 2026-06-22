@@ -159,6 +159,10 @@ const iconUrl = `${baseUrl}/icons/translate.svg`;
                 { left: "$$", right: "$$", display: true },
                 { left: "$", right: "$", display: false },
               ],
+              // v4 关键修复: KaTeX 默认 ignoredTags 含 "code", 把 <code class="formula-code">
+              // 包住的独立公式跳过. 显式覆盖 (保留 script/style, 排除 code)
+              // 注: option 名是 ignoredTags 不是 ignoredElements (我之前写错)
+              ignoredTags: ["script", "noscript", "style", "textarea", "pre", "option"],
               throwOnError: false,
               strict: false,
             });
