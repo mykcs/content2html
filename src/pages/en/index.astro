@@ -1,12 +1,14 @@
 ---
 // src/pages/en/index.astro - English navigation page (en route)
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { webSiteLd } from "../../lib/json-ld";
 ---
 <BaseLayout
   title="content2html"
   description="Content (arxiv paper / local progress) → HTML (slide + long-form)"
   lang="en"
   productType="longform"
+  jsonLd={webSiteLd("en")}
 >
   <header>
     <h1>content2html</h1>

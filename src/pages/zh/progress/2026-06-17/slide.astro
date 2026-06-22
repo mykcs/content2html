@@ -3,6 +3,7 @@
 // progress-mode: 中文 slide 版本 (横向翻页, 5 页: title/done/doing/next/metrics)
 // 改用 Astro content collection (getEntry) — 见 src/content.config.ts
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import { articleLd } from "../../../../lib/json-ld";
 import { getEntry } from "astro:content";
 
 const entry = await getEntry("progress", "2026-06-17");
@@ -22,6 +23,7 @@ const p = entry.data as {
   description={`${p.period} — done/doing/next`}
   lang="zh"
   productType="slide"
+  jsonLd={articleLd(p, "zh")}
 >
   <section class="slide-page active" data-page="1">
     <div class="col-span-12 flex flex-col justify-center">

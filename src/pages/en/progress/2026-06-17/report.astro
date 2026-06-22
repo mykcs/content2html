@@ -3,6 +3,7 @@
 // progress-mode: English report version (single-column longform, scrollable)
 // Migrated to Astro content collection (getEntry) — see src/content.config.ts
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import { articleLd } from "../../../../lib/json-ld";
 import { getEntry } from "astro:content";
 
 const entry = await getEntry("progress", "2026-06-17");
@@ -22,6 +23,7 @@ const p = entry.data as {
   description={`${p.period} — done/doing/next`}
   lang="en"
   productType="longform"
+  jsonLd={articleLd(p, "en")}
 >
   <article>
     <header>

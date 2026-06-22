@@ -14,9 +14,21 @@ interface Props {
   description?: string;
   lang?: "zh" | "en";
   productType?: "slide" | "longform";
+  /**
+   * JSON-LD structured data (F3 fix).
+   * Per-page-type schemas:
+   *   - index pages → WebSite
+   *   - paper pages → ScholarlyArticle (Google Scholar eligibility + Rich Results)
+   *   - progress pages → Article
+   *
+   * Pass a fully-formed schema.org object. BaseLayout serializes it inside
+   * <script type="application/ld+json" set:html={...} />.
+   * Reference: https://schema.org/{WebSite, ScholarlyArticle, Article}
+   */
+  jsonLd?: Record<string, unknown>;
 }
 
-const { title, description = "", lang = "zh", productType = "longform" } = Astro.props;
+const { title, description = "", lang = "zh", productType = "longform", jsonLd } = Astro.props;
 
 // === 中英文切换 URL (与主站 Masthead.astro:30-34 算法一致) ===
 // 适配 content2html i18n: defaultLocale='zh' + prefixDefaultLocale=true
@@ -78,6 +90,16 @@ const iconUrl = `${baseUrl}/icons/translate.svg`;
         </>
       );
     })()}
+
+    {/* JSON-LD structured data (F3 fix)
+        Per-page-type schemas: WebSite / ScholarlyArticle / Article
+        Each page passes jsonLd prop with full schema.org object. */}
+    {jsonLd && (
+      <script
+        type="application/ld+json"
+        set:html={JSON.stringify(jsonLd)}
+      />
+    )}
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>

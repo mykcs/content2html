@@ -3,6 +3,7 @@
 // progress-mode: English slide version (horizontal pagination, 5 pages: title/done/doing/next/metrics)
 // Migrated to Astro content collection (getEntry) — see src/content.config.ts
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import { articleLd } from "../../../../lib/json-ld";
 import { getEntry } from "astro:content";
 
 const entry = await getEntry("progress", "2026-06-17");
@@ -22,6 +23,7 @@ const p = entry.data as {
   description={`${p.period} — done/doing/next`}
   lang="en"
   productType="slide"
+  jsonLd={articleLd(p, "en")}
 >
   <section class="slide-page active" data-page="1">
     <div class="col-span-12 flex flex-col justify-center">

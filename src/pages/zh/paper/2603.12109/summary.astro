@@ -3,6 +3,7 @@
 // paper-mode: 中文 summary 版本 (单栏 long-form) — AReW / 信息自锁
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getEntry } from "astro:content";
+import { scholarlyArticleLd } from "../../../../lib/json-ld";
 
 const entry = await getEntry("papers", "2603.12109");
 if (!entry) throw new Error("paper 2603.12109 not found in collection");
@@ -24,6 +25,7 @@ const paper = entry.data as {
   description={paper.abstract_zh}
   lang="zh"
   productType="longform"
+  jsonLd={scholarlyArticleLd(paper, "zh")}
 >
   <article>
     <header>

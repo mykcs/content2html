@@ -4,6 +4,7 @@
 // v2 aesthetic upgrade: typography +25%, Swiss editorial signature
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getEntry } from "astro:content";
+import { scholarlyArticleLd } from "../../../../lib/json-ld";
 import PaperSlideSection from "../../../../components/PaperSlideSection.astro";
 
 const entry = await getEntry("papers", "2603.12109");
@@ -77,6 +78,7 @@ function cleanHeading(heading: string): string {
   description={paper.abstract_en}
   lang="en"
   productType="slide"
+  jsonLd={scholarlyArticleLd(paper, "en")}
 >
   <!-- Slide 1: Title (full English title + English authors + English affiliations) -->
   <section class="slide-page active" data-page="1">    <div class="slide-top-accent"></div>

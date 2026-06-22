@@ -1,12 +1,14 @@
 ---
 // src/pages/zh/index.astro - 中文版导航页（zh 路由）
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { webSiteLd } from "../../lib/json-ld";
 ---
 <BaseLayout
   title="content2html"
   description="内容 (arxiv paper / 本地 progress) → HTML (slide + long-form)"
   lang="zh"
   productType="longform"
+  jsonLd={webSiteLd("zh")}
 >
   <header>
     <h1>content2html</h1>

@@ -4,6 +4,7 @@
 // v2 美学升级: 字号 +25%, Swiss editorial 签名 (accent-bar + kicker + 顶 kicker bar)
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getEntry } from "astro:content";
+import { scholarlyArticleLd } from "../../../../lib/json-ld";
 import PaperSlideSection from "../../../../components/PaperSlideSection.astro";
 
 const entry = await getEntry("papers", "2603.12109");
@@ -74,6 +75,7 @@ function cleanHeading(heading: string): string {
   description={paper.abstract_zh}
   lang="zh"
   productType="slide"
+  jsonLd={scholarlyArticleLd(paper, "zh")}
 >
   <!-- Slide 1: Title (完整英文 title + 英文作者 + 英文单位) -->
   <section class="slide-page active" data-page="1">    <div class="slide-top-accent"></div>
