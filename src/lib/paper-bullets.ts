@@ -21,11 +21,16 @@ export type SlideBullet =
  */
 const MATH_OPS = /[∈∇∝⪯←∑∫∂]|:=|\\geq|\\leq|\\rightarrow|\\leftarrow|\\propto/;
 const CJK_LEAD = /^[一-鿿]/;
+// 公式行的长度上限 (v2 收紧, 防止 EN 长段被误判为公式)
+//   例: "Design intra-trajectory likelihood-margin objective to inject critiques into policy gradient..."
+//   含 math token 但 200+ chars, 应该是 definition 不是 formula
+const FORMULA_MAX_CHARS = 150;
 
 function isFormulaLine(line: string): boolean {
   const trimmed = line.trim();
   if (!trimmed) return false;
   if (CJK_LEAD.test(trimmed)) return false;
+  if (trimmed.length > FORMULA_MAX_CHARS) return false;  // v2 加
   return MATH_OPS.test(trimmed);
 }
 
