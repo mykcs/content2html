@@ -77,17 +77,24 @@ const audit = await page.evaluate(() => {
 });
 
 // 3. Extract last 2 pages and check sizes (blank page = small file)
+// Threshold: relative to average non-blank page size (50% heuristic).
+// Small papers (e.g. 2606.18246 with 6 short sections) have page PNG ~2KB
+// at 50dpi (legitimate), so absolute 5KB threshold false-positives.
 execSync(`pdftoppm -png -r 50 -f ${pdfPages - 1} -l ${pdfPages} /tmp/print-verify.pdf /tmp/print-verify-page`, { encoding: 'utf8' });
 const fs = await import('node:fs');
 const lastPages = fs.readdirSync('/tmp').filter(f => f.startsWith('print-verify-page-')).sort();
-const pageSizes = lastPages.map(p => ({ page: p, size: fs.statSync(`/tmp/${p}`).size }));
-const lastPageBlank = pageSizes[pageSizes.length - 1]?.size < 5000; // < 5KB = blank
+// Compute average across all rendered pages for relative threshold
+const allPageSizes = lastPages.map(p => fs.statSync(`/tmp/${p}`).size);
+const avgSize = allPageSizes.reduce((a, b) => a + b, 0) / allPageSizes.length;
+const lastPageSize = allPageSizes[allPageSizes.length - 1];
+// Blank = last page < 50% of avg (catches real blanks without false-positives on small papers)
+const lastPageBlank = lastPageSize < avgSize * 0.5;
 
 // 4. Final verdict
 console.log('=== Print E2E Verification ===\n');
 console.log(`Slide count:    ${SLIDE_COUNT}`);
 console.log(`PDF page count: ${pdfPages}`);
-console.log(`Last page size: ${pageSizes[pageSizes.length - 1]?.size} bytes ${lastPageBlank ? '(BLANK!)' : ''}\n`);
+console.log(`Last page size: ${allPageSizes[allPageSizes.length - 1]?.size} bytes ${lastPageBlank ? '(BLANK!)' : ''}\n`);
 console.log('Layer checks:');
 Object.entries(audit.layers).forEach(([k, v]) => console.log(`  ${k.padEnd(20)} ${v}`));
 
