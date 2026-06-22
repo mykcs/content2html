@@ -575,8 +575,23 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
   }
 
   .slide-page:last-child {
-    page-break-after: auto;
-    break-after: auto;
+    /* ⚠️ 2026-06-22 fix: keep `break-after: page` on last slide too.
+       Was `auto` before, but Chrome print pipeline adds 1 trailing blank page
+       when last content element doesn't explicitly end the print sequence
+       (verified via real-browser print, Playwright page.pdf() doesn't reproduce
+       but user reports 14 pages vs expected 13).
+       Forcing page-break on slide 13 ensures clean PDF end at page 13. */
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+
+  /* Prevent trailing blank page: tell browser print sequence ends here.
+     Without this, Chrome may emit extra page after the last explicit break. */
+  body::after {
+    content: "";
+    display: block;
+    break-after: avoid;
+    page-break-after: avoid;
   }
 
   /* Scale px-based borders/padding/widths that don't cascade from html font-size
