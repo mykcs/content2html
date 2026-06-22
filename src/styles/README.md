@@ -7,8 +7,21 @@ This directory holds the visual contract for all 4 content2html products:
 
 | File | Scope | Media | Purpose |
 |------|-------|-------|---------|
-| `global.css` | All slides + longform | screen | Design tokens (Tailwind v4 `@theme`), typography, slide deck chrome |
+| `global.css` | All slides + longform | screen | Design tokens (Tailwind v4 `@theme`), typography, slide deck chrome, `@utility` typography helpers, `@custom-variant dark` infra |
 | `print.css` | All slides (`.slide-page` and descendants) | `@media print` only | Print-optimized layout (297×167mm, 1 slide per page) |
+
+## Tailwind v4 directives (2026-06-22 added)
+
+| Directive | Location | Purpose |
+|-----------|----------|---------|
+| `@import "tailwindcss"` | global.css:6 | v4 CSS-first config entry |
+| `@source "../pages/**/*.astro"` etc. | global.css:14-16 | A.3 — explicit scan paths (v4 auto-scans by default; explicit = future-proof) |
+| `@custom-variant dark (&:where(.dark, .dark *))` | global.css:19 | A.2 — dark mode infra (CLAUDE.md v4 requires this exact syntax). Light-only today. |
+| `@theme { --text-display, --color-ikb-blue, ... }` | global.css:21-71 | Design tokens — see "Adding new design tokens" below |
+| `@utility text-kicker` | global.css | A.1 — typography helper (kicker 24×, caption 30×, meta-page 26× usage). Raw CSS kept for backward compat. |
+| `--print-scale: 0.5846` | global.css:65 | C.1 — print scale factor (297mm / 508mm). NOT named `--slide-scale` to avoid collision with `:root --slide-scale: 1` (set by slide-nav.ts). |
+
+## How print works
 
 ## How print works
 

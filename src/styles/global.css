@@ -6,6 +6,23 @@
 @import "tailwindcss";
 
 /* =============================================================
+ * Tailwind v4 — explicit content paths + dark variant infra
+ * (2026-06-22 add, future-proofs v4 directives not yet used)
+ * ============================================================= */
+/* A.3 — Explicit scan paths. v4 auto-scans by default; explicit
+   declaration makes intent clear and prevents future refactors
+   from breaking Tailwind's class detection if files move. */
+@source "../pages/**/*.astro";
+@source "../layouts/**/*.astro";
+@source "../components/**/*.{astro,ts,tsx}";
+
+/* A.2 — Custom dark variant. CLAUDE.md warns v4 requires this exact
+   syntax for dark mode (no `darkMode: 'class'` in tailwind.config).
+   content2html is light-only today; this is infra for future dark
+   theme. Use: <html class="dark"> or @variant dark ... */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* =============================================================
  * Print stylesheet template — 抽取自 global.css 的 @media print 块 (2026-06-22)
  * 4 产物 (paper-slide / paper-summary / progress-slide / progress-report) 自动应用
  * 设计契约 + 添加新元素指引: 见 src/styles/print.css 顶部注释
@@ -57,6 +74,14 @@
   --text-body: 1.125rem;       /* 18pt — body (Q&A) */
   --text-caption: 0.9375rem;   /* 15pt — caption / 斜体注释 */
   --text-kicker: 0.8125rem;    /* 13pt — 大写小标签 (AReW · 2603.12109) */
+
+  /* C.1 — Print scale factor. Formula:
+       scale = 297mm / (1920px / 96dpi × 25.4) = 297 / 508 ≈ 0.5846
+     ⚠️ 不能命名 --slide-scale (跟 screen :root 里的同名 var 冲突;
+     :root --slide-scale: 1 会被 slide-nav.ts 设置为 1, 覆盖我们的 0.5846
+     导致 screen 加载时 slide 缩到 1/2 → 全部 overflow → 16 页变 26 页).
+     用 --print-scale 区分 screen vs print. */
+  --print-scale: 0.5846;
 }
 
 /* ============ Swiss grid baseline (8pt) ============ */
@@ -172,7 +197,42 @@ body {
 /* figure 元素 reset (从 components.md figure.tile 移植) */
 figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 0; }
 
-/* === v2: Typography signatures (Swiss editorial 风) === */
+/* === A.1 — Typography utilities (Tailwind v4 @utility) ===
+   Converting widely-used typography classes from raw CSS to @utility
+   so they're discoverable alongside Tailwind utilities + reusable in
+   print.css via class instead of duplicating rules.
+   Audit (2026-06-22): kicker 24×, caption 30×, meta-page 26×.
+   ⚠️ Raw CSS kept for backward compat; @utility provides identical
+   declarations for new components / print.css consumers. */
+@utility text-kicker {
+  font-family: var(--font-sans);
+  font-size: var(--text-kicker);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-ikb-blue);
+  line-height: 1.2;
+}
+
+@utility text-caption {
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  font-style: italic;
+  line-height: 1.4;
+  color: var(--color-graphite);
+  letter-spacing: 0.01em;
+}
+
+@utility text-meta-page {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--color-black);
+  letter-spacing: 0.08em;
+}
+
+/* === v2: Typography signatures (Swiss editorial 风) — raw CSS, kept for
+   existing components. New code should prefer the @utility versions
+   defined in the A.1 block above. */
 .kicker {
   font-family: var(--font-sans);
   font-size: var(--text-kicker);
