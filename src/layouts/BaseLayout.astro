@@ -132,16 +132,16 @@ const iconUrl = `${baseUrl}/icons/translate.svg`;
     </div>
     <slot />
     {productType === "slide" && (
-      <div class="slide-controls" role="toolbar" aria-label="Slide controls">
-        <span class="slide-controls__label">Preview:</span>
-        <span class="slide-controls__zoom" id="slide-zoom-level">Fit</span>
+      <div class="slide-controls" role="toolbar" aria-label={lang === "en" ? "Slide controls" : "幻灯片控件"}>
+        <span class="slide-controls__label">{lang === "en" ? "Preview:" : "预览:"}</span>
+        <span class="slide-controls__zoom" id="slide-zoom-level">{lang === "en" ? "Fit" : "适应"}</span>
         <div class="slide-controls__group">
-          <button data-zoom="0.5" title="Zoom 50%" aria-label="缩小">−</button>
-          <button data-zoom="1" title="Zoom 100%" aria-label="放大">+</button>
+          <button data-zoom="0.5" title={lang === "en" ? "Zoom 50%" : "缩放 50%"} aria-label={lang === "en" ? "Zoom out" : "缩小"}>−</button>
+          <button data-zoom="1" title={lang === "en" ? "Zoom 100%" : "缩放 100%"} aria-label={lang === "en" ? "Zoom in" : "放大"}>+</button>
         </div>
-        <button data-zoom="fit" class="active" title="Fit to window (0)" aria-label="适应屏幕">Fit</button>
+        <button data-zoom="fit" class="active" title={lang === "en" ? "Fit to window (0)" : "适应窗口 (0)"} aria-label={lang === "en" ? "Fit to screen" : "适应屏幕"}>{lang === "en" ? "Fit" : "适应"}</button>
         <span class="slide-controls__divider"></span>
-        <button data-zoom="print" class="slide-controls__print" title="Print / Save as PDF (P)" aria-label="打印 PDF">Print PDF</button>
+        <button data-zoom="print" class="slide-controls__print" title={lang === "en" ? "Print / Save as PDF (P)" : "打印 / 另存为 PDF (P)"} aria-label={lang === "en" ? "Print PDF" : "打印 PDF"}>{lang === "en" ? "Print PDF" : "打印 PDF"}</button>
       </div>
     )}
     {productType === "slide" && (

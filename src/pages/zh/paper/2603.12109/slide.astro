@@ -48,10 +48,7 @@ const FIG = "/content2html/figures/2603.12109";
 const TITLE_EN = paper.title_full_en ?? paper.title_en;
 const AUTHORS_EN = paper.authors_with_affil_en ?? paper.authors.map((n) => ({ name: n, affil: [] as string[] }));
 const AFFILS_EN: string[] = paper.affiliations_en ?? Array.from(new Set(AUTHORS_EN.flatMap((a) => a.affil)));
-// 预计算每个作者的 sup affiliation 数字, 避免 JSX 内嵌 .map((_,idx)=>) 渲染失败
-const AUTHOR_SUP: string[] = AUTHORS_EN.map((a) =>
-  a.affil.map((x) => String(AFFILS_EN.indexOf(x) + 1)).join(",")
-);
+// (AUTHOR_SUP 已删除 2026-06-22 — zh slide 用 inline .map, 跟 en slide 不一致. F7 P2 cleanup)
 
 // 精简 PPT：把 body 里的 "1./2./3. 段标题" 提取为 bullet，丢掉长段落
 // 满足 "Slide 文字量不要太多" 设计原则
