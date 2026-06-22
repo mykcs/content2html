@@ -4,6 +4,8 @@
 // v2 aesthetic upgrade: typography +25%, Swiss editorial signature
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getEntry } from "astro:content";
+import { extractPaperBullets } from "../../../../lib/paper-bullets";
+import PaperSlideBullet from "../../../../components/PaperSlideBullet.astro";
 
 const entry = await getEntry("papers", "2603.12109");
 if (!entry) throw new Error("paper 2603.12109 not found in collection");
@@ -190,8 +192,8 @@ function cleanHeading(heading: string): string {
         <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[2].heading)}</h2>
       </div>
       <ul class="flex-1 flex flex-col gap-3 justify-center max-w-7xl">
-        {extractBullets(paper.sections_en[2].body).map((b) => (
-          <li class="takeaway-item">{b}</li>
+        {extractPaperBullets(paper.sections_en[2].body).map((b, i) => (
+          <PaperSlideBullet bullet={b} index={b.kind === "formula" ? i : undefined} />
         ))}
       </ul>
     </div>

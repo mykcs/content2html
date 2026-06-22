@@ -1,0 +1,36 @@
+---
+// src/components/PaperSlideBullet.astro
+// 通用 paper slide bullet 渲染: 3 种 kind
+//   - title:     编号段 (e.g. "1. xxx")
+//   - definition: 长段, 含 CJK + 内联公式 (markMath 后内联 $...$ 公式)
+//   - formula:   独立公式行, 大字 + 等宽 + 居中
+//
+// KaTeX 由 BaseLayout 在 productType="slide" 时自动加载, 无需本组件关心.
+//   markMath 替换为 $...$ 后, auto-render 扫描并替换为 HTML.
+//
+// 当前调用方:
+//   src/pages/{zh,en}/paper/2603.12109/slide.astro
+//   计划接入: 2606.18246 slide (按需)
+import type { SlideBullet } from "../lib/paper-bullets";
+import { markMath } from "../lib/paper-bullets";
+
+interface Props {
+  bullet: SlideBullet;
+  index?: number;  // 公式角标 (e.g. "(1)")
+}
+
+const { bullet, index } = Astro.props;
+const mathText = markMath(bullet.text);
+---
+{bullet.kind === "title" && (
+  <li class="takeaway-item takeaway-item--title">{mathText}</li>
+)}
+{bullet.kind === "definition" && (
+  <li class="takeaway-item takeaway-item--definition">{mathText}</li>
+)}
+{bullet.kind === "formula" && (
+  <li class="takeaway-item takeaway-item--formula">
+    {index !== undefined && <span class="formula-idx">({index})</span>}
+    <code class="formula-code">{mathText}</code>
+  </li>
+)}

@@ -337,6 +337,50 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
   font-weight: 500;
 }
 
+/* Paper slide bullet 3 variants (2026-06-22 加, paper slide 缺公式修复)
+   - title:     编号段, 大字 + bold + 蓝边
+   - definition: 长段, 普通字号 + 灰边 (与 title 区分, 不喧宾夺主)
+   - formula:   独立公式, 等宽 + 居中 + 灰边 + KaTeX 渲染 */
+.slide-page .takeaway-item--title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-ikb-blue);
+  border-left: 8px solid var(--color-ikb-blue);
+}
+.slide-page .takeaway-item--definition {
+  font-size: 1.4rem;          /* 比 title 小, 避免长段占太多 slide 空间 */
+  line-height: 1.4;
+  font-weight: 400;
+  color: var(--color-text, #222);
+  border-left: 4px solid rgba(0, 0, 0, 0.18);  /* 灰边, 不抢 title 视觉 */
+  padding: 0.4rem 0 0.4rem 1rem;
+}
+.slide-page .takeaway-item--formula {
+  font-size: 1.5rem;
+  line-height: 1.5;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.03);
+  border-left: 4px solid var(--color-ikb-blue);
+  border-radius: 0 6px 6px 0;
+  padding: 0.6rem 1rem;
+  margin: 0.25rem 0;
+}
+.slide-page .takeaway-item--formula .formula-idx {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: rgba(0, 0, 0, 0.5);
+  margin-right: 0.5rem;
+  vertical-align: super;
+}
+.slide-page .takeaway-item--formula .formula-code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
 /* Title slide 装饰: IKB-blue 巨数字 + 作者高亮 */
 .slide-page .author-name {
   color: var(--color-ikb-blue);
