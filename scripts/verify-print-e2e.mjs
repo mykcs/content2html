@@ -17,7 +17,7 @@ import { chromium } from 'playwright';
 import { writeFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 
-const SLIDE_COUNT = parseInt(process.env.SLIDE_COUNT || '13');
+const SLIDE_COUNT = parseInt(process.env.SLIDE_COUNT || '16');  // 2026-06-22: was 13, actual site has 16 slides
 const URL = process.env.URL || 'https://mykcs.github.io/content2html/zh/paper/2603.12109/slide/';
 
 const browser = await chromium.launch();
