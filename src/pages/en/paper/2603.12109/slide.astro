@@ -83,7 +83,7 @@ function cleanHeading(heading: string): string {
   <!-- Slide 1: Title (full English title + English authors + English affiliations) -->
   <section class="slide-page active" data-page="1">    <div class="slide-top-accent"></div>
     <div class="slide-meta-bar">
-      <span class="meta-page">01 / 13</span>
+      <span class="meta-page">01 / 16</span>
     </div>
 
     <div class="col-span-12 flex flex-col justify-center items-center text-center gap-6">
@@ -130,7 +130,7 @@ function cleanHeading(heading: string): string {
   <!-- Slide 3: Fig 1 concept — r-2x1 (2.01:1) -->
   <section class="slide-page" data-page="2">    <div class="slide-top-accent"></div>
     <div class="slide-meta-bar">
-      <span class="meta-page">02 / 13</span>
+      <span class="meta-page">02 / 16</span>
     </div>
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
@@ -149,7 +149,7 @@ function cleanHeading(heading: string): string {
   <!-- Slide 4: Q1 -->
   <section class="slide-page" data-page="3">    <div class="slide-top-accent"></div>
     <div class="slide-meta-bar">
-      <span class="meta-page">03 / 13</span>
+      <span class="meta-page">03 / 16</span>
     </div>
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
@@ -169,7 +169,7 @@ function cleanHeading(heading: string): string {
   <!-- Slide 5: Q2 -->
   <section class="slide-page" data-page="4">    <div class="slide-top-accent"></div>
     <div class="slide-meta-bar">
-      <span class="meta-page">04 / 13</span>
+      <span class="meta-page">04 / 16</span>
     </div>
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
@@ -186,26 +186,28 @@ function cleanHeading(heading: string): string {
     </div>
   </section>
 
-  <!-- Slide 6: Q3 — v3.0 模板接入: 4 公式卡片 + section 简述 -->
-  <section class="slide-page" data-page="5">
-    <div class="slide-top-accent"></div>
-    <div class="slide-meta-bar">
-      <span class="meta-page">05 / 13</span>
-    </div>
-    <div class="col-span-12 flex flex-col gap-5 h-full">
-      <PaperSlideSection
-        section={paper.sections_en[2]}
-        sectionIndex={2}
-        keyFormulas={paper.key_formulas}
-        lang="en"
-      />
-    </div>
-  </section>
+  <!-- Slide 6-9: Q3.1-Q3.4 — v3.0 模板: 每 sub-section 1 公式卡片 -->
+  {[2, 3, 4, 5].map((i, idx) => (
+    <section class="slide-page" data-page={`${5 + idx}`}>
+      <div class="slide-top-accent"></div>
+      <div class="slide-meta-bar">
+        <span class="meta-page">{String(5 + idx).padStart(2, "0")} / 16</span>
+      </div>
+      <div class="col-span-12 flex flex-col gap-5 h-full">
+        <PaperSlideSection
+          section={paper.sections_en[i]}
+          sectionIndex={i}
+          keyFormulas={paper.key_formulas}
+          lang="en"
+        />
+      </div>
+    </section>
+  ))}
 
   <!-- Slide 7: Fig 4 training dynamics 4 panels — r-16x10 (1.56:1) -->
-  <section class="slide-page" data-page="6">    <div class="slide-top-accent"></div>
+  <section class="slide-page" data-page="9">    <div class="slide-top-accent"></div>
     <div class="slide-meta-bar">
-      <span class="meta-page">06 / 13</span>
+      <span class="meta-page">09 / 16</span>
     </div>
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
@@ -222,9 +224,9 @@ function cleanHeading(heading: string): string {
   </section>
 
   <!-- Slide 8: Q4 (1/2) -->
-  <section class="slide-page" data-page="7">    <div class="slide-top-accent"></div>
+  <section class="slide-page" data-page="10">    <div class="slide-top-accent"></div>
     <div class="slide-meta-bar">
-      <span class="meta-page">07 / 13</span>
+      <span class="meta-page">10 / 16</span>
     </div>
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
@@ -242,9 +244,9 @@ function cleanHeading(heading: string): string {
   </section>
 
   <!-- Slide 9: Fig 3 algorithm generalization 3 panels — h-30 -->
-  <section class="slide-page" data-page="8">    <div class="slide-top-accent"></div>
+  <section class="slide-page" data-page="11">    <div class="slide-top-accent"></div>
     <div class="slide-meta-bar">
-      <span class="meta-page">08 / 13</span>
+      <span class="meta-page">11 / 16</span>
     </div>
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
@@ -261,9 +263,9 @@ function cleanHeading(heading: string): string {
   </section>
 
   <!-- Slide 10: Q4 (2/2) -->
-  <section class="slide-page" data-page="9">    <div class="slide-top-accent"></div>
+  <section class="slide-page" data-page="12">    <div class="slide-top-accent"></div>
     <div class="slide-meta-bar">
-      <span class="meta-page">09 / 13</span>
+      <span class="meta-page">12 / 16</span>
     </div>
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
@@ -281,9 +283,9 @@ function cleanHeading(heading: string): string {
   </section>
 
   <!-- Slide 11: Fig 5 lambda + Fig 6 τ²-bench — dual h-30 -->
-  <section class="slide-page" data-page="10">    <div class="slide-top-accent"></div>
+  <section class="slide-page" data-page="13">    <div class="slide-top-accent"></div>
     <div class="slide-meta-bar">
-      <span class="meta-page">10 / 13</span>
+      <span class="meta-page">13 / 16</span>
     </div>
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
@@ -305,9 +307,9 @@ function cleanHeading(heading: string): string {
   </section>
 
   <!-- Slide 12: Q5 -->
-  <section class="slide-page" data-page="11">    <div class="slide-top-accent"></div>
+  <section class="slide-page" data-page="14">    <div class="slide-top-accent"></div>
     <div class="slide-meta-bar">
-      <span class="meta-page">11 / 13</span>
+      <span class="meta-page">14 / 16</span>
     </div>
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
@@ -325,9 +327,9 @@ function cleanHeading(heading: string): string {
   </section>
 
   <!-- Slide 13: Q6 -->
-  <section class="slide-page" data-page="12">    <div class="slide-top-accent"></div>
+  <section class="slide-page" data-page="15">    <div class="slide-top-accent"></div>
     <div class="slide-meta-bar">
-      <span class="meta-page">12 / 13</span>
+      <span class="meta-page">15 / 16</span>
     </div>
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
@@ -345,9 +347,9 @@ function cleanHeading(heading: string): string {
   </section>
 
   <!-- Slide 14: Q7 (restored) -->
-  <section class="slide-page" data-page="13">    <div class="slide-top-accent"></div>
+  <section class="slide-page" data-page="16">    <div class="slide-top-accent"></div>
     <div class="slide-meta-bar">
-      <span class="meta-page">13 / 13</span>
+      <span class="meta-page">16 / 16</span>
     </div>
 
     <div class="col-span-12 flex flex-col gap-5 h-full">

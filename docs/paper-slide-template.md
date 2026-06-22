@@ -43,10 +43,12 @@ wrapFormulaForKatex(latex: string, displayMode: boolean = false): string
 <PaperSlideSection
   section={paper.sections_zh[2]}
   sectionIndex={2}
-  keyFormulas={paper.key_formulas?.filter(f => f.section_index === 2) ?? []}
+  keyFormulas={paper.key_formulas ?? []}   {/* 组件内部按 section_index 过滤 */}
   lang="zh"
 />
 ```
+
+> v3.1 简化: 不需要 caller 手动 filter, 组件内部 `formulasForThisSection = keyFormulas.filter(f => f.section_index === sectionIndex)`. 1 slide = 1 formula 原则.
 
 ## 接入流程 (新 paper 5 步)
 

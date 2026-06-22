@@ -39,8 +39,20 @@
       "body": "该论文的相关研究主要涵盖以下四个方向：\n\n1. 主动推理与多轮交互（Active Reasoning & Multi-turn Interaction）\n- Proactive CoT (Deng et al., 2023)：通过提示工程让LLM识别歧义并生成澄清问题。\n- UoT (Hu et al., 2024)：量化每个问题在减少不确定性方面的贡献。\n- 多轮评估基准：MT-Eval (Kwan et al., 2024)、MathChat (Liang et al., 2024) 以及专门针对多轮交互中LLM失效模式的研究。\n- 多轮谜题推理：Badola et al. (2025) 提出Multi-turn Puzzles评估LLM的交互推理能力，是本文PE-G数据集的原始来源。\n\n2. 基于强化学习的LLM推理训练（RL for LLM Reasoning）\n- PPO/GRPO算法：Schulman et al. (2017) 的PPO，以及Shao et al. (2024) 提出的GRPO（Group Relative Policy Optimization），后者被DeepSeek-R1 (Guo et al., 2025) 等模型广泛采用。\n- RL增强LLM综述：Wang et al. (2024) 和 Srivastava & Aggarwal (2025) 系统综述了RL在LLM推理中的应用。\n- Agentic RL综述：Plaat et al. (2025) 和 Zhang et al. (2025a) 综述了面向LLM智能体的RL方法。\n\n3. 信用分配与中间奖励设计（Credit Assignment & Intermediate Rewards）\n这是与本文理论贡献最相关的领域。\n- 基于规则的奖励塑造：StepTool (Yu et al., 2024)、StepCoder (Dou et al., 2024) 和 RLVMR (Zhang et al., 2025b) 利用编译器反馈或验证器信号设计中间奖励。\n- 基于信念/不确定性的奖励：CURIO (Wan et al., 2025) 构建势函数基于理想信念状态分配中间奖励；Sotopia-RL (Yu et al., 2025) 利用专有LLM进行奖励标注。\n- 解耦搜索与回答：Wang et al. (2025b) 发现 outcome-only 训练会导致搜索智能体的系统性缺陷，与本文观察到的SeL现象一致。\n- 进度归因：SPA-RL (Wang et al., 2025a) 训练奖励模型并施加求和约束，将最终奖励分解为逐步进度。\n\n4. 信念更新与交互诊断（Belief Tracking & Interactive Diagnosis）\n- 医疗诊断：MediQ (Li et al., 2024) 是本文使用的医学问答基准。\n- 故障排查：FloDial (Raghu et al., 2021; Hu et al., 2024) 是本文使用的多轮故障诊断对话数据集。\n- 主动学习式查询：Zhou et al. (2025) 研究LLM在信息不完整时提出正确问题的能力。\n\n与上述工作相比，本文的独特贡献在于：\n- 识别新现象：首次系统性地识别并理论化了「信息自锁定」（SeL）这一结构性失效模式。\n- 轻量级干预：不同于需要训练额外奖励模型（如SPA-RL）或枚举潜在状态（如CURIO）的方法，本文提出的AREW仅利用易于获取的二元方向性批评，通过优势重加权注入RL信号，实现最小侵入式修改。"
     },
     {
-      "heading": "Q3. 论文如何解决这个问题？",
-      "body": "论文提出 AREW（Advantage Reweighing with directional critiques） 框架，通过注入易于获取的方向性批评来重新分配学习信号，从而打破动作选择（AS）与信念跟踪（BT）之间的负反馈循环。具体解决方案包含以下三个核心层面：\n\n1. 构建步骤级方向性批评\n基于主动推理中交互轮次的可诊断性，为AS和BT通道分别定义二元批评信号：\n\nAS通道批评（查询信息性）\n对于第 t 轮的查询动作，定义批评信号 z_t^Q ∈ {−1, 0, +1}：\n- +1：查询从环境/用户处获取了信息性反馈（如揭示了新证据）\n- −1：查询为非信息性（如重复提问或得到「未知」回复）\n- 0：弃权（abstention）\n在PE-G任务中，通过检查查询的属性子空间是否产生非支配性项目对来判断；在MediQ中，通过反馈是否包含新的临床事实来判定。\n\nBT通道批评（信念更新有效性）\n通过追踪任务相关置信度的标量读出 Ψ_t ∈ [0, 1]（如通过提示获取候选假设的置信度），定义：\n- z_t^U := Sign(Ψ_{t+1} − Ψ_t) ∈ {−1, 0, +1}\n- +1：智能体成功基于新观察提升了对真实状态的置信度\n- −1：信念更新方向错误或未有效吸收信息\n\n2. 边际感知辅助目标\n为将批评信号注入策略梯度，设计轨迹内似然边际目标（intra-trajectory likelihood-margin objective）。对于轨迹 τ 及其批评标签 {z_t}_{t=0}^{H−1}，定义正/负批评索引集 P_τ := {t : z_t = +1}, N_τ := {t : z_t = −1}。当 |P_τ| > 0 且 |N_τ| > 0 时，辅助目标为：L̃(ω; τ) := (1/|P_τ|) Σ_{t∈P_τ} log π_{ω,t} − (1/|N_τ|) Σ_{t∈N_τ} log π_{ω,t}。该目标直接鼓励智能体提升被正批评步骤的决策对数概率，相对降低被负批评步骤的概率，且满足中心化性质。\n\n3. 最小侵入式优势重加权\n将辅助目标与标准策略梯度（如PPO、GRPO）结合，导出优势重加权机制。增广后的梯度更新为：∇_ω L̃_aug(ω) ∝ E_τ [Σ_{t=0}^{H−1} (A_t + λ u_t) ∇_ω log π_{ω,t}]，其中 A_t 为标准优势估计（来自 outcome reward），λ > 0 为注射强度系数，u_t 为步骤级系数：u_t = 1/|P_τ| if z_t = +1, -1/|N_τ| if z_t = −1, 0 otherwise。关键实现：只需对每步优势进行加性调整 Ã_t ← A_t + λ u_t，无需修改底层奖励函数或RL优化机制。\n\n4. 理论保证与鲁棒性\nProposition 4.1 表明，AREW的有效性由批评的加权准确率（weighted accuracy）决定：只要 Acc_Q(ω) > 1/2（即批评准确率超过随机猜测），AREW即可产生正向的AS信息性改进。意味着AREW不依赖完美准确的批评，对噪声具有鲁棒性（实验验证即使50%噪声下仍有效）。"
+      "heading": "Q3.1. 构建 AS 通道批评信号",
+      "body": "论文提出 AREW（Advantage Reweighing with directional critiques）框架，通过注入易于获取的方向性批评来重新分配学习信号。第一个关键组件是 AS（Action Selection）通道批评：\n\n对于第 t 轮的查询动作，定义批评信号 z_t^Q ∈ {−1, 0, +1}：\n- +1：查询从环境/用户处获取了信息性反馈（如揭示了新证据）\n- −1：查询为非信息性（如重复提问或得到「未知」回复）\n- 0：弃权（abstention）\n\n实现细节：在 PE-G 任务中，通过检查查询的属性子空间是否产生非支配性项目对来判断；在 MediQ 中，通过反馈是否包含新的临床事实来判定。"
+    },
+    {
+      "heading": "Q3.2. 构建 BT 通道批评信号",
+      "body": "第二个关键组件是 BT（Belief Tracking）通道批评，与 AS 批评互补：\n\n通过追踪任务相关置信度的标量读出 Ψ_t ∈ [0, 1]（如通过提示获取候选假设的置信度），定义：\n- z_t^U := Sign(Ψ_{t+1} − Ψ_t) ∈ {−1, 0, +1}\n- +1：智能体成功基于新观察提升了对真实状态的置信度\n- −1：信念更新方向错误或未有效吸收信息"
+    },
+    {
+      "heading": "Q3.3. 边际感知辅助目标",
+      "body": "为将批评信号注入策略梯度，设计轨迹内似然边际目标（intra-trajectory likelihood-margin objective）：\n\n对于轨迹 τ 及其批评标签 {z_t}_{t=0}^{H−1}，定义正/负批评索引集 P_τ := {t : z_t = +1}, N_τ := {t : z_t = −1}。当 |P_τ| > 0 且 |N_τ| > 0 时，辅助目标为公式所示。\n\n该目标直接鼓励智能体提升被正批评步骤的决策对数概率，相对降低被负批评步骤的概率，且满足中心化性质。"
+    },
+    {
+      "heading": "Q3.4. 最小侵入式优势重加权",
+      "body": "将辅助目标与标准策略梯度（如 PPO、GRPO）结合，导出优势重加权机制。增广后的梯度更新为：\n\n∇_ω L̃_aug(ω) ∝ E_τ [Σ_{t=0}^{H−1} (A_t + λ u_t) ∇_ω log π_{ω,t}]\n\n其中 A_t 为标准优势估计（来自 outcome reward），λ > 0 为注射强度系数，u_t 为步骤级系数：\n- u_t = 1/|P_τ| if z_t = +1\n- u_t = -1/|N_τ| if z_t = −1\n- u_t = 0 otherwise\n\n关键实现：只需对每步优势进行加性调整（见卡片公式），无需修改底层奖励函数或 RL 优化机制。\n\n理论保证（Proposition 4.1）：只要 Acc_Q(ω) > 1/2（即批评准确率超过随机猜测），AREW 即可产生正向的 AS 信息性改进。这意味着 AREW 不依赖完美准确的批评，对噪声具有鲁棒性（实验验证即使 50% 噪声下仍有效）。"
     },
     {
       "heading": "Q4. 论文做了哪些实验？（1/2）",
@@ -73,8 +85,20 @@
       "body": "The paper's related work spans four directions:\n\n1. Active Reasoning & Multi-turn Interaction\n- Proactive CoT (Deng et al., 2023): prompt engineering to identify ambiguity and generate clarification questions\n- UoT (Hu et al., 2024): quantifying each question's contribution to uncertainty reduction\n- Multi-turn evaluation benchmarks: MT-Eval (Kwan et al., 2024), MathChat (Liang et al., 2024)\n- Multi-turn puzzle reasoning: Badola et al. (2025) Multi-turn Puzzles (source of PE-G)\n\n2. RL for LLM Reasoning\n- PPO/GRPO algorithms (Schulman 2017, Shao 2024) — GRPO adopted by DeepSeek-R1 (Guo 2025)\n- RL-enhanced LLM surveys: Wang 2024, Srivastava & Aggarwal 2025\n- Agentic RL surveys: Plaat 2025, Zhang 2025a\n\n3. Credit Assignment & Intermediate Rewards (most relevant to theoretical contribution)\n- Rule-based reward shaping: StepTool (Yu 2024), StepCoder (Dou 2024), RLVMR (Zhang 2025b)\n- Belief/uncertainty-based rewards: CURIO (Wan 2025) potential function, Sotopia-RL (Yu 2025)\n- Decoupling search and answer: Wang 2025b (also finds outcome-only defects)\n- Progress attribution: SPA-RL (Wang 2025a) reward decomposition\n\n4. Belief Tracking & Interactive Diagnosis\n- Medical diagnosis: MediQ (Li 2024)\n- Troubleshooting: FloDial (Raghu 2021, Hu 2024)\n- Active learning queries: Zhou 2025\n\nUnique contribution: first to systematically identify and theorize SeL as a structural failure mode with bidirectional AS-BT coupling; AREW is lightweight compared to methods that train reward models (SPA-RL) or enumerate latent states (CURIO)."
     },
     {
-      "heading": "Q3. How does the paper solve it?",
-      "body": "The paper proposes AREW (Advantage Reweighing with directional critiques), injecting easy-to-obtain directional critiques to reallocate learning signals, breaking the AS-BT negative feedback loop. The solution has three core components:\n\n1. Constructing step-level directional critiques\nFor AS and BT channels, define binary critique signals based on the diagnosability of interaction turns:\n\nAS channel critique (query informativeness): z_t^Q ∈ {−1, 0, +1}\n- +1: query elicits informative feedback from environment/user (reveals new evidence)\n- −1: non-informative query (repetition or 'Unknown' response)\n- 0: abstention\nIn PE-G: check if query's attribute subspace produces non-dominated item pairs; in MediQ: check if feedback contains new clinical facts.\n\nBT channel critique (belief update effectiveness):\n- Track task-relevant confidence scalar readout Ψ_t ∈ [0, 1]\n- z_t^U := Sign(Ψ_{t+1} − Ψ_t) ∈ {−1, 0, +1}\n- +1: agent successfully improved confidence in true state based on new observation\n- −1: belief update direction wrong or ineffective\n\n2. Margin-aware auxiliary objective\nDesign intra-trajectory likelihood-margin objective to inject critiques into policy gradient. For trajectory τ with critique labels {z_t}, define P_τ := {t : z_t = +1}, N_τ := {t : z_t = −1}. When |P_τ| > 0 and |N_τ| > 0: L̃(ω; τ) := (1/|P_τ|) Σ_{t∈P_τ} log π_{ω,t} − (1/|N_τ|) Σ_{t∈N_τ} log π_{ω,t}. This directly encourages higher log-probability for positively critiqued steps and lower for negatively critiqued steps, while satisfying the centralization property.\n\n3. Minimum-invasive advantage reweighting\nCombine auxiliary objective with standard policy gradient (PPO/GRPO): augmented gradient is ∇_ω L̃_aug(ω) ∝ E_τ [Σ_{t=0}^{H−1} (A_t + λ u_t) ∇_ω log π_{ω,t}]. Only requires additive adjustment Ã_t ← A_t + λ u_t to per-step advantage — no modification of underlying reward function or RL optimization.\n\n4. Theoretical guarantees & robustness\nProposition 4.1: AREW effectiveness determined by critique weighted accuracy Acc_Q(ω) > 1/2 — AREW works with noisy critiques (experimentally validated even at 50% noise)."
+      "heading": "Q3.1. AS channel critique signal",
+      "body": "The paper proposes AREW (Advantage Reweighing with directional critiques), injecting easy-to-obtain directional critiques to reallocate learning signals. The first key component is the AS (Action Selection) channel critique.\n\nFor query action at round t, define critique signal z_t^Q ∈ {−1, 0, +1}:\n- +1: query elicits informative feedback (e.g., reveals new evidence)\n- −1: non-informative query (repetition or 'Unknown' response)\n- 0: abstention\n\nImplementation: In PE-G, check if query's attribute subspace produces non-dominated item pairs; in MediQ, check if feedback contains new clinical facts."
+    },
+    {
+      "heading": "Q3.2. BT channel critique signal",
+      "body": "The second key component is the BT (Belief Tracking) channel critique, complementary to AS:\n\nBy tracking task-relevant confidence scalar readout Ψ_t ∈ [0, 1] (e.g., via prompting for candidate hypothesis confidence), define:\n- z_t^U := Sign(Ψ_{t+1} − Ψ_t) ∈ {−1, 0, +1}\n- +1: agent successfully improved confidence in true state based on new observation\n- −1: belief update direction wrong or ineffective"
+    },
+    {
+      "heading": "Q3.3. Margin-aware auxiliary objective",
+      "body": "To inject critique signals into policy gradient, design intra-trajectory likelihood-margin objective:\n\nFor trajectory τ with critique labels {z_t}_{t=0}^{H−1}, define positive/negative critique index sets P_τ := {t : z_t = +1}, N_τ := {t : z_t = −1}. When |P_τ| > 0 and |N_τ| > 0, the auxiliary objective is given in the formula card.\n\nThis directly encourages higher log-probability for positively critiqued steps and lower for negatively critiqued steps, while satisfying the centralization property."
+    },
+    {
+      "heading": "Q3.4. Minimum-invasive advantage reweighting",
+      "body": "Combine auxiliary objective with standard policy gradient (PPO/GRPO) to derive advantage reweighting. The augmented gradient is:\n\n∇_ω L̃_aug(ω) ∝ E_τ [Σ_{t=0}^{H−1} (A_t + λ u_t) ∇_ω log π_{ω,t}]\n\nwhere A_t is the standard advantage estimate (from outcome reward), λ > 0 is the injection strength, and u_t is the per-step coefficient:\n- u_t = 1/|P_τ| if z_t = +1\n- u_t = -1/|N_τ| if z_t = −1\n- u_t = 0 otherwise\n\nKey implementation: only requires the additive adjustment shown in the formula card to per-step advantage — no modification of underlying reward function or RL optimization.\n\nTheoretical guarantee (Proposition 4.1): as long as Acc_Q(ω) > 1/2 (critique accuracy exceeds random guess), AREW produces positive AS informativeness improvement. This means AREW does not depend on perfectly accurate critiques and is robust to noise (experimentally validated even at 50% noise)."
     },
     {
       "heading": "Q4. What experiments were run? (1/2)",
@@ -125,19 +149,19 @@
       "context": { "zh": "+1 信息性查询 / −1 非信息性 / 0 弃权", "en": "+1 informative query / −1 uninformative / 0 abstention" }
     },
     {
-      "section_index": 2,
+      "section_index": 3,
       "label": { "zh": "BT 批评信号", "en": "BT critique signal" },
       "formula": { "zh": "z_t^U := \\mathrm{Sign}(\\Psi_{t+1} - \\Psi_t) \\in \\{-1, 0, +1\\}", "en": "z_t^U := \\mathrm{Sign}(\\Psi_{t+1} - \\Psi_t) \\in \\{-1, 0, +1\\}" },
       "context": { "zh": "基于信念读出 Ψ_t 的方向性变化", "en": "Directional change of belief readout Ψ_t" }
     },
     {
-      "section_index": 2,
+      "section_index": 4,
       "label": { "zh": "边际感知辅助目标", "en": "Margin-aware auxiliary objective" },
       "formula": { "zh": "\\tilde{L}(\\omega; \\tau) := \\frac{1}{|P_\\tau|} \\sum_{t \\in P_\\tau} \\log \\pi_{\\omega,t} - \\frac{1}{|N_\\tau|} \\sum_{t \\in N_\\tau} \\log \\pi_{\\omega,t}", "en": "\\tilde{L}(\\omega; \\tau) := \\frac{1}{|P_\\tau|} \\sum_{t \\in P_\\tau} \\log \\pi_{\\omega,t} - \\frac{1}{|N_\\tau|} \\sum_{t \\in N_\\tau} \\log \\pi_{\\omega,t}" },
       "context": { "zh": "提升正批评步骤概率, 降低负批评步骤概率", "en": "Boost positive-critique log-prob, suppress negative" }
     },
     {
-      "section_index": 2,
+      "section_index": 5,
       "label": { "zh": "最小侵入式优势调整", "en": "Minimum-invasive advantage reweighting" },
       "formula": { "zh": "\\tilde{A}_t \\leftarrow A_t + \\lambda u_t", "en": "\\tilde{A}_t \\leftarrow A_t + \\lambda u_t" },
       "context": { "zh": "每步优势加 λ·u_t, 不改奖励函数", "en": "Add λ·u_t to per-step advantage, no reward function change" }
