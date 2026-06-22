@@ -32,6 +32,17 @@ const papers = defineCollection({
       z.object({ heading: z.string(), body: z.string() })
     ),
     key_takeaways: z.array(z.string()),
+    // v3.0 (2026-06-22) 加: paper slide 模板 — 重要公式卡片
+    // 关联到 sections_zh/en 的 section_index; 没有时降级回 extractPaperBullets
+    // 详见 docs/paper-slide-template.md
+    key_formulas: z.array(
+      z.object({
+        section_index: z.number().int().nonnegative(),
+        label: z.object({ zh: z.string(), en: z.string() }),
+        formula: z.object({ zh: z.string(), en: z.string() }),  // LaTeX 源码 (KaTeX 渲染)
+        context: z.object({ zh: z.string().optional(), en: z.string().optional() }).optional(),
+      })
+    ).optional(),
     // Paper metadata (slide 1 右下角元信息块用)
     published_date: z.string().optional(),         // YYYY-MM-DD
     code_url: z.string().url().optional(),         // 公开代码仓库

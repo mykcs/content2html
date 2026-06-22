@@ -117,5 +117,31 @@
   "field_small_en": "LLM Agent Active Reasoning",
   "technologies_zh": ["PPO", "GRPO", "GSPO", "方向性批评", "优势重加权", "Qwen-2.5-7B", "LLaMA-3.1-8B", "7 数据集"],
   "technologies_en": ["PPO", "GRPO", "GSPO", "Directional Critiques", "Advantage Reweighting", "Qwen-2.5-7B", "LLaMA-3.1-8B", "7 Datasets"],
+  "key_formulas": [
+    {
+      "section_index": 2,
+      "label": { "zh": "AS 批评信号", "en": "AS critique signal" },
+      "formula": { "zh": "z_t^Q \\in \\{-1, 0, +1\\}", "en": "z_t^Q \\in \\{-1, 0, +1\\}" },
+      "context": { "zh": "+1 信息性查询 / −1 非信息性 / 0 弃权", "en": "+1 informative query / −1 uninformative / 0 abstention" }
+    },
+    {
+      "section_index": 2,
+      "label": { "zh": "BT 批评信号", "en": "BT critique signal" },
+      "formula": { "zh": "z_t^U := \\mathrm{Sign}(\\Psi_{t+1} - \\Psi_t) \\in \\{-1, 0, +1\\}", "en": "z_t^U := \\mathrm{Sign}(\\Psi_{t+1} - \\Psi_t) \\in \\{-1, 0, +1\\}" },
+      "context": { "zh": "基于信念读出 Ψ_t 的方向性变化", "en": "Directional change of belief readout Ψ_t" }
+    },
+    {
+      "section_index": 2,
+      "label": { "zh": "边际感知辅助目标", "en": "Margin-aware auxiliary objective" },
+      "formula": { "zh": "\\tilde{L}(\\omega; \\tau) := \\frac{1}{|P_\\tau|} \\sum_{t \\in P_\\tau} \\log \\pi_{\\omega,t} - \\frac{1}{|N_\\tau|} \\sum_{t \\in N_\\tau} \\log \\pi_{\\omega,t}", "en": "\\tilde{L}(\\omega; \\tau) := \\frac{1}{|P_\\tau|} \\sum_{t \\in P_\\tau} \\log \\pi_{\\omega,t} - \\frac{1}{|N_\\tau|} \\sum_{t \\in N_\\tau} \\log \\pi_{\\omega,t}" },
+      "context": { "zh": "提升正批评步骤概率, 降低负批评步骤概率", "en": "Boost positive-critique log-prob, suppress negative" }
+    },
+    {
+      "section_index": 2,
+      "label": { "zh": "最小侵入式优势调整", "en": "Minimum-invasive advantage reweighting" },
+      "formula": { "zh": "\\tilde{A}_t \\leftarrow A_t + \\lambda u_t", "en": "\\tilde{A}_t \\leftarrow A_t + \\lambda u_t" },
+      "context": { "zh": "每步优势加 λ·u_t, 不改奖励函数", "en": "Add λ·u_t to per-step advantage, no reward function change" }
+    }
+  ],
   "type": "paper"
 }

@@ -6,6 +6,7 @@ import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getEntry } from "astro:content";
 import { extractPaperBullets } from "../../../../lib/paper-bullets";
 import PaperSlideBullet from "../../../../components/PaperSlideBullet.astro";
+import PaperSlideSection from "../../../../components/PaperSlideSection.astro";
 
 const entry = await getEntry("papers", "2603.12109");
 if (!entry) throw new Error("paper 2603.12109 not found in collection");
@@ -37,6 +38,12 @@ const paper = entry.data as {
   field_small_en?: string;
   technologies_zh?: string[];
   technologies_en?: string[];
+  key_formulas?: {
+    section_index: number;
+    label: { zh: string; en: string };
+    formula: { zh: string; en: string };
+    context?: { zh?: string; en?: string };
+  }[];
 };
 
 const FIG = "/content2html/figures/2603.12109";
@@ -179,23 +186,19 @@ function cleanHeading(heading: string): string {
     </div>
   </section>
 
-  <!-- Slide 6: Q3 -->
-  <section class="slide-page" data-page="5">    <div class="slide-top-accent"></div>
+  <!-- Slide 6: Q3 — v3.0 模板接入: 4 公式卡片 + section 简述 -->
+  <section class="slide-page" data-page="5">
+    <div class="slide-top-accent"></div>
     <div class="slide-meta-bar">
       <span class="meta-page">05 / 13</span>
     </div>
-
     <div class="col-span-12 flex flex-col gap-5 h-full">
-      <div>
-        <p class="kicker mb-3">Q3 · Method</p>
-        <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[2].heading)}</h2>
-      </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-7xl">
-        {extractPaperBullets(paper.sections_en[2].body).map((b) => (
-          <PaperSlideBullet bullet={b} />
-        ))}
-      </ul>
+      <PaperSlideSection
+        section={paper.sections_en[2]}
+        sectionIndex={2}
+        keyFormulas={paper.key_formulas}
+        lang="en"
+      />
     </div>
   </section>
 
