@@ -38,6 +38,8 @@ interface Props {
 const { section, sectionIndex, keyFormulas = [], lang } = Astro.props;
 const cleanHeading = section.heading.replace(/^Q\d+(?:\.\d+)?\.\s*/, "");
 const formulaKicker = lang === "zh" ? "公式" : "Formula";
+// v2 关键: 只渲染匹配当前 sectionIndex 的公式 (1 slide = 1 formula 模板目标)
+const formulasForThisSection = keyFormulas.filter((f) => f.section_index === sectionIndex);
 const bullets = extractPaperBullets(section.body);
 ---
 
@@ -47,11 +49,11 @@ const bullets = extractPaperBullets(section.body);
   <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading}</h2>
 </div>
 
-{/* 重要公式卡片 (v3.0 模板核心) */}
-{keyFormulas.length > 0 && (
+{/* 重要公式卡片 (v3.0 模板核心) — v2: 只渲染匹配当前 sectionIndex 的公式 */}
+{formulasForThisSection.length > 0 && (
   <div class="flex flex-col gap-3 max-w-6xl">
     <p class="kicker text-ikb-blue">{formulaKicker}</p>
-    {keyFormulas.map((f) => {
+    {formulasForThisSection.map((f) => {
       const formulaLatex = pickLocalized(f.formula, lang);
       const label = pickLocalized(f.label, lang);
       const context = pickLocalized(f.context ?? { zh: "", en: "" }, lang);
@@ -69,14 +71,14 @@ const bullets = extractPaperBullets(section.body);
 )}
 
 {/* 简述 (paper body 的 bullets, clamp 2 行) — v2 改: 只在没 key_formulas 时渲染, 避免 slide 溢出 */}
-{keyFormulas.length === 0 && bullets.length > 0 && (
+{formulasForThisSection.length === 0 && bullets.length > 0 && (
   <ul class="flex-1 flex flex-col gap-2 justify-start max-w-7xl overflow-y-auto">
     {bullets.map((b) => <PaperSlideBullet bullet={b} />)}
   </ul>
 )}
 
 {/* 当有 key_formulas 时, 简述 (paper body 摘要) 单独显示在底部 (一行 1 句, 不 clamp) */}
-{keyFormulas.length > 0 && (
+{formulasForThisSection.length > 0 && (
   <div class="formula-section-summary">
     {bullets.filter(b => b.kind === "title").slice(0, 4).map((b) => (
       <p class="formula-section-summary-item">{b.text}</p>
