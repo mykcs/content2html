@@ -109,6 +109,7 @@ body {
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);  /* depth on dark bg */
   border-radius: 6px;
   font-family: var(--font-serif);
+  overflow: hidden;  /* v3: 截断超 slide 高的内容 (Q3 长 slide 必备, 否则溢出 body) */
 }
 
 .slide-page.active {
