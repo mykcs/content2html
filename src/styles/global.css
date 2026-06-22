@@ -221,13 +221,16 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
   letter-spacing: 0.01em;
 }
 
-/* === Bottom meta bar (v3 layout: 顶部 kicker 全部删, arXiv + 日期到左下, 页码右下) === */
+/* === Meta bar (页码: 右下角) ===
+   2026-06-22 user 反馈: 把页码从 top-right 移到 bottom-right (经典 PowerPoint 位置)
+   - top-right 改: 不再有 meta-bar (slide-top-accent 装饰线在左上, 顶部右侧空)
+   - bottom-right: .meta-page "01 / 13" 格式 */
 .slide-meta-bar {
   position: absolute;
-  top: 32px;             /* 2026-06-21 fix: 移到 top-right (瑞士 editorial 风格, 跟 slide-top-accent 左上对称) */
+  bottom: 32px;          /* 2026-06-22 fix: 移到 bottom-right (user 反馈) */
   right: 100px;
   display: flex;
-  justify-content: flex-end;  /* 2026-06-21: 删 arxiv+date 后单 child (page) 仍贴右 */
+  justify-content: flex-end;
   align-items: baseline;
   font-family: var(--font-sans);
   font-size: var(--text-kicker);
@@ -236,6 +239,7 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
   letter-spacing: 0.1em;
   color: var(--color-graphite);
   pointer-events: none;
+  z-index: 5;  /* 高于 info-corner 避免被覆盖 */
 }
 
 .slide-meta-bar a {
@@ -617,10 +621,10 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
     max-width: 246px !important; /* 屏 420 × 0.585 */
   }
   .slide-page .slide-meta-bar {
-    top: 19px !important;       /* 屏 32 × 0.585 (跟屏幕 top-right 对齐) */
-    right: 58px !important;     /* 屏 100 × 0.585 */
+    top: auto !important;        /* 2026-06-22 fix: 屏幕 + print 都 bottom-right */
+    bottom: 19px !important;     /* 屏 32 × 0.585 */
+    right: 58px !important;      /* 屏 100 × 0.585 */
     left: auto !important;
-    bottom: auto !important;
   }
 
   /* Figure slides: 取消 flex: 1 (flex-1 让 figure grow 到 flex container, 覆盖 max-height)
