@@ -191,9 +191,9 @@ function cleanHeading(heading: string): string {
         <hr class="accent-bar mb-6" />
         <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_zh[2].heading)}</h2>
       </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-7xl">
-        {extractPaperBullets(paper.sections_zh[2].body).map((b, i) => (
-          <PaperSlideBullet bullet={b} index={b.kind === "formula" ? i : undefined} />
+      <ul class="flex-1 flex flex-col gap-1 justify-center max-w-7xl">
+        {extractPaperBullets(paper.sections_zh[2].body).map((b) => (
+          <PaperSlideBullet bullet={b} />
         ))}
       </ul>
     </div>
