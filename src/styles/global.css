@@ -525,14 +525,25 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
     border-radius: 0 !important;
     margin: 0 !important;
     overflow: hidden !important;
-    /* Page break */
-    page-break-after: always !important;
-    break-after: page !important;
+    /* ⚠️ 2026-06-22 fix: Use `break-before: page` on slides 2-13 instead of
+       `break-after: page` on all slides. The latter forces a trailing blank
+       page in real browser print pipeline (user reports 14 pages, expected 13).
+       Same visual result, no trailing blank. */
+    page-break-after: auto !important;
+    break-after: auto !important;
     /* Position override (screen 是 absolute + translate) */
     position: relative !important;
     top: auto !important;
     left: auto !important;
     transform: none !important;
+  }
+
+  /* Force page break BEFORE slides 2-13 (skip first slide via adjacent sibling).
+     Adjacent sibling combinator `+` only matches if both are .slide-page.
+     break-before on first slide does nothing (already at page 1). */
+  .slide-page + .slide-page {
+    page-break-before: always !important;
+    break-before: page !important;
   }
 
   /* Absolute-positioned 装饰元素: 按 scale 0.5846 缩放 (override screen px 值) */
@@ -575,23 +586,10 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
   }
 
   .slide-page:last-child {
-    /* ⚠️ 2026-06-22 fix: keep `break-after: page` on last slide too.
-       Was `auto` before, but Chrome print pipeline adds 1 trailing blank page
-       when last content element doesn't explicitly end the print sequence
-       (verified via real-browser print, Playwright page.pdf() doesn't reproduce
-       but user reports 14 pages vs expected 13).
-       Forcing page-break on slide 13 ensures clean PDF end at page 13. */
-    page-break-after: always !important;
-    break-after: page !important;
-  }
-
-  /* Prevent trailing blank page: tell browser print sequence ends here.
-     Without this, Chrome may emit extra page after the last explicit break. */
-  body::after {
-    content: "";
-    display: block;
-    break-after: avoid;
-    page-break-after: avoid;
+    /* Default: allow natural end (slide 13 = last page). Don't force break-after here
+       to avoid creating trailing blank page in some browser print pipelines. */
+    page-break-after: auto;
+    break-after: auto;
   }
 
   /* Scale px-based borders/padding/widths that don't cascade from html font-size
