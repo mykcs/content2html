@@ -1,7 +1,8 @@
 ---
 // src/pages/en/paper/2606.18246/slide.astro
-// paper-mode: English slide version (horizontal pagination)
-// Migrated to Astro content collection (getEntry) — see src/content.config.ts
+// paper-mode: English slide (horizontal pagination) — 6 Q&A (Title + 5 sections from paper)
+// Template style: aligned with 2603.12109 (Title + Info-Corner + Q&A with extractBullets)
+// v3.2 aesthetic upgrade: Swiss editorial signature (accent-bar + kicker + top-accent)
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getEntry } from "astro:content";
 import { scholarlyArticleLd } from "../../../../lib/json-ld";
@@ -20,6 +21,28 @@ const paper = entry.data as {
   sections_en: { heading: string; body: string }[];
   key_takeaways: string[];
 };
+
+// Extract "1./2./3. xxx" bullet titles from body, drop long paragraphs
+function extractBullets(body: string): string[] {
+  const out: string[] = [];
+  const numbered = body.match(/^\d+\.\s+[^\n]+/gm);
+  if (numbered) out.push(...numbered.map((s) => s.trim()));
+  return out;
+}
+
+// Strip "1." / "Q1." prefix from heading (kicker already labels position)
+function cleanHeading(heading: string): string {
+  return heading.replace(/^\d+\.\s*/, "").replace(/^Q\d+(?:\.\d+)?\.\s*/, "");
+}
+
+// Q&A kicker labels
+const KICKERS = [
+  "Q1 · Problem",           // sections_en[0]
+  "Q2 · Method",            // sections_en[1]
+  "Q3 · Experiments",       // sections_en[2]
+  "Q4 · Analysis",          // sections_en[3]
+  "Q5 · Summary",           // sections_en[4]
+];
 ---
 <BaseLayout
   title={`${paper.title_en} | paper-slide`}
@@ -28,41 +51,138 @@ const paper = entry.data as {
   productType="slide"
   jsonLd={scholarlyArticleLd(paper, "en")}
 >
+  <!-- Slide 1: Title + Info Corner -->
   <section class="slide-page active" data-page="1">
-    <div class="col-span-12 flex flex-col justify-center">
-      <p class="text-caption text-gray-rule">arXiv: {paper.arxiv_id ?? paper.id}</p>
-      <h1 class="text-display font-sans font-bold mt-4">{paper.title_en}</h1>
-      <hr class="swiss-rule my-6" />
-      <p class="text-body text-graphite">{paper.authors.join(" · ")}</p>
+    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span class="meta-page">01 / 06</span>
     </div>
+
+    <div class="col-span-12 flex flex-col justify-center items-center text-center gap-6">
+      <hr class="accent-bar" />
+      <h1 class="text-headline font-sans font-bold leading-tight max-w-6xl">{paper.title_en}</h1>
+      <hr class="swiss-rule w-40" />
+      <p class="text-body leading-relaxed max-w-6xl">{paper.authors.join(" · ")}</p>
+    </div>
+
+    <!-- Slide 1 left-bottom info corner: arXiv / sections / takeaways / topic / scale -->
+    <aside class="slide-info-corner" aria-label="Paper metadata">
+      <dl>
+        <dt>arXiv</dt>
+        <dd><a href={`https://arxiv.org/abs/${paper.arxiv_id ?? paper.id}`} target="_blank" rel="noopener noreferrer">{paper.arxiv_id ?? paper.id}</a></dd>
+        <dt>Sections</dt>
+        <dd>{paper.sections_en.length} sections</dd>
+        <dt>Takeaways</dt>
+        <dd>{paper.key_takeaways.length} items</dd>
+        <dt>Topic</dt>
+        <dd>Non-uniform width Transformer (×-shaped &gt;&lt;former)</dd>
+        <dt>Scale</dt>
+        <dd>200M to 3B params (dense + MoE)</dd>
+      </dl>
+    </aside>
   </section>
 
+  <!-- Slide 2: Abstract (one-liner + full) -->
   <section class="slide-page" data-page="2">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
-      <h2 class="col-span-12 text-headline font-sans">Abstract</h2>
-      <p class="col-span-10 col-start-2 text-body leading-relaxed">{paper.abstract_en}</p>
+    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span class="meta-page">02 / 06</span>
+    </div>
+
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">Abstract</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight mb-4">One-liner</h2>
+      </div>
+      <p class="caption flex-shrink-0">×-shaped (&gt;&lt;former) architecture: keep early/late layers wide, compress middle layers as a parameter-free bottleneck. Saves 22% FLOPs + 15% KV cache, with lower loss than parameter-matched uniform baselines on 200M-3B models.</p>
+      <div class="flex-1 flex items-center">
+        <p class="text-body leading-relaxed max-w-6xl">{paper.abstract_en}</p>
+      </div>
     </div>
   </section>
 
+  <!-- Slide 3: Q1 Problem -->
   <section class="slide-page" data-page="3">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
-      <h2 class="col-span-12 text-headline font-sans">Key Contributions</h2>
-      <ul class="col-span-10 col-start-2 space-y-3 text-body">
-        {paper.key_takeaways.map((t) => (
-          <li class="border-l-4 border-ikb-blue pl-4">{t}</li>
+    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span class="meta-page">03 / 06</span>
+    </div>
+
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">{KICKERS[0]}</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[0].heading)}</h2>
+      </div>
+      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-7xl">
+        {extractBullets(paper.sections_en[0].body).map((b) => (
+          <li class="takeaway-item">{b}</li>
         ))}
       </ul>
     </div>
   </section>
 
+  <!-- Slide 4: Q2 Method -->
   <section class="slide-page" data-page="4">
-    <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
-      <h2 class="col-span-12 text-headline font-sans">Section Overview</h2>
-      <ol class="col-span-10 col-start-2 space-y-2 text-body">
-        {paper.sections_en.map((s) => (
-          <li><strong>{s.heading}</strong> — {s.body.slice(0, 60)}…</li>
+    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span class="meta-page">04 / 06</span>
+    </div>
+
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">{KICKERS[1]}</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[1].heading)}</h2>
+      </div>
+      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-7xl">
+        {extractBullets(paper.sections_en[1].body).map((b) => (
+          <li class="takeaway-item">{b}</li>
         ))}
-      </ol>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Slide 5: Q3 Experiments -->
+  <section class="slide-page" data-page="5">
+    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span class="meta-page">05 / 06</span>
+    </div>
+
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">{KICKERS[2]}</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[2].heading)}</h2>
+      </div>
+      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-7xl">
+        {extractBullets(paper.sections_en[2].body).map((b) => (
+          <li class="takeaway-item">{b}</li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Slide 6: Q4 Analysis -->
+  <section class="slide-page" data-page="6">
+    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span class="meta-page">06 / 06</span>
+    </div>
+
+    <div class="col-span-12 flex flex-col gap-5 h-full">
+      <div>
+        <p class="kicker mb-3">{KICKERS[3]}</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[3].heading)}</h2>
+      </div>
+      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-7xl">
+        {extractBullets(paper.sections_en[3].body).map((b) => (
+          <li class="takeaway-item">{b}</li>
+        ))}
+      </ul>
     </div>
   </section>
 </BaseLayout>
