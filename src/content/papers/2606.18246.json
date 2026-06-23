@@ -63,5 +63,13 @@
     "中间层瓶颈结构产生定性不同的残差流表征（更紧凑、更聚焦）",
     "挑战「层宽应均匀」的默认假设，为资源高效大模型设计提供新路径"
   ],
+  "key_formulas": [
+    {
+      "section_index": 1,
+      "label": { "zh": "宽度函数", "en": "Width function" },
+      "formula": { "zh": "w(l) = d \\cdot \\varphi(l)", "en": "w(l) = d \\cdot \\varphi(l)" },
+      "context": { "zh": "首尾层 φ(l)=1, 中间层 φ(l)≈0.5 形成瓶颈", "en": "early/late φ(l)=1, middle φ(l)≈0.5 (bottleneck)" }
+    }
+  ],
   "type": "paper"
 }
