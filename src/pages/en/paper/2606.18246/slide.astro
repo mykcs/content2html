@@ -5,7 +5,7 @@
 // v3.2 aesthetic upgrade: Swiss editorial signature (accent-bar + kicker + top-accent)
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getEntry } from "astro:content";
-import { scholarlyArticleLd } from "../../../../lib/json-ld";
+import PaperSlideSection from "../../../../components/PaperSlideSection.astro";
 
 const entry = await getEntry("papers", "2606.18246");
 if (!entry) throw new Error("paper 2606.18246 not found in collection");
@@ -20,6 +20,12 @@ const paper = entry.data as {
   sections_zh: { heading: string; body: string }[];
   sections_en: { heading: string; body: string }[];
   key_takeaways: string[];
+  key_formulas?: {
+    section_index: number;
+    label: { zh: string; en: string };
+    formula: { zh: string; en: string };
+    context?: { zh?: string; en?: string };
+  }[];
 };
 
 // Extract "1./2./3. xxx" bullet titles from body, drop long paragraphs
@@ -49,7 +55,6 @@ const KICKERS = [
   description={paper.abstract_en}
   lang="en"
   productType="slide"
-  jsonLd={scholarlyArticleLd(paper, "en")}
 >
   <!-- Slide 1: Title + Info Corner -->
   <section class="slide-page active" data-page="1">
@@ -123,24 +128,19 @@ const KICKERS = [
     </div>
   </section>
 
-  <!-- Slide 4: Q2 Method -->
+  <!-- Slide 4: Q2 Method — v3.3 template: width function formula card -->
   <section class="slide-page" data-page="4">
     <div class="slide-top-accent"></div>
     <div class="slide-meta-bar">
       <span class="meta-page">04 / 06</span>
     </div>
-
     <div class="col-span-12 flex flex-col gap-5 h-full">
-      <div>
-        <p class="kicker mb-3">{KICKERS[1]}</p>
-        <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[1].heading)}</h2>
-      </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-7xl">
-        {extractBullets(paper.sections_en[1].body).map((b) => (
-          <li class="takeaway-item">{b}</li>
-        ))}
-      </ul>
+      <PaperSlideSection
+        section={paper.sections_en[1]}
+        sectionIndex={1}
+        keyFormulas={paper.key_formulas}
+        lang="en"
+      />
     </div>
   </section>
 
