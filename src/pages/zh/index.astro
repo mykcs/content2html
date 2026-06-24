@@ -2,6 +2,10 @@
 // src/pages/zh/index.astro - 中文版导航页（zh 路由）
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { webSiteLd } from "../../lib/json-ld";
+import { getCollection } from "astro:content";
+
+const papers = (await getCollection("papers")) as Array<{ id: string; data: { title_zh?: string; title_en?: string; published_date?: string } }>;
+const lang = "zh";
 ---
 <BaseLayout
   title="content2html"
@@ -25,8 +29,19 @@ import { webSiteLd } from "../../lib/json-ld";
       </ul>
     </section>
     <section>
+      <h2>已生成 Papers</h2>
+      <ul>
+        {papers.map((p) => (
+          <li>
+            <a href={`/${lang}/paper/${p.id}/slide/`}>{p.data.title_zh ?? p.data.title_en}</a>
+            {p.data.published_date && <span class="caption"> · {p.data.published_date}</span>}
+          </li>
+        ))}
+      </ul>
+    </section>
+    <section>
       <h2>状态</h2>
-      <p>SKILL.md (主入口 trigger <code>/content2html</code>) 已上线，MVP 完成 + 部署到 <a href="/content2html/zh/paper/2606.18246/slide/">/zh/paper/2606.18246/slide/</a>。</p>
+      <p>SKILL.md (主入口 trigger <code>/content2html</code>) 已上线，MVP 完成 + 部署到 <code>/content2html/zh/paper/{papers[0]?.id ?? "2606.18246"}/slide/</code>。</p>
     </section>
   </main>
 </BaseLayout>

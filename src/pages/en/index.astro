@@ -2,6 +2,10 @@
 // src/pages/en/index.astro - English navigation page (en route)
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { webSiteLd } from "../../lib/json-ld";
+import { getCollection } from "astro:content";
+
+const papers = (await getCollection("papers")) as Array<{ id: string; data: { title_zh?: string; title_en?: string; published_date?: string } }>;
+const lang = "en";
 ---
 <BaseLayout
   title="content2html"
@@ -25,8 +29,19 @@ import { webSiteLd } from "../../lib/json-ld";
       </ul>
     </section>
     <section>
+      <h2>Generated Papers</h2>
+      <ul>
+        {papers.map((p) => (
+          <li>
+            <a href={`/${lang}/paper/${p.id}/slide/`}>{p.data.title_en ?? p.data.title_zh}</a>
+            {p.data.published_date && <span class="caption"> · {p.data.published_date}</span>}
+          </li>
+        ))}
+      </ul>
+    </section>
+    <section>
       <h2>Status</h2>
-      <p>SKILL.md (main entry, trigger <code>/content2html</code>) is live. MVP deployed with <a href="/content2html/en/paper/2606.18246/slide/">paper slide sample</a> and <a href="/content2html/en/paper/2606.18246/summary/">paper summary sample</a>.</p>
+      <p>SKILL.md (main entry, trigger <code>/content2html</code>) is live. MVP deployed with <a href={`/content2html/en/paper/${papers[0]?.id ?? "2606.18246"}/slide/`}>paper slide sample</a> and <a href={`/content2html/en/paper/${papers[0]?.id ?? "2606.18246"}/summary/`}>paper summary sample</a>.</p>
     </section>
   </main>
 </BaseLayout>

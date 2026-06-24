@@ -63,6 +63,33 @@
     "中间层瓶颈结构产生定性不同的残差流表征（更紧凑、更聚焦）",
     "挑战「层宽应均匀」的默认假设，为资源高效大模型设计提供新路径"
   ],
+  "title_full_en": "Variable-Width Transformers",
+  "published_date": "2026-06-22",
+  "code_url": "https://github.com/woody-yc/variable-width-transformers",
+  "venue": "ICML 2026",
+  "venue_rank": "Poster",
+  "venue_url": "https://icml.cc",
+  "category": "cs.LG",
+  "authors_with_affil_en": [
+    { "name": "Zhaofeng Wu", "affil": ["MIT"] },
+    { "name": "Oliver Sieberling", "affil": ["MIT"] },
+    { "name": "Shawn Tan", "affil": ["MIT"] },
+    { "name": "Rameswar Panda", "affil": ["MIT-IBM Watson AI Lab"] },
+    { "name": "Yury Polyanskiy", "affil": ["MIT"] },
+    { "name": "Yoon Kim", "affil": ["MIT"] }
+  ],
+  "affiliations_en": [
+    "MIT",
+    "MIT-IBM Watson AI Lab"
+  ],
+  "field_large_zh": "计算机科学",
+  "field_large_en": "Computer Science",
+  "field_medium_zh": "机器学习 / Transformer 架构",
+  "field_medium_en": "ML / Transformer Architecture",
+  "field_small_zh": "非均匀宽度扩展",
+  "field_small_en": "Nonuniform Width Scaling",
+  "technologies_zh": ["Transformer", "Decoder-only LM", "200M-3B 参数", "SlimPajama", "The Pile"],
+  "technologies_en": ["Transformer", "Decoder-only LM", "200M-3B params", "SlimPajama", "The Pile"],
   "key_formulas": [
     {
       "section_index": 1,
