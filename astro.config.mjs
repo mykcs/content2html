@@ -15,7 +15,10 @@ export default defineConfig({
   base: '/content2html',
   integrations: [
     sitemap({
-      filter: (page) => !page.endsWith('/404/'),
+      // F-P1 (2026-06-24): exclude bare root redirector + 404 pages
+      // bare root = Astro.redirect() → 356-byte meta-refresh HTML with <meta name="robots" content="noindex">
+      // including noindex URL in sitemap = SEO contradiction (sitemap says indexable, page says noindex)
+      filter: (page) => !page.endsWith('/404/') && !page.endsWith('/content2html/'),
     }),
   ],
   prefetch: { prefetchAll: true, defaultStrategy: 'hover' },

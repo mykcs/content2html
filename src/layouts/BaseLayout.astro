@@ -119,14 +119,14 @@ const iconUrl = `${baseUrl}/icons/translate.svg`;
           target="_blank"
           rel="noopener noreferrer"
           class="dev-btn flex items-center gap-2 px-2.5 py-1.5 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors shadow-md no-underline"
-          title="开发 (GitHub Actions) — 点击查看 build 状态"
+          title={lang === "en" ? "Dev (GitHub Actions) — click to view build status" : "开发 (GitHub Actions) — 点击查看 build 状态"}
           aria-label="GitHub Actions build status"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="10"></circle>
             <polygon points="10 8 16 12 10 16 10 8"></polygon>
           </svg>
-          <span class="text-[11px] font-semibold uppercase tracking-wider">开发</span>
+          <span class="text-[11px] font-semibold uppercase tracking-wider">{lang === "en" ? "Dev" : "开发"}</span>
           <span class="h-3.5 w-px bg-white/25" aria-hidden="true"></span>
           <img
             src="https://github.com/mykcs/content2html/actions/workflows/deploy.yml/badge.svg?branch=main&style=flat-square"
