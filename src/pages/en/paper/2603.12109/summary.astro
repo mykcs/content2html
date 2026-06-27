@@ -25,7 +25,7 @@ const paper = entry.data as {
   description={paper.abstract_en}
   lang="en"
   productType="longform"
-  jsonLd={scholarlyArticleLd(paper, "en")}
+  jsonLd={scholarlyArticleLd(paper, "en", entry.id)}
 >
   <article>
     <header>

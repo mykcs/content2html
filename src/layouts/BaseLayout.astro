@@ -56,7 +56,10 @@ const iconUrl = `${baseUrl}/icons/translate.svg`;
     {/* Canonical + hreflang alternates
         ⚠️ 2026-06-22 fix: Astro.site 已是 https://mykcs.github.io/content2html/ (含 base).
            Astro.url.pathname 也含 base (/content2html/zh/...). 直接拼接导致双前缀.
-           用 new URL(pathname, site) 让 URL constructor 自动处理 base 关系. */}
+           用 new URL(pathname, site) 让 URL constructor 自动处理 base 关系.
+        ⚠️ 2026-06-27 fix (P0 #1): 之前用 `${baseUrl}${suffix}/` (suffix 以 / 开头),
+           导致 output 为 /content2html/paper/X/slide// (双尾斜杠). 修复: 让 suffix
+           永远以 / 结尾 (去重), 然后 baseUrl 不带尾 /, 拼接 = 单 / 分隔. */}
     {(() => {
       const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, "");
       const siteUrl = (Astro.site ?? new URL("https://mykcs.github.io")).toString().replace(/\/$/, "");
@@ -64,7 +67,9 @@ const iconUrl = `${baseUrl}/icons/translate.svg`;
       const pathWithoutLocale = Astro.url.pathname
         .replace(new RegExp(`^${baseUrl}/?(en|zh)?`), "")
         .replace(/^\//, "") || "/";
-      const suffix = pathWithoutLocale === "/" ? "" : "/" + pathWithoutLocale;
+      // suffix 保证末尾有 /, 开头不带 / (避免与 baseUrl 拼出 //)
+      const trimmedPath = pathWithoutLocale.replace(/\/$/, "");
+      const suffix = trimmedPath === "" ? "" : "/" + trimmedPath;
       const enHref = new URL(`${baseUrl}/en${suffix}/`, Astro.site ?? siteUrl).toString();
       const zhHref = new URL(`${baseUrl}${suffix}/`, Astro.site ?? siteUrl).toString();
       return (

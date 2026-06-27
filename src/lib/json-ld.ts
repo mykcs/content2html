@@ -43,11 +43,16 @@ const SITE_URL = "https://mykcs.github.io/content2html";
  *   - publisher / provider (arxiv)
  *   - sameAs (arxiv URL)
  */
-export function scholarlyArticleLd(paper: PaperLike, lang: "zh" | "en"): Record<string, unknown> {
+// P1 #1 fix (2026-06-27): pass entry.id (filename slug from glob loader) explicitly.
+// Previous code used paper.id, but the JSON files don't have an `id` field —
+// the id is auto-generated from filename by `glob()` loader (src/content.config.ts).
+// Inline-passing entry.id avoids the "url":...paper/undefined/slide/ bug.
+// sameAs still uses arxiv_id (correct); only url was broken.
+export function scholarlyArticleLd(paper: PaperLike, lang: "zh" | "en", entryId: string): Record<string, unknown> {
   const isEn = lang === "en";
   const title = isEn ? paper.title_en : paper.title_zh;
   const abstract = isEn ? paper.abstract_en : paper.abstract_zh;
-  const arxivId = paper.arxiv_id ?? paper.id;
+  const arxivId = paper.arxiv_id ?? paper.id ?? entryId;
   const arxivUrl = `https://arxiv.org/abs/${arxivId}`;
 
   // authors_with_affil_en (English locale) preferred over flat authors array
@@ -59,6 +64,14 @@ export function scholarlyArticleLd(paper: PaperLike, lang: "zh" | "en"): Record<
       }))
     : paper.authors.map((name) => ({ "@type": "Person", name }));
 
+  // P1 #1 fix (2026-06-27): destructure entry.id before template literal use.
+  // Previous code used paper.id directly inside the template string but the
+  // ScholarlyArticle consumer (src/pages/.../paper/*/slide.astro) passed the
+  // paper object whose `id` field was undefined for some code paths, producing
+  // URLs like /paper/undefined/slide/. Explicit destructure surfaces the issue
+  // and removes the ambiguity. entryId is passed by the caller (filename slug).
+  const paperId = entryId || paper.id;
+
   const ld: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "ScholarlyArticle",
@@ -69,7 +82,7 @@ export function scholarlyArticleLd(paper: PaperLike, lang: "zh" | "en"): Record<
     isAccessibleForFree: true,
     author: authors,
     inLanguage: isEn ? "en" : "zh",
-    url: `${SITE_URL}/${lang}/paper/${paper.id}/slide/`,
+    url: `${SITE_URL}/${lang}/paper/${paperId}/slide/`,
     sameAs: arxivUrl,
     identifier: arxivId,
     provider: { "@type": "Organization", name: "arXiv", url: "https://arxiv.org" },

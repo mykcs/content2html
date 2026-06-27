@@ -17,13 +17,19 @@ import { chromium } from 'playwright';
 import { writeFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 
-const SLIDE_COUNT = parseInt(process.env.SLIDE_COUNT || '16');  // 2026-06-22: was 13, actual site has 16 slides
 const URL = process.env.URL || 'https://mykcs.github.io/content2html/zh/paper/2603.12109/slide/';
 
 const browser = await chromium.launch();
 const page = await browser.newPage();
 await page.goto(URL, { waitUntil: 'networkidle' });
 await page.waitForTimeout(1500);
+
+// P1 #3 fix (2026-06-27): auto-detect slide count from DOM (.slide-page elements).
+// Fallback to env var SLIDE_COUNT or default 16 for back-compat.
+// 2026-06-22: was hardcoded 16, breaks for 2606.18246 (6 slides) or progress (5 slides).
+const SLIDE_COUNT = process.env.SLIDE_COUNT
+  ? parseInt(process.env.SLIDE_COUNT, 10)
+  : await page.locator('.slide-page').count();
 
 // 1. Page count via Playwright page.pdf()
 const buf = await page.pdf({

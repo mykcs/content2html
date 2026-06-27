@@ -75,7 +75,7 @@ function cleanHeading(heading: string): string {
   description={paper.abstract_zh}
   lang="zh"
   productType="slide"
-  jsonLd={scholarlyArticleLd(paper, "zh")}
+  jsonLd={scholarlyArticleLd(paper, "zh", entry.id)}
 >
   <!-- Slide 1: Title (完整英文 title + 英文作者 + 英文单位) -->
   <section class="slide-page active" data-page="1">    <div class="slide-top-accent"></div>

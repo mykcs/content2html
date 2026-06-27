@@ -2,6 +2,7 @@
 // src/pages/zh/progress/2026-06-17/slide.astro
 // progress-mode: 中文 slide 版本 (横向翻页, 5 页: title/done/doing/next/metrics)
 // 改用 Astro content collection (getEntry) — 见 src/content.config.ts
+// P1 #2 fix (2026-06-27): 加 meta-page 块, 跟 paper slide 一致
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { articleLd } from "../../../../lib/json-ld";
 import { getEntry } from "astro:content";
@@ -17,6 +18,8 @@ const p = entry.data as {
   next: [string, string, string][];
   metrics?: Record<string, string>;
 };
+
+const TOTAL_SLIDES = 5;
 ---
 <BaseLayout
   title={`${p.project_name} | progress-slide`}
@@ -26,6 +29,10 @@ const p = entry.data as {
   jsonLd={articleLd(p, "zh")}
 >
   <section class="slide-page active" data-page="1">
+    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span class="meta-page">01 / {String(TOTAL_SLIDES).padStart(2, "0")}</span>
+    </div>
     <div class="col-span-12 flex flex-col justify-center">
       <p class="text-caption text-gray-rule">{p.period}</p>
       <h1 class="text-display font-sans font-bold mt-4">{p.project_name}</h1>
@@ -35,6 +42,10 @@ const p = entry.data as {
   </section>
 
   <section class="slide-page" data-page="2">
+    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span class="meta-page">02 / {String(TOTAL_SLIDES).padStart(2, "0")}</span>
+    </div>
     <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
       <h2 class="col-span-12 text-headline font-sans">Done (已完成)</h2>
       <ol class="col-span-10 col-start-2 space-y-2 text-body">
@@ -44,6 +55,10 @@ const p = entry.data as {
   </section>
 
   <section class="slide-page" data-page="3">
+    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span class="meta-page">03 / {String(TOTAL_SLIDES).padStart(2, "0")}</span>
+    </div>
     <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
       <h2 class="col-span-12 text-headline font-sans">Doing (进行中)</h2>
       <ul class="col-span-10 col-start-2 space-y-3 text-body">
@@ -53,6 +68,10 @@ const p = entry.data as {
   </section>
 
   <section class="slide-page" data-page="4">
+    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span class="meta-page">04 / {String(TOTAL_SLIDES).padStart(2, "0")}</span>
+    </div>
     <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
       <h2 class="col-span-12 text-headline font-sans">Next (计划中)</h2>
       <table class="col-span-12 text-body">
@@ -77,6 +96,10 @@ const p = entry.data as {
   </section>
 
   <section class="slide-page" data-page="5">
+    <div class="slide-top-accent"></div>
+    <div class="slide-meta-bar">
+      <span class="meta-page">05 / {String(TOTAL_SLIDES).padStart(2, "0")}</span>
+    </div>
     <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
       <h2 class="col-span-12 text-headline font-sans">Metrics (指标)</h2>
       <dl class="col-span-10 col-start-2 grid grid-cols-2 gap-4 text-body">

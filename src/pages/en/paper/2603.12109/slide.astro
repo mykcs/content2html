@@ -2,6 +2,7 @@
 // src/pages/en/paper/2603.12109/slide.astro
 // paper-mode: English slide (horizontal pagination) — 8 Q&A + 4 figures
 // v2 aesthetic upgrade: typography +25%, Swiss editorial signature
+// P2 #1 fix (2026-06-27): 删除 AUTHOR_SUP, 用 inline .map (跟 zh slide 一致)
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getEntry } from "astro:content";
 import { scholarlyArticleLd } from "../../../../lib/json-ld";
@@ -49,9 +50,7 @@ const FIG = `${import.meta.env.BASE_URL}/figures/2603.12109`;
 const TITLE_EN = paper.title_full_en ?? paper.title_en;
 const AUTHORS_EN = paper.authors_with_affil_en ?? paper.authors.map((n) => ({ name: n, affil: [] as string[] }));
 const AFFILS_EN: string[] = paper.affiliations_en ?? Array.from(new Set(AUTHORS_EN.flatMap((a) => a.affil)));
-const AUTHOR_SUP: string[] = AUTHORS_EN.map((a) =>
-  a.affil.map((x) => String(AFFILS_EN.indexOf(x) + 1)).join(",")
-);
+// (AUTHOR_SUP 已删除 2026-06-27 — 跟 zh slide 一致, 改用 inline .map. F7 P2 #1 cleanup)
 
 // 精简 PPT: extract "1./2./3. xxx" bullet titles from body, drop long paragraphs
 // Honors "slides should have minimal text" PPT design principle
@@ -78,7 +77,7 @@ function cleanHeading(heading: string): string {
   description={paper.abstract_en}
   lang="en"
   productType="slide"
-  jsonLd={scholarlyArticleLd(paper, "en")}
+  jsonLd={scholarlyArticleLd(paper, "en", entry.id)}
 >
   <!-- Slide 1: Title (full English title + English authors + English affiliations) -->
   <section class="slide-page active" data-page="1">    <div class="slide-top-accent"></div>
@@ -91,7 +90,7 @@ function cleanHeading(heading: string): string {
       <h1 class="text-headline font-sans font-bold leading-tight max-w-6xl">{TITLE_EN}</h1>
       <hr class="swiss-rule w-40" />
       <p class="text-body leading-relaxed max-w-6xl">
-        {AUTHORS_EN.map((a, i) => <><span class="author-name">{a.name}</span><sup class="text-caption text-ikb-blue">{AUTHOR_SUP[i]}</sup>{i < AUTHORS_EN.length - 1 ? " · " : ""}</>)}
+        {AUTHORS_EN.map((a, i) => <><span class="author-name">{a.name}</span><sup class="text-caption text-ikb-blue">{a.affil.map((x) => String(AFFILS_EN.indexOf(x) + 1)).join(",")}</sup>{i < AUTHORS_EN.length - 1 ? " · " : ""}</>)}
       </p>
       <ol class="text-caption text-graphite leading-relaxed list-none max-w-6xl text-left mt-2">
         {AFFILS_EN.map((aff, idx) => <li><sup class="text-ikb-blue font-semibold">{idx + 1}</sup> {aff}</li>)}
