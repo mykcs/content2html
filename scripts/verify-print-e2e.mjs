@@ -24,12 +24,28 @@ const page = await browser.newPage();
 await page.goto(URL, { waitUntil: 'networkidle' });
 await page.waitForTimeout(1500);
 
-// P1 #3 fix (2026-06-27): auto-detect slide count from DOM (.slide-page elements).
-// Fallback to env var SLIDE_COUNT or default 16 for back-compat.
-// 2026-06-22: was hardcoded 16, breaks for 2606.18246 (6 slides) or progress (5 slides).
-const SLIDE_COUNT = process.env.SLIDE_COUNT
-  ? parseInt(process.env.SLIDE_COUNT, 10)
-  : await page.locator('.slide-page').count();
+// P1 #3 fix (2026-06-27): SLIDE_COUNT is REQUIRED (no DOM auto-detect, no default).
+// DOM auto-detect via page.locator('.slide-page').count() was tried previously but
+// fails for paper slides that have <section class="slide-page"> inside map() loops
+// or inside component-rendered markup where Playwright counts nested/extra nodes.
+// SLIDE_COUNT is the single source of truth — caller must pass it explicitly
+// matching the actual slide count in the slide.astro source (e.g. 16 for 2603.12109,
+// 6 for 2606.18246, 5 for progress 2026-06-17).
+const rawSlideCount = process.env.SLIDE_COUNT;
+if (!rawSlideCount) {
+  console.error('❌ SLIDE_COUNT env var is required.');
+  console.error('   Usage: SLIDE_COUNT=16 node scripts/verify-print-e2e.mjs');
+  console.error('   Known slide counts:');
+  console.error('     - 2603.12109 paper slide: 16');
+  console.error('     - 2606.18246 paper slide: 6');
+  console.error('     - progress 2026-06-17 slide: 5');
+  process.exit(2);
+}
+const SLIDE_COUNT = parseInt(rawSlideCount, 10);
+if (!Number.isFinite(SLIDE_COUNT) || SLIDE_COUNT <= 0) {
+  console.error(`❌ SLIDE_COUNT must be a positive integer, got: ${rawSlideCount}`);
+  process.exit(2);
+}
 
 // 1. Page count via Playwright page.pdf()
 const buf = await page.pdf({

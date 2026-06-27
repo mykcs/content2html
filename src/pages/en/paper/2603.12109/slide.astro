@@ -2,7 +2,6 @@
 // src/pages/en/paper/2603.12109/slide.astro
 // paper-mode: English slide (horizontal pagination) — 8 Q&A + 4 figures
 // v2 aesthetic upgrade: typography +25%, Swiss editorial signature
-// P2 #1 fix (2026-06-27): 删除 AUTHOR_SUP, 用 inline .map (跟 zh slide 一致)
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getEntry } from "astro:content";
 import { scholarlyArticleLd } from "../../../../lib/json-ld";
@@ -50,7 +49,6 @@ const FIG = `${import.meta.env.BASE_URL}/figures/2603.12109`;
 const TITLE_EN = paper.title_full_en ?? paper.title_en;
 const AUTHORS_EN = paper.authors_with_affil_en ?? paper.authors.map((n) => ({ name: n, affil: [] as string[] }));
 const AFFILS_EN: string[] = paper.affiliations_en ?? Array.from(new Set(AUTHORS_EN.flatMap((a) => a.affil)));
-// (AUTHOR_SUP 已删除 2026-06-27 — 跟 zh slide 一致, 改用 inline .map. F7 P2 #1 cleanup)
 
 // 精简 PPT: extract "1./2./3. xxx" bullet titles from body, drop long paragraphs
 // Honors "slides should have minimal text" PPT design principle
