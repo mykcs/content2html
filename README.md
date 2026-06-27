@@ -1,3 +1,5 @@
+> 📌 This is a public repository. To make it private, navigate to **Settings → Danger Zone → Change repository visibility → Make private**. Visibility changes are reversible but may affect external links and forks.
+
 # content2html
 
 > **内容 (arxiv paper / 本地 progress) → HTML (slide + long-form)**
