@@ -1,0 +1,17 @@
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Robots-Tag: noindex
+
+/*
+  Content-Security-Policy: default-src 'self'; img-src 'self' https://mykcs.github.io https://cdn.jsdelivr.net https://arxiv.org data:; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self' https://cdn.jsdelivr.net data:; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'
+
+/zh/*
+  X-Robots-Tag: all
+/en/*
+  X-Robots-Tag: all
+/paper/*
+  X-Robots-Tag: all
+/progress/*
+  X-Robots-Tag: all
