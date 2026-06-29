@@ -50,6 +50,14 @@ const iconUrl = `${baseUrl}/icons/translate.svg`;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {/* Round 12 fix (2026-06-29): client-side CSP injection. GH Pages user/org site
+        does not serve `public/_headers` (only Project Pages sites do, per GitHub
+        Pages _headers doc 2023-09). We inject equivalent CSP / X-Content-Type-Options
+        / Referrer-Policy via <meta http-equiv>. X-Frame-Options is server-only and
+        cannot be set via meta — documented as known limitation, see public/_headers.README. */}
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://mykcs.github.io https://cdn.jsdelivr.net https://arxiv.org data:; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self' https://cdn.jsdelivr.net data:; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
 
