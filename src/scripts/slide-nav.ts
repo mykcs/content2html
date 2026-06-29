@@ -65,7 +65,13 @@ function fitScale(): number {
 
 function applyZoom(level: ZoomLevel): void {
   const scale = level === "fit" ? fitScale() : level;
-  document.documentElement.style.setProperty("--slide-scale", String(scale));
+  // Round 16 fix (2026-06-29): set --slide-scale on .slide-deck element, not
+  // :root. global.css defines `.slide-deck { --slide-scale: 1 }` which has
+  // higher CSS specificity than :root, so setting on documentElement was
+  // silently overridden by the class rule (cascade). Set on the actual
+  // element using the var (.slide-page) to win specificity.
+  const deck = document.querySelector<HTMLElement>(".slide-deck");
+  if (deck) deck.style.setProperty("--slide-scale", String(scale));
   // Update controls display
   const display = document.querySelector<HTMLElement>(".slide-controls__zoom");
   if (display) display.textContent = level === "fit" ? "Fit" : `${Math.round(level * 100)}%`;
