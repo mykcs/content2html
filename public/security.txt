@@ -1,0 +1,8 @@
+# RFC 9116 — security.txt for content2html (mykcs.github.io/content2html/)
+# Personal academic site (paper → HTML tool). Low-risk surface.
+# Contact: mailto preferred (RFC 9116 §2.5.1)
+# Expires: must be renewed within 1 year per RFC 9116 §2.6
+Contact: mailto:mykcs.contact@gmail.com
+Expires: 2027-06-29T23:59:59.000Z
+Preferred-Languages: zh-CN, en
+Canonical: https://mykcs.github.io/content2html/security.txt
