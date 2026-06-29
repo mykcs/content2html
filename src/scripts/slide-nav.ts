@@ -242,19 +242,22 @@ function detach(): void {
   document.removeEventListener("click", onControlsClick as EventListener);
 }
 
-// Round 16 fix (2026-06-29): defer attach via DOMContentLoaded or microtask
-// because inline module scripts may run BEFORE the body element is parsed.
-// Previous attempts failed because d() ran while document.querySelector(".slide-deck")
-// returned null (body not yet in DOM), so applyZoom's setProperty was silently
-// skipped — fit button visually did nothing.
-function init(): void {
+// Round 16 fix v4 (2026-06-29): inline DOMContentLoaded listener — simplest
+// possible path. Previous attempts used queueMicrotask / 3 重保险 / direct
+// call, all failed because either DOMContentLoaded fired before listener
+// registered, or module ran before body was parsed. This minimal version:
+// 1. If document already past DOMContentLoaded → call attach synchronously
+// 2. Else → register DOMContentLoaded listener with once
+// Listener also calls attach synchronously when DOM ready.
+// In both branches, attach only runs AFTER body is in DOM (verified by
+// .slide-deck querySelector returning a non-null element).
+function readyOrNow(fn: () => void): void {
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", attach, { once: true });
+    document.addEventListener("DOMContentLoaded", fn, { once: true });
   } else {
-    // Body is in DOM; defer one microtask to ensure layout is stable
-    queueMicrotask(attach);
+    fn();
   }
 }
-init();
+readyOrNow(attach);
 document.addEventListener("astro:page-load", attach);
 document.addEventListener("astro:before-swap", detach);
