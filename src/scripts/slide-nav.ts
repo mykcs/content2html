@@ -242,22 +242,18 @@ function detach(): void {
   document.removeEventListener("click", onControlsClick as EventListener);
 }
 
-// Round 16 fix v4 (2026-06-29): inline DOMContentLoaded listener — simplest
-// possible path. Previous attempts used queueMicrotask / 3 重保险 / direct
-// call, all failed because either DOMContentLoaded fired before listener
-// registered, or module ran before body was parsed. This minimal version:
-// 1. If document already past DOMContentLoaded → call attach synchronously
-// 2. Else → register DOMContentLoaded listener with once
-// Listener also calls attach synchronously when DOM ready.
-// In both branches, attach only runs AFTER body is in DOM (verified by
-// .slide-deck querySelector returning a non-null element).
-function readyOrNow(fn: () => void): void {
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", fn, { once: true });
-  } else {
-    fn();
-  }
+// Round 16 fix v5 (2026-06-29): always register DOMContentLoaded listener
+// and ALSO call attach synchronously if document is already past loading.
+// The 2 paths handle both:
+// - module script runs while body is parsing (rare): DOMContentLoaded fires
+//   later, listener catches it
+// - module script runs after body is parsed (common): direct call works
+// In both cases, attach runs at most once per "trigger" because of
+// idempotent operations (addEventListener for click is the same target/handler
+// pair → deduped by browser; setProperty same value is no-op).
+document.addEventListener("DOMContentLoaded", attach, { once: true });
+if (document.readyState !== "loading") {
+  attach();
 }
-readyOrNow(attach);
 document.addEventListener("astro:page-load", attach);
 document.addEventListener("astro:before-swap", detach);
