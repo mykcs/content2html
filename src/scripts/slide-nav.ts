@@ -242,14 +242,19 @@ function detach(): void {
   document.removeEventListener("click", onControlsClick as EventListener);
 }
 
-// Round 16 fix (2026-06-29): always call d() immediately + DOMContentLoaded
-// fallback. Previous code used `readyState === "loading"` to decide which
-// path to take, but module script can run while readyState is "loading"
-// then DOMContentLoaded fires before our addEventListener registers, so
-// attach() never runs. Real-world symptom: fit button visually does nothing.
-attach();
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", attach, { once: true });
+// Round 16 fix (2026-06-29): defer attach via DOMContentLoaded or microtask
+// because inline module scripts may run BEFORE the body element is parsed.
+// Previous attempts failed because d() ran while document.querySelector(".slide-deck")
+// returned null (body not yet in DOM), so applyZoom's setProperty was silently
+// skipped — fit button visually did nothing.
+function init(): void {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", attach, { once: true });
+  } else {
+    // Body is in DOM; defer one microtask to ensure layout is stable
+    queueMicrotask(attach);
+  }
 }
+init();
 document.addEventListener("astro:page-load", attach);
 document.addEventListener("astro:before-swap", detach);
