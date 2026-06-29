@@ -115,8 +115,17 @@ const iconUrl = `${baseUrl}/icons/translate.svg`;
     )}
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {/* PWA manifest (Round 15 SEO fix). Served from public/manifest.json */}
+    <link rel="manifest" href={`${baseUrl}/manifest.json`} />
   </head>
   <body class={productType === "slide" ? "slide-deck" : "longform"}>
+    {/* Skip-link (Round 15 a11y fix). Hidden until focused — keyboard-only users
+        can tab past the floating toolbar straight into main content. Targets
+        #main on every page; pages must wrap primary content in id="main".
+        CSS: src/styles/global.css .skip-link rule. */}
+    <a href="#main" class="skip-link">
+      {lang === "en" ? "Skip to main content" : "跳到主要内容"}
+    </a>
     <!--
       右上角浮动工具栏 (跟主站 CVActionBar.astro:22 模式一致: flex 容器 + 多按钮 gap-2).
       - lang-toggle: 跟主站 Masthead.astro:79-81 同款 (深灰圆形 + translate.svg), 中英文切换
@@ -165,7 +174,9 @@ const iconUrl = `${baseUrl}/icons/translate.svg`;
         />
       </a>
     </div>
-    <slot />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
     {productType === "slide" && (
       <div class="slide-controls" role="toolbar" aria-label={lang === "en" ? "Slide controls" : "幻灯片控件"}>
         <span class="slide-controls__label">{lang === "en" ? "Preview:" : "预览:"}</span>

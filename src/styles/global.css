@@ -90,6 +90,31 @@ html {
   line-height: 1.5;
 }
 
+/* ============ Skip-link (Round 15 a11y) ============
+ * Visually hidden until keyboard focus (Tab) — keyboard users can bypass
+ * the floating toolbar and jump straight into main content (#main).
+ * WCAG 2.4.1 (Bypass Blocks). */
+.skip-link {
+  position: absolute;
+  left: 0.5rem;
+  top: -3rem;
+  z-index: 100;
+  padding: 0.5rem 1rem;
+  background: var(--color-black);
+  color: var(--color-white);
+  text-decoration: none;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: top 0.15s ease-in;
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  top: 0.5rem;
+  outline: 2px solid var(--color-ikb-blue);
+  outline-offset: 2px;
+}
+
 body {
   font-family: var(--font-sans);
   color: var(--color-black);

@@ -8,6 +8,7 @@
     "dev": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
+    "test": "playwright --version && node -e \"console.log('content2html: no jest tests; e2e via Playwright ad-hoc. See scripts/verify-print-e2e.mjs')\"",
     "astro": "astro"
   },
   "dependencies": {

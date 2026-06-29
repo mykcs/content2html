@@ -1,0 +1,19 @@
+{
+  "name": "content2html",
+  "short_name": "content2html",
+  "description": "内容 (arxiv paper / 本地 progress) → HTML (slide + long-form). guizang Style B 视觉.",
+  "start_url": "/content2html/",
+  "scope": "/content2html/",
+  "display": "standalone",
+  "background_color": "#FAFAFA",
+  "theme_color": "#002FA7",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "/content2html/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
