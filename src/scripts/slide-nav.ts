@@ -242,11 +242,14 @@ function detach(): void {
   document.removeEventListener("click", onControlsClick as EventListener);
 }
 
-// 3 重保险: 立即 attach (module defer) + DOMContentLoaded 兜底 + ViewTransitions 兼容
+// Round 16 fix (2026-06-29): always call d() immediately + DOMContentLoaded
+// fallback. Previous code used `readyState === "loading"` to decide which
+// path to take, but module script can run while readyState is "loading"
+// then DOMContentLoaded fires before our addEventListener registers, so
+// attach() never runs. Real-world symptom: fit button visually does nothing.
+attach();
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", attach, { once: true });
-} else {
-  attach();
 }
 document.addEventListener("astro:page-load", attach);
 document.addEventListener("astro:before-swap", detach);
