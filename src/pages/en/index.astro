@@ -33,7 +33,7 @@ const lang = "en";
       <ul>
         {papers.map((p) => (
           <li>
-            <a href={`/${lang}/paper/${p.id}/slide/`}>{p.data.title_en ?? p.data.title_zh}</a>
+            <a href={`/content2html/${lang}/paper/${p.id}/slide/`}>{p.data.title_en ?? p.data.title_zh}</a>
             {p.data.published_date && <span class="caption"> · {p.data.published_date}</span>}
           </li>
         ))}
