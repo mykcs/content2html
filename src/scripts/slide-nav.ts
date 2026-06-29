@@ -219,8 +219,11 @@ function attach(): void {
   document.addEventListener("touchstart", onTouchStart, { passive: true });
   document.addEventListener("touchend", onTouchEnd, { passive: true });
   window.addEventListener("resize", onResize);
-  const controls = document.querySelector(`.${CONTROLS_CLASS}`);
-  if (controls) controls.addEventListener("click", onControlsClick as EventListener);
+  // Round 16 fix: use document-level click delegation (per §L25 L26 §H).
+  // Original attached only to .slide-controls, but Astro 5+ may render controls
+  // after module script executes (deferred hydration), causing null querySelector.
+  // Document delegation works regardless of element order.
+  document.addEventListener("click", onControlsClick as EventListener);
 }
 
 function detach(): void {
@@ -229,8 +232,8 @@ function detach(): void {
   document.removeEventListener("touchstart", onTouchStart);
   document.removeEventListener("touchend", onTouchEnd);
   window.removeEventListener("resize", onResize);
-  const controls = document.querySelector(`.${CONTROLS_CLASS}`);
-  if (controls) controls.removeEventListener("click", onControlsClick as EventListener);
+  // Round 16 fix: match attach() — remove document-level click delegation
+  document.removeEventListener("click", onControlsClick as EventListener);
 }
 
 // 3 重保险: 立即 attach (module defer) + DOMContentLoaded 兜底 + ViewTransitions 兼容
