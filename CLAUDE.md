@@ -91,7 +91,7 @@ Workflow: `.github/workflows/deploy.yml` (跟主站一样的 astro-build 模式)
 
 修改 `SKILL.md` frontmatter 或 trigger 段:
 
-1. 跑 4 源三角验证 (per rich-audit §F.2.0 v2.6.36): `~/.agents/skills/rich-audit/SKILL.md`
+1. 跑 4 源三角验证 (per rich-audit §F.2.0 v2.6.36): `~/.agents/skills/host-self-evolve/SKILL.md`
 2. bump version + 加 changelog (skill-as-code 协议)
 3. smart-push 直 push main (单文件 micro edit)
 4. 5 commands verification (git log/status/remote + gh run list CI green)
