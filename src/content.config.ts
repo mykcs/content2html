@@ -49,10 +49,10 @@ const papers = defineCollection({
     ).optional(),
     // Paper metadata (slide 1 右下角元信息块用)
     published_date: z.string().optional(),         // YYYY-MM-DD
-    code_url: z.string().url().optional(),         // 公开代码仓库
+    code_url: z.url().optional(),                  // 公开代码仓库
     venue: z.string().optional(),                   // e.g. "ICML 2026" / "NeurIPS 2025"
     venue_rank: z.string().optional(),              // e.g. "Post" / "Highlight" / "Oral" / "Spotlight"
-    venue_url: z.string().url().optional(),         // e.g. "https://icml.cc"
+    venue_url: z.url().optional(),                 // e.g. "https://icml.cc"
     category: z.string().optional(),                // arXiv primary category, e.g. "cs.AI"
     field_large_zh: z.string().optional(),
     field_large_en: z.string().optional(),
