@@ -72,14 +72,19 @@ const iconUrl = `${baseUrl}/icons/translate.svg`;
       const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, "");
       const siteUrl = (Astro.site ?? new URL("https://mykcs.github.io")).toString().replace(/\/$/, "");
       const canonicalHref = new URL(Astro.url.pathname, Astro.site ?? siteUrl).toString();
-      const pathWithoutLocale = Astro.url.pathname
-        .replace(new RegExp(`^${baseUrl}/?(en|zh)?`), "")
-        .replace(/^\//, "") || "/";
-      // suffix 保证末尾有 /, 开头不带 / (避免与 baseUrl 拼出 //)
-      const trimmedPath = pathWithoutLocale.replace(/\/$/, "");
+      // Round 17 fix (2026-07-14): hreflang x-default / zh 缺 /zh/ 前缀 regression.
+      // root 因: BaseLayout IIFE 把 zh 前缀也误剥离. content2html i18n 配置
+      // defaultLocale='zh' + prefixDefaultLocale=true → 中文页都在 /zh/ 下, hreflang
+      // zh 必须带 /zh/ 前缀 (跟 en hreflang 一致). 修法: 路径剥离时只认 en 前缀,
+      // zh 永远拼回 baseUrl + /zh/ suffix, en 拼 baseUrl + /en/ suffix.
+      const trimmedPath = Astro.url.pathname
+        .replace(new RegExp(`^${baseUrl}/?en/?`), "")
+        .replace(new RegExp(`^${baseUrl}/?(zh)?/?`), "")
+        .replace(/^\//, "")
+        .replace(/\/$/, "");
       const suffix = trimmedPath === "" ? "" : "/" + trimmedPath;
       const enHref = new URL(`${baseUrl}/en${suffix}/`, Astro.site ?? siteUrl).toString();
-      const zhHref = new URL(`${baseUrl}${suffix}/`, Astro.site ?? siteUrl).toString();
+      const zhHref = new URL(`${baseUrl}/zh${suffix}/`, Astro.site ?? siteUrl).toString();
       return (
         <>
           <link rel="canonical" href={canonicalHref} />
