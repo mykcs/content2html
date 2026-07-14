@@ -33,12 +33,23 @@ const TOTAL_SLIDES = 5;
     <div class="slide-meta-bar">
       <span class="meta-page">01 / {String(TOTAL_SLIDES).padStart(2, "0")}</span>
     </div>
-    <div class="col-span-12 flex flex-col justify-center">
+    <div class="col-span-12 flex flex-col justify-center items-center text-center gap-6">
+      <hr class="accent-bar" />
       <p class="text-caption text-gray-rule">{p.period}</p>
-      <h1 class="text-display font-sans font-bold mt-4">{p.project_name}</h1>
-      <hr class="swiss-rule my-6" />
-      <p class="text-body text-graphite">Progress overview · progress-mode smoke test</p>
+      <h1 class="text-headline font-sans font-bold leading-tight max-w-6xl">{p.project_name}</h1>
+      <hr class="swiss-rule w-40" />
+      <p class="kicker">Progress Log · work-in-progress report</p>
     </div>
+    <aside class="slide-info-corner" aria-label="Progress metadata">
+      <dl>
+        <dt>Period</dt>
+        <dd>{p.period}</dd>
+        <dt>Mode</dt>
+        <dd>progress-mode · smoke test</dd>
+        <dt>Products</dt>
+        <dd>slide + report (bilingual)</dd>
+      </dl>
+    </aside>
   </section>
 
   <section class="slide-page" data-page="2">
@@ -47,7 +58,11 @@ const TOTAL_SLIDES = 5;
       <span class="meta-page">02 / {String(TOTAL_SLIDES).padStart(2, "0")}</span>
     </div>
     <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
-      <h2 class="col-span-12 text-headline font-sans">Done (completed)</h2>
+      <div class="col-span-12">
+        <p class="kicker mb-3">Q1 · What was completed</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans">Done (completed)</h2>
+      </div>
       <ol class="col-span-10 col-start-2 space-y-2 text-body">
         {p.done.map((d) => <li class="border-l-4 border-lemon-green pl-4">{d}</li>)}
       </ol>
@@ -60,7 +75,11 @@ const TOTAL_SLIDES = 5;
       <span class="meta-page">03 / {String(TOTAL_SLIDES).padStart(2, "0")}</span>
     </div>
     <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
-      <h2 class="col-span-12 text-headline font-sans">Doing (in progress)</h2>
+      <div class="col-span-12">
+        <p class="kicker mb-3">Q2 · In-progress items</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans">Doing (in progress)</h2>
+      </div>
       <ul class="col-span-10 col-start-2 space-y-3 text-body">
         {p.doing.map((d) => <li class="border-l-4 border-lemon-yellow pl-4">{d}</li>)}
       </ul>
@@ -73,7 +92,11 @@ const TOTAL_SLIDES = 5;
       <span class="meta-page">04 / {String(TOTAL_SLIDES).padStart(2, "0")}</span>
     </div>
     <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
-      <h2 class="col-span-12 text-headline font-sans">Next (planned)</h2>
+      <div class="col-span-12">
+        <p class="kicker mb-3">Q3 · Next steps</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans">Next (planned)</h2>
+      </div>
       <table class="col-span-12 text-body">
         <thead>
           <tr class="border-b border-gray-rule">
@@ -101,7 +124,11 @@ const TOTAL_SLIDES = 5;
       <span class="meta-page">05 / {String(TOTAL_SLIDES).padStart(2, "0")}</span>
     </div>
     <div class="col-span-12 grid grid-cols-12 gap-4 content-center">
-      <h2 class="col-span-12 text-headline font-sans">Metrics</h2>
+      <div class="col-span-12">
+        <p class="kicker mb-3">Q4 · Quantitative metrics</p>
+        <hr class="accent-bar mb-6" />
+        <h2 class="text-headline font-sans">Metrics (indicators)</h2>
+      </div>
       <dl class="col-span-10 col-start-2 grid grid-cols-2 gap-4 text-body">
         {Object.entries(p.metrics ?? {}).map(([k, v]) => (
           <div class="border-l-4 border-ikb-blue pl-4">
