@@ -5,11 +5,16 @@ import { webSiteLd } from "../../lib/json-ld";
 import { getCollection } from "astro:content";
 
 const papers = (await getCollection("papers")) as Array<{ id: string; data: { title_zh?: string; title_en?: string; published_date?: string } }>;
+const progressEntries = (await getCollection("progress")) as Array<{ id: string; data: { project_name: string; period: string } }>;
 const lang = "en";
+const paperCount = papers.length;
+const progressCount = progressEntries.length;
+// 4 products = paper × 2 (slide/summary) + progress × 2 (slide/report)
+const productCount = paperCount * 2 + progressCount * 2;
 ---
 <BaseLayout
   title="content2html"
-  description="Content (arxiv paper / local progress) → HTML (slide + long-form)"
+  description={`Content (arxiv paper / local progress) → HTML (slide + long-form). ${paperCount} papers, ${progressCount} progress logs, ${productCount} products.`}
   lang="en"
   productType="longform"
   jsonLd={webSiteLd("en")}
@@ -17,6 +22,9 @@ const lang = "en";
   <header>
     <h1>content2html</h1>
     <p class="swiss-rule"></p>
+    <p class="text-caption text-graphite mt-2">
+      {paperCount} papers · {progressCount} progress logs · {productCount} products · bilingual (zh/en)
+    </p>
   </header>
   <main>
     <section>
@@ -29,15 +37,34 @@ const lang = "en";
       </ul>
     </section>
     <section>
-      <h2>Generated Papers</h2>
-      <ul>
-        {papers.map((p) => (
-          <li>
-            <a href={`/content2html/${lang}/paper/${p.id}/slide/`}>{p.data.title_en ?? p.data.title_zh}</a>
-            {p.data.published_date && <span class="caption"> · {p.data.published_date}</span>}
-          </li>
-        ))}
-      </ul>
+      <h2>Generated Papers ({paperCount})</h2>
+      {paperCount > 0 ? (
+        <ul>
+          {papers.map((p) => (
+            <li>
+              <a href={`/content2html/${lang}/paper/${p.id}/slide/`}>{p.data.title_en ?? p.data.title_zh}</a>
+              {p.data.published_date && <span class="caption"> · {p.data.published_date}</span>}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="text-graphite">No paper products yet.</p>
+      )}
+    </section>
+    <section>
+      <h2>Progress Logs ({progressCount})</h2>
+      {progressCount > 0 ? (
+        <ul>
+          {progressEntries.map((p) => (
+            <li>
+              <a href={`/content2html/${lang}/progress/${p.id}/slide/`}>{p.data.project_name}</a>
+              <span class="caption"> · {p.data.period}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="text-graphite">No progress logs yet.</p>
+      )}
     </section>
     <section>
       <h2>Status</h2>

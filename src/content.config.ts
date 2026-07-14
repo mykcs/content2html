@@ -3,7 +3,11 @@
 // 2 collections: papers + progress
 // Loader: glob (Astro v6 standard, JSON files in src/content/<collection>/)
 // Schema: zod (Astro v6 standard, type safety + IDE autocomplete)
-import { defineCollection, z } from 'astro:content';
+// z import: per Astro 6 docs (node_modules/astro/types/content.d.ts:16),
+//   `import { z } from 'astro:content'` is deprecated and will be removed in Astro 7.
+//   Use `import { z } from 'astro/zod'` instead. (Fix ts(6385) deprecation warning × 19)
+import { defineCollection } from 'astro:content';
+import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
 const papers = defineCollection({
