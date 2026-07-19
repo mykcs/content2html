@@ -26,3 +26,6 @@ Thumbs.db
 node_modules/
 .claude/worktrees/
 .claude/
+
+# website-improve run artifacts (never commit)
+.website-improve/
