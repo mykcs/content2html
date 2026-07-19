@@ -21,20 +21,20 @@ const showOnly = async (idx) => {
 
 // Slide 1 (info-corner + meta-bar interaction)
 await showOnly(0);
-await page.screenshot({ path: '/Users/myk/Repo/webs/active/content2html/scripts/final-screen-slide1.png' });
+await page.screenshot({ path: new URL('./final-screen-slide1.png', import.meta.url).pathname });
 
 // Slide 5 (text-heavy, kicker + h2 + bullets)
 await showOnly(4);
-await page.screenshot({ path: '/Users/myk/Repo/webs/active/content2html/scripts/final-screen-slide5.png' });
+await page.screenshot({ path: new URL('./final-screen-slide5.png', import.meta.url).pathname });
 
 // Print mode
 await page.emulateMedia({ media: 'print' });
 await page.waitForTimeout(500);
 await showOnly(0);
-await page.screenshot({ path: '/Users/myk/Repo/webs/active/content2html/scripts/final-print-slide1.png' });
+await page.screenshot({ path: new URL('./final-print-slide1.png', import.meta.url).pathname });
 
 await showOnly(4);
-await page.screenshot({ path: '/Users/myk/Repo/webs/active/content2html/scripts/final-print-slide5.png' });
+await page.screenshot({ path: new URL('./final-print-slide5.png', import.meta.url).pathname });
 
 await browser.close();
 console.log('Final screenshots done');

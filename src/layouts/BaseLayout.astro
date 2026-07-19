@@ -55,7 +55,10 @@ const iconUrl = `${baseUrl}/icons/translate.svg`;
         Pages _headers doc 2023-09). We inject equivalent CSP / X-Content-Type-Options
         / Referrer-Policy via <meta http-equiv>. X-Frame-Options is server-only and
         cannot be set via meta — documented as known limitation, see public/_headers.README. */}
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://mykcs.github.io https://cdn.jsdelivr.net https://arxiv.org data:; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self' https://cdn.jsdelivr.net data:; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'" />
+    {/* 2026-07-19: img-src += https://github.com (dev-btn badge.svg 被 CSP block, Playwright
+        实测 console error). script-src 'self' 依赖 astro.config vite.build.assetsInlineLimit=0
+        (强制 script 外联, 否则 Astro inline 小 script → CSP block slide-nav). */}
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://mykcs.github.io https://cdn.jsdelivr.net https://arxiv.org https://github.com data:; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self' https://cdn.jsdelivr.net data:; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'" />
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <title>{title}</title>
@@ -119,7 +122,7 @@ const iconUrl = `${baseUrl}/icons/translate.svg`;
       />
     )}
 
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={`${baseUrl}/favicon.svg`} />
     {/* PWA manifest (Round 15 SEO fix). Served from public/manifest.json */}
     <link rel="manifest" href={`${baseUrl}/manifest.json`} />
   </head>

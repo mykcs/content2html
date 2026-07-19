@@ -22,12 +22,12 @@ const showOnly = async (idx) => {
 
 // Screen slide 5
 await showOnly(4);
-await page.screenshot({ path: '/Users/myk/Repo/webs/active/content2html/scripts/v3-screen-slide5.png' });
+await page.screenshot({ path: new URL('./v3-screen-slide5.png', import.meta.url).pathname });
 
 // Print slide 5 (force print mode)
 await page.emulateMedia({ media: 'print' });
 await page.waitForTimeout(500);
-await page.screenshot({ path: '/Users/myk/Repo/webs/active/content2html/scripts/v3-print-slide5.png' });
+await page.screenshot({ path: new URL('./v3-print-slide5.png', import.meta.url).pathname });
 
 await browser.close();
 console.log('v3 done');

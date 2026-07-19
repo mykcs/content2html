@@ -17,7 +17,7 @@ for (const lang of ['zh', 'en']) {
       });
     }, i);
     await page.waitForTimeout(400);
-    await page.screenshot({ path: `/Users/myk/Repo/webs/active/content2html/scripts/v18246-${lang}-s${i+1}.png` });
+    await page.screenshot({ path: new URL(`./v18246-${lang}-s${i+1}.png`, import.meta.url).pathname });
     console.log(`${lang}/slide ${i+1} captured`);
   }
 }

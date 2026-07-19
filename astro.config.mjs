@@ -59,5 +59,11 @@ export default defineConfig({
   },
   vite: {
     plugins: [tailwindcss()],
+    build: {
+      // 2026-07-19 (P0): 默认 assetsInlineLimit=4KB 会让 Astro 把小 script inline 成
+      // <script type="module">, 被 BaseLayout CSP meta `script-src 'self'` block
+      // (Playwright 实测: slide-nav 键盘翻页失效). 置 0 = 全部 script 外联, CSP 兼容.
+      assetsInlineLimit: 0,
+    },
   },
 });
