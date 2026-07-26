@@ -10,7 +10,7 @@
 // Reference: https://schema.org/{WebSite,ScholarlyArticle,Article}
 
 export interface PaperLike {
-  id: string;
+  id?: string;
   arxiv_id?: string;
   title_zh: string;
   title_en: string;
@@ -24,11 +24,12 @@ export interface PaperLike {
 }
 
 export interface ProgressLike {
+  id?: string;
   project_name: string;
   period: string;
   done: string[];
   doing: string[];
-  next: string[][];  // [date, item] tuples (length varies per row)
+  next: string[][]; // [date, item] tuples (length varies per row)
 }
 
 const SITE_URL = "https://mykcs.github.io/content2html";
@@ -48,7 +49,11 @@ const SITE_URL = "https://mykcs.github.io/content2html";
 // the id is auto-generated from filename by `glob()` loader (src/content.config.ts).
 // Inline-passing entry.id avoids the "url":...paper/undefined/slide/ bug.
 // sameAs still uses arxiv_id (correct); only url was broken.
-export function scholarlyArticleLd(paper: PaperLike, lang: "zh" | "en", entryId: string): Record<string, unknown> {
+export function scholarlyArticleLd(
+  paper: PaperLike,
+  lang: "zh" | "en",
+  entryId: string,
+): Record<string, unknown> {
   const isEn = lang === "en";
   const title = isEn ? paper.title_en : paper.title_zh;
   const abstract = isEn ? paper.abstract_en : paper.abstract_zh;
@@ -56,13 +61,19 @@ export function scholarlyArticleLd(paper: PaperLike, lang: "zh" | "en", entryId:
   const arxivUrl = `https://arxiv.org/abs/${arxivId}`;
 
   // authors_with_affil_en (English locale) preferred over flat authors array
-  const authors = (isEn && paper.authors_with_affil_en && paper.authors_with_affil_en.length > 0)
-    ? paper.authors_with_affil_en.map((a) => ({
-        "@type": "Person",
-        name: a.name,
-        affiliation: a.affil.map((name) => ({ "@type": "Organization", name })),
-      }))
-    : paper.authors.map((name) => ({ "@type": "Person", name }));
+  const authors =
+    isEn &&
+    paper.authors_with_affil_en &&
+    paper.authors_with_affil_en.length > 0
+      ? paper.authors_with_affil_en.map((a) => ({
+          "@type": "Person",
+          name: a.name,
+          affiliation: a.affil.map((name) => ({
+            "@type": "Organization",
+            name,
+          })),
+        }))
+      : paper.authors.map((name) => ({ "@type": "Person", name }));
 
   // P1 #1 fix (2026-06-27): destructure entry.id before template literal use.
   // Previous code used paper.id directly inside the template string but the
@@ -85,7 +96,11 @@ export function scholarlyArticleLd(paper: PaperLike, lang: "zh" | "en", entryId:
     url: `${SITE_URL}/${lang}/paper/${paperId}/slide/`,
     sameAs: arxivUrl,
     identifier: arxivId,
-    provider: { "@type": "Organization", name: "arXiv", url: "https://arxiv.org" },
+    provider: {
+      "@type": "Organization",
+      name: "arXiv",
+      url: "https://arxiv.org",
+    },
   };
 
   if (paper.venue && paper.venue_url) {
@@ -103,11 +118,20 @@ export function scholarlyArticleLd(paper: PaperLike, lang: "zh" | "en", entryId:
  * Build an Article schema for progress pages.
  * Longform progress report → Article (not ScholarlyArticle, no peer review).
  */
-export function articleLd(progress: ProgressLike, lang: "zh" | "en"): Record<string, unknown> {
+export function articleLd(
+  progress: ProgressLike,
+  lang: "zh" | "en",
+  entryId: string,
+  variant: "slide" | "report" = "report",
+): Record<string, unknown> {
   // ISO 8601 date from period "2026-06-04 ~ 2026-06-17 (最近 2 周)"
   const dateMatch = progress.period.match(/(\d{4}-\d{2}-\d{2})/);
   const datePublished = dateMatch ? dateMatch[1] : undefined;
-
+  // P1 #2 fix (2026-07-26): URL must point at the actual deployed page variant.
+  // Previously the hard-coded "/report/" suffix broke progress-slide pages (variant
+  // mismatch) and the date-from-period regex pointed at the start date instead of
+  // the entry id (causing 404 when start date differs from filename slug).
+  const slug = entryId || (dateMatch ? dateMatch[1] : "");
   return {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -116,7 +140,7 @@ export function articleLd(progress: ProgressLike, lang: "zh" | "en"): Record<str
     description: `${progress.done.length} done · ${progress.doing.length} doing · ${progress.next.length} next`,
     datePublished,
     inLanguage: lang === "en" ? "en" : "zh",
-    url: `${SITE_URL}/${lang}/progress/${dateMatch?.[1] ?? ""}/${lang === "en" ? "report" : "report"}/`,
+    url: `${SITE_URL}/${lang}/progress/${slug}/${variant}/`,
     author: { "@type": "Person", name: "mykcs" },
     publisher: { "@type": "Organization", name: "content2html", url: SITE_URL },
   };

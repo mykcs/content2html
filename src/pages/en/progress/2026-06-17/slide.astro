@@ -10,7 +10,6 @@ import { getEntry } from "astro:content";
 const entry = await getEntry("progress", "2026-06-17");
 if (!entry) throw new Error("progress 2026-06-17 not found in collection");
 const p = entry.data as {
-  id: string;
   project_name: string;
   period: string;
   done: string[];
@@ -26,7 +25,7 @@ const TOTAL_SLIDES = 5;
   description={`${p.period} — done/doing/next`}
   lang="en"
   productType="slide"
-  jsonLd={articleLd(p, "en")}
+  jsonLd={articleLd(p, "en", entry.id, "slide")}
 >
   <section class="slide-page active" data-page="1">
     <div class="slide-top-accent"></div>

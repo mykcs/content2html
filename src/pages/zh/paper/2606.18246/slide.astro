@@ -10,7 +10,6 @@ import PaperSlideSection from "../../../../components/PaperSlideSection.astro";
 const entry = await getEntry("papers", "2606.18246");
 if (!entry) throw new Error("paper 2606.18246 not found in collection");
 const paper = entry.data as {
-  id: string;
   arxiv_id?: string;
   title_zh: string;
   title_en: string;
@@ -27,6 +26,7 @@ const paper = entry.data as {
     context?: { zh?: string; en?: string };
   }[];
 };
+const paperId = paper.arxiv_id ?? entry.id;
 
 // 精简 PPT: extract "1./2./3. xxx" bullet titles from body, drop long paragraphs
 function extractBullets(body: string): string[] {
@@ -74,7 +74,7 @@ const KICKERS = [
     <aside class="slide-info-corner" aria-label="Paper metadata">
       <dl>
         <dt>arXiv</dt>
-        <dd><a href={`https://arxiv.org/abs/${paper.arxiv_id ?? paper.id}`} target="_blank" rel="noopener noreferrer">{paper.arxiv_id ?? paper.id}</a></dd>
+        <dd><a href={`https://arxiv.org/abs/${paperId}`} target="_blank" rel="noopener noreferrer">{paperId}</a></dd>
         <dt>章节</dt>
         <dd>{paper.sections_zh.length} 节 / 摘要 + 方法 + 实验 + 分析 + 总结</dd>
         <dt>关键贡献</dt>

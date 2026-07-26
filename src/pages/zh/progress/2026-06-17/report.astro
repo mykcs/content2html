@@ -9,7 +9,6 @@ import { getEntry } from "astro:content";
 const entry = await getEntry("progress", "2026-06-17");
 if (!entry) throw new Error("progress 2026-06-17 not found in collection");
 const p = entry.data as {
-  id: string;
   project_name: string;
   period: string;
   done: string[];
@@ -23,7 +22,7 @@ const p = entry.data as {
   description={`${p.period} — done/doing/next`}
   lang="zh"
   productType="longform"
-  jsonLd={articleLd(p, "zh")}
+  jsonLd={articleLd(p, "zh", entry.id, "report")}
 >
   <article>
     <header>
@@ -83,7 +82,7 @@ const p = entry.data as {
 
     <footer>
       <hr class="swiss-rule" />
-      <p class="text-caption text-gray-rule">本文为 progress-mode 烟雾测试产物 · {p.id}</p>
+      <p class="text-caption text-gray-rule">本文为 progress-mode 烟雾测试产物 · {entry.id}</p>
     </footer>
   </article>
 </BaseLayout>

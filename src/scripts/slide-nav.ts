@@ -30,7 +30,7 @@ type ZoomAction = ZoomLevel | "print";
 // Previously also rendered bottom-right (CSS ::after) + bottom-left (slide-indicator JS) — REMOVED 2026-06-21.
 function navigate(shift: number): void {
   const pages = Array.from(
-    document.querySelectorAll<HTMLElement>(".slide-page")
+    document.querySelectorAll<HTMLElement>(".slide-page"),
   );
   if (pages.length === 0) return;
 
@@ -49,7 +49,7 @@ function navigate(shift: number): void {
 
 function ensureFirstPageActive(): void {
   const pages = Array.from(
-    document.querySelectorAll<HTMLElement>(".slide-page")
+    document.querySelectorAll<HTMLElement>(".slide-page"),
   );
   if (pages.length === 0) return;
   const hasActive = pages.some((p) => p.classList.contains(ACTIVE_CLASS));
@@ -74,7 +74,9 @@ function applyZoom(level: ZoomLevel): void {
   if (deck) deck.style.setProperty("--slide-scale", String(scale));
   // Update controls display
   const display = document.querySelector<HTMLElement>(".slide-controls__zoom");
-  if (display) display.textContent = level === "fit" ? "Fit" : `${Math.round(level * 100)}%`;
+  if (display)
+    display.textContent =
+      level === "fit" ? "Fit" : `${Math.round(level * 100)}%`;
   // Toggle .active class on Fit button
   const fitBtn = document.querySelector<HTMLButtonElement>("[data-zoom='fit']");
   if (fitBtn) fitBtn.classList.toggle("active", level === "fit");
@@ -157,7 +159,7 @@ function onKeyDown(e: KeyboardEvent): void {
         const target = parseInt(e.key, 10) - 1;
         if (target < pages.length) {
           const current = Array.from(pages).findIndex((p) =>
-            p.classList.contains(ACTIVE_CLASS)
+            p.classList.contains(ACTIVE_CLASS),
           );
           if (current >= 0) pages[current].classList.remove(ACTIVE_CLASS);
           pages[target].classList.add(ACTIVE_CLASS);
@@ -198,7 +200,9 @@ function onTouchEnd(e: TouchEvent): void {
 
 // === Controls bar wiring ===
 function onControlsClick(e: Event): void {
-  const btn = (e.target as HTMLElement | null)?.closest<HTMLElement>("[data-zoom]");
+  const btn = (e.target as HTMLElement | null)?.closest<HTMLElement>(
+    "[data-zoom]",
+  );
   if (!btn) return;
   const level = btn.dataset.zoom as ZoomAction | undefined;
   if (!level) return;

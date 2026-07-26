@@ -10,7 +10,6 @@ import PaperSlideSection from "../../../../components/PaperSlideSection.astro";
 const entry = await getEntry("papers", "2603.12109");
 if (!entry) throw new Error("paper 2603.12109 not found in collection");
 const paper = entry.data as {
-  id: string;
   arxiv_id?: string;
   title_zh: string;
   title_en: string;
@@ -47,6 +46,7 @@ const paper = entry.data as {
 
 const FIG = `${import.meta.env.BASE_URL}/figures/2603.12109`;
 const TITLE_EN = paper.title_full_en ?? paper.title_en;
+const paperId = paper.arxiv_id ?? entry.id;
 const AUTHORS_EN = paper.authors_with_affil_en ?? paper.authors.map((n) => ({ name: n, affil: [] as string[] }));
 const AFFILS_EN: string[] = paper.affiliations_en ?? Array.from(new Set(AUTHORS_EN.flatMap((a) => a.affil)));
 
@@ -99,7 +99,7 @@ function cleanHeading(heading: string): string {
     <aside class="slide-info-corner" aria-label="Paper metadata">
       <dl>
         <dt>arXiv</dt>
-        <dd><a href={`https://arxiv.org/abs/${paper.arxiv_id ?? paper.id}`} target="_blank" rel="noopener noreferrer">{paper.arxiv_id ?? paper.id}</a></dd>
+        <dd><a href={`https://arxiv.org/abs/${paperId}`} target="_blank" rel="noopener noreferrer">{paperId}</a></dd>
         <dt>Published</dt>
         <dd>{paper.published_date ?? "N/A"}</dd>
         <dt>Code</dt>
@@ -138,7 +138,7 @@ function cleanHeading(heading: string): string {
       </div>
       <p class="caption flex-shrink-0">Top: vanilla outcome-based RL trapped in self-locking (Uninformative AS + Anti-aligned BT); Bottom: AReW restores AS-BT alignment via directional critiques (Informative AS + Aligned BT)</p>
       <figure class="frame-img r-2x1 fit-contain flex-1">
-        <img src={`${FIG}/fig1_pipeline.png`} alt="Fig 1: SeL overview + AReW mitigation" />
+        <img src={`${FIG}/fig1_pipeline.png`} alt="Fig 1: SeL overview + AReW mitigation" loading="lazy" decoding="async" />
       </figure>
     </div>
   </section>
@@ -215,7 +215,7 @@ function cleanHeading(heading: string): string {
       </div>
       <p class="caption flex-shrink-0">vanilla PPO (red) vs AReW-AS ONLY (green) vs AReW-AS+BT (blue) Reward vs Training Steps; AReW sustained improvement, vanilla stalls</p>
       <figure class="frame-img r-16x10 fit-contain flex-1">
-        <img src={`${FIG}/fig4_full.png`} alt="Fig 4: training dynamics" />
+        <img src={`${FIG}/fig4_full.png`} alt="Fig 4: training dynamics" loading="lazy" decoding="async" />
       </figure>
     </div>
   </section>
@@ -254,7 +254,7 @@ function cleanHeading(heading: string): string {
       </div>
       <p class="caption flex-shrink-0">(a) MediQ intervention: outcome-RL reduces feedback sensitivity, increases belief consistency; (b) PE-F under GRPO; (c) FloDial-Easy under GSPO</p>
       <figure class="frame-img h-30 fit-contain">
-        <img src={`${FIG}/fig3_full.png`} alt="Fig 3: algorithm generalization" />
+        <img src={`${FIG}/fig3_full.png`} alt="Fig 3: algorithm generalization" loading="lazy" decoding="async" />
       </figure>
     </div>
   </section>
@@ -294,10 +294,10 @@ function cleanHeading(heading: string): string {
       <p class="caption flex-shrink-0">Fig 5 (left): τ²-bench training dynamics — (a) rewards (b) tool execution errors (c) consumed response tokens (d) instruction turns · Fig 6 (right): τ²-bench AReW customer service</p>
       <div class="flex-1 grid grid-cols-2 gap-6 items-center">
         <figure class="frame-img h-30 fit-contain">
-          <img src={`${FIG}/fig5_taubench.png`} alt="Fig 5: τ²-bench training dynamics — (a) rewards (b) tool execution errors (c) consumed response tokens (d) instruction turns" />
+          <img src={`${FIG}/fig5_taubench.png`} alt="Fig 5: τ²-bench training dynamics — (a) rewards (b) tool execution errors (c) consumed response tokens (d) instruction turns" loading="lazy" decoding="async" />
         </figure>
         <figure class="frame-img h-30 fit-contain">
-          <img src={`${FIG}/gh-tau2-AREW.png`} alt="Fig 6: τ²-bench AReW customer service" />
+          <img src={`${FIG}/gh-tau2-AREW.png`} alt="Fig 6: τ²-bench AReW customer service" loading="lazy" decoding="async" />
         </figure>
       </div>
     </div>

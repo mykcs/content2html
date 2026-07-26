@@ -8,7 +8,6 @@ import { scholarlyArticleLd } from "../../../../lib/json-ld";
 const entry = await getEntry("papers", "2603.12109");
 if (!entry) throw new Error("paper 2603.12109 not found in collection");
 const paper = entry.data as {
-  id: string;
   arxiv_id?: string;
   title_zh: string;
   title_en: string;
@@ -19,6 +18,7 @@ const paper = entry.data as {
   sections_en: { heading: string; body: string }[];
   key_takeaways: string[];
 };
+const paperId = paper.arxiv_id ?? entry.id;
 ---
 <BaseLayout
   title={`${paper.title_en} | paper-summary`}
@@ -29,7 +29,7 @@ const paper = entry.data as {
 >
   <article>
     <header>
-      <p class="text-caption text-gray-rule">arXiv: {paper.arxiv_id ?? paper.id}</p>
+      <p class="text-caption text-gray-rule">arXiv: {paperId}</p>
       <h1>{paper.title_en}</h1>
       <p class="text-graphite">{paper.authors.join(" · ")}</p>
       <hr class="swiss-rule" />
@@ -58,7 +58,7 @@ const paper = entry.data as {
 
     <footer>
       <hr class="swiss-rule" />
-      <p class="text-caption text-gray-rule">Paper-mode artifact · {paper.id}</p>
+      <p class="text-caption text-gray-rule">Paper-mode artifact · {entry.id}</p>
     </footer>
   </article>
 </BaseLayout>
