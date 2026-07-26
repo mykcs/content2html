@@ -15,6 +15,11 @@ export default defineConfig({
   base: '/content2html',
   integrations: [
     sitemap({
+      // P2 SEO: emit <lastmod> so GSC sees freshness signals (cross-site
+      // audit 2026-07-26: 0/14 urls had lastmod before this fix). Build
+      // time is good enough — Google wants freshness signal, not per-file
+      // git mtime accuracy.
+      lastmod: new Date(),
       // F-P1 (2026-06-24): exclude bare root redirector + 404 pages
       // bare root = Astro.redirect() → 356-byte meta-refresh HTML with <meta name="robots" content="noindex">
       // including noindex URL in sitemap = SEO contradiction (sitemap says indexable, page says noindex)
