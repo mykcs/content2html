@@ -9,6 +9,7 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
+import sitemapSeo from './src/integrations/sitemap-seo.mjs';
 
 export default defineConfig({
   site: 'https://mykcs.github.io/content2html/',
@@ -20,11 +21,36 @@ export default defineConfig({
       // time is good enough — Google wants freshness signal, not per-file
       // git mtime accuracy.
       lastmod: new Date(),
+      // Round 22 P1 (cross-site audit 2026-07-26): emit <xhtml:link
+      // rel="alternate" hreflang="…"> for every localized URL. The i18n
+      // config was added but the sitemap integration never knew about
+      // it, so GSC saw the sitemap as monolingual and per-page
+      // <link rel="alternate"> tags were the only hreflang signal.
+      // Default locale is 'zh' (this project's ADR-0003 Override 2);
+      // x-default points at the Chinese URL.
+      i18n: {
+        defaultLocale: 'zh',
+        locales: { en: 'en', zh: 'zh' },
+      },
+      // Round 22 P1: append x-default to every multi-locale path group.
+      // @astrojs/sitemap v3.7.3 emits en+zh from the i18n config but
+      // never auto-emits x-default even though every per-page
+      // <link rel="alternate"> tag in the site does (see Layout.astro).
+      serialize: (item) => {
+        if (item.links && Array.isArray(item.links) && item.links.length > 1) {
+          const zh = item.links.find((l) => l.lang === 'zh');
+          if (zh && !item.links.some((l) => l.lang === 'x-default')) {
+            item.links.push({ url: zh.url, lang: 'x-default' });
+          }
+        }
+        return item;
+      },
       // F-P1 (2026-06-24): exclude bare root redirector + 404 pages
       // bare root = Astro.redirect() → 356-byte meta-refresh HTML with <meta name="robots" content="noindex">
       // including noindex URL in sitemap = SEO contradiction (sitemap says indexable, page says noindex)
       filter: (page) => !page.endsWith('/404/') && !page.endsWith('/content2html/'),
     }),
+    sitemapSeo(),
   ],
   prefetch: { prefetchAll: true, defaultStrategy: 'hover' },
   output: 'static',
