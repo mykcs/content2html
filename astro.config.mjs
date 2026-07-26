@@ -10,6 +10,24 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 import sitemapSeo from './src/integrations/sitemap-seo.mjs';
+import { execSync } from 'node:child_process';
+
+// Build-time injection of the latest commit date (used as sitemap
+// <lastmod>). Per-URL git mtime would be more accurate but impractical
+// at sitemap time; HEAD commit time is a good middle ground — fresh
+// deploys move the timestamp forward across actual content edits,
+// which is what Google uses for freshness scoring. Find Your
+// Unknowns audit 2026-07-26: build-time lastmod = "suspicious pattern"
+// risk because it advances even on no-content-change rebuilds.
+let lastUpdated;
+try {
+  lastUpdated = execSync('git log -1 --format=%cI', {
+    cwd: process.cwd(),
+    encoding: 'utf-8',
+  }).trim();
+} catch {
+  lastUpdated = new Date().toISOString();
+}
 
 export default defineConfig({
   site: 'https://mykcs.github.io/content2html/',
@@ -17,10 +35,14 @@ export default defineConfig({
   integrations: [
     sitemap({
       // P2 SEO: emit <lastmod> so GSC sees freshness signals (cross-site
-      // audit 2026-07-26: 0/14 urls had lastmod before this fix). Build
-      // time is good enough — Google wants freshness signal, not per-file
-      // git mtime accuracy.
-      lastmod: new Date(),
+      // audit 2026-07-26: 0/14 urls had lastmod before this fix).
+      // Round 22 P2: use git HEAD commit time (lastUpdated above) instead
+      // of build time, so freshness tracks actual content edits rather
+      // than advancing on every no-change rebuild.
+      lastmod: (() => {
+        const parsed = Date.parse(lastUpdated);
+        return Number.isNaN(parsed) ? new Date() : new Date(parsed);
+      })(),
       // Round 22 P1 (cross-site audit 2026-07-26): emit <xhtml:link
       // rel="alternate" hreflang="…"> for every localized URL. The i18n
       // config was added but the sitemap integration never knew about
