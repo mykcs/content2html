@@ -25,7 +25,7 @@ const paperId = paper.arxiv_id ?? entry.id;
   description={paper.abstract_zh}
   lang="zh"
   productType="longform"
-  jsonLd={scholarlyArticleLd(paper, "zh", entry.id)}
+  jsonLd={scholarlyArticleLd(paper, "zh", entry.id, "summary")}
 >
   <article>
     <header>

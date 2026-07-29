@@ -139,6 +139,10 @@ body {
   --slide-frame-pad: 80px; /* breathing room around scaled slide */
 }
 
+@media screen {
+  html.slide-mode { overflow: hidden; }
+}
+
 .slide-deck {
   width: 100vw;
   height: 100vh;
@@ -593,6 +597,7 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
   max-width: 45rem;  /* 720px */
   margin: 0 auto;
   padding: 2rem 1.5rem;
+  overflow-wrap: anywhere;
   line-height: 1.75;
   font-family: var(--font-serif);
 }
