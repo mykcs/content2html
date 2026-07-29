@@ -14,8 +14,10 @@
 // issue (2f0e7dd, 0fda967, bfb850c, bef1017, ...). Without this script, future fixes
 // will repeat the same loop.
 import { chromium } from 'playwright';
-import { writeFileSync } from 'node:fs';
-import { execSync } from 'node:child_process';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 const URL = process.env.URL || 'https://mykcs.github.io/content2html/zh/paper/2603.12109/slide/';
 
@@ -48,13 +50,15 @@ if (!Number.isFinite(SLIDE_COUNT) || SLIDE_COUNT <= 0) {
 }
 
 // 1. Page count via Playwright page.pdf()
+const workDir = mkdtempSync(join(tmpdir(), 'content2html-print-'));
+const pdfPath = join(workDir, 'print-verify.pdf');
 const buf = await page.pdf({
   width: '297mm', height: '167mm',
   printBackground: true,
   margin: { top: 0, bottom: 0, left: 0, right: 0 },
   preferCSSPageSize: true,
 });
-writeFileSync('/tmp/print-verify.pdf', buf);
+writeFileSync(pdfPath, buf);
 const pdfPages = (buf.toString('binary').match(/\/Type\s*\/Page[^s]/g) || []).length;
 
 // 2. Visual fidelity check (no 100% font-size artifacts)
@@ -98,25 +102,20 @@ const audit = await page.evaluate(() => {
   return results;
 });
 
-// 3. Extract last 2 pages and check sizes (blank page = small file)
-// Threshold: relative to average non-blank page size (50% heuristic).
-// Small papers (e.g. 2606.18246 with 6 short sections) have page PNG ~2KB
-// at 50dpi (legitimate), so absolute 5KB threshold false-positives.
-execSync(`pdftoppm -png -r 50 -f ${pdfPages - 1} -l ${pdfPages} /tmp/print-verify.pdf /tmp/print-verify-page`, { encoding: 'utf8' });
-const fs = await import('node:fs');
-const lastPages = fs.readdirSync('/tmp').filter(f => f.startsWith('print-verify-page-')).sort();
-// Compute average across all rendered pages for relative threshold
-const allPageSizes = lastPages.map(p => fs.statSync(`/tmp/${p}`).size);
-const avgSize = allPageSizes.reduce((a, b) => a + b, 0) / allPageSizes.length;
-const lastPageSize = allPageSizes[allPageSizes.length - 1];
-// Blank = last page < 50% of avg (catches real blanks without false-positives on small papers)
-const lastPageBlank = lastPageSize < avgSize * 0.5;
+// 3. A real trailing blank has no extractable text. The old PNG-size heuristic
+// read stale /tmp files and rejected legitimate sparse slides.
+const lastPageText = execFileSync(
+  'pdftotext',
+  ['-f', String(pdfPages), '-l', String(pdfPages), pdfPath, '-'],
+  { encoding: 'utf8' },
+).replace(/\s/g, '');
+const lastPageBlank = lastPageText.length === 0;
 
 // 4. Final verdict
 console.log('=== Print E2E Verification ===\n');
 console.log(`Slide count:    ${SLIDE_COUNT}`);
 console.log(`PDF page count: ${pdfPages}`);
-console.log(`Last page size: ${allPageSizes[allPageSizes.length - 1]?.size} bytes ${lastPageBlank ? '(BLANK!)' : ''}\n`);
+console.log(`Last-page text: ${lastPageText.length} chars ${lastPageBlank ? '(BLANK!)' : ''}\n`);
 console.log('Layer checks:');
 Object.entries(audit.layers).forEach(([k, v]) => console.log(`  ${k.padEnd(20)} ${v}`));
 
@@ -126,4 +125,6 @@ const allLayers = Object.values(audit.layers).every(v => v === '✓');
 const pass = pageCountOk && noBlank && allLayers;
 
 console.log(`\n${pass ? '✅ PASS' : '❌ FAIL'}: pageCount=${pageCountOk}, noBlank=${noBlank}, layers=${allLayers}`);
+await browser.close();
+rmSync(workDir, { recursive: true, force: true });
 process.exit(pass ? 0 : 1);

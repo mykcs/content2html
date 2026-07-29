@@ -26,7 +26,7 @@ const productCount = paperCount * 2 + progressCount * 2;
       {paperCount} papers · {progressCount} progress logs · {productCount} products · bilingual (zh/en)
     </p>
   </header>
-  <main>
+  <div>
     <section>
       <h2>4 Products</h2>
       <ul>
@@ -70,5 +70,5 @@ const productCount = paperCount * 2 + progressCount * 2;
       <h2>Status</h2>
       <p>SKILL.md (main entry, trigger <code>/content2html</code>) is live. MVP deployed with <a href={`/content2html/en/paper/${papers[0]?.id ?? "2606.18246"}/slide/`}>paper slide sample</a> and <a href={`/content2html/en/paper/${papers[0]?.id ?? "2606.18246"}/summary/`}>paper summary sample</a>.</p>
     </section>
-  </main>
+  </div>
 </BaseLayout>

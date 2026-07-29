@@ -53,6 +53,7 @@ export function scholarlyArticleLd(
   paper: PaperLike,
   lang: "zh" | "en",
   entryId: string,
+  variant: "slide" | "summary" = "slide",
 ): Record<string, unknown> {
   const isEn = lang === "en";
   const title = isEn ? paper.title_en : paper.title_zh;
@@ -93,7 +94,7 @@ export function scholarlyArticleLd(
     isAccessibleForFree: true,
     author: authors,
     inLanguage: isEn ? "en" : "zh",
-    url: `${SITE_URL}/${lang}/paper/${paperId}/slide/`,
+    url: `${SITE_URL}/${lang}/paper/${paperId}/${variant}/`,
     sameAs: arxivUrl,
     identifier: arxivId,
     provider: {
@@ -154,13 +155,8 @@ export function webSiteLd(lang: "zh" | "en"): Record<string, unknown> {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: lang === "en" ? "content2html" : "content2html",
-    url: `${SITE_URL}/${lang === "en" ? "en/" : ""}`,
+    url: `${SITE_URL}/${lang}/`,
     inLanguage: lang === "en" ? "en" : "zh",
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${SITE_URL}/${lang === "en" ? "en/" : ""}paper/{search_term}/`,
-      "query-input": "required name=search_term",
-    },
     publisher: { "@type": "Organization", name: "content2html", url: SITE_URL },
   };
 }
