@@ -5,6 +5,7 @@
 // v3.2 aesthetic upgrade: Swiss editorial signature (accent-bar + kicker + top-accent)
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getEntry } from "astro:content";
+import { scholarlyArticleLd } from "../../../../lib/json-ld";
 import PaperSlideSection from "../../../../components/PaperSlideSection.astro";
 
 const entry = await getEntry("papers", "2606.18246");
@@ -55,6 +56,7 @@ const KICKERS = [
   description={paper.abstract_en}
   lang="en"
   productType="slide"
+  jsonLd={scholarlyArticleLd(paper, "en", entry.id)}
 >
   <!-- Slide 1: Title + Info Corner -->
   <section class="slide-page active" data-page="1">
