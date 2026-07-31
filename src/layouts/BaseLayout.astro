@@ -100,7 +100,11 @@ const iconUrl = `${baseUrl}/icons/translate.svg`;
           <meta property="og:description" content={description} />
           <meta property="og:url" content={canonicalHref} />
           <meta property="og:locale" content={lang === "zh" ? "zh_CN" : "en_US"} />
-          <meta property="og:type" content="website" />
+          {/* Round 24 P2 (full-sweep 2026-07-31): derive og:type from URL.
+              paper / progress pages are content → "article" (better social card
+              metadata for FB/Twitter). Index / 404 pages stay "website".
+              Decision: URL-derived (no prop) to avoid per-page maintenance. */}
+          <meta property="og:type" content={/\/(paper|progress)\//.test(Astro.url.pathname) ? "article" : "website"} />
           {/* Round 22 P1 (cross-site audit 2026-07-26): locale-aware OG image
               so /en/ and /zh/ share cards differ. og-image:height bumped
               630 → 632 to match mmx-generated dims (mmx requires 8-aligned). */}

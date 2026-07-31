@@ -1,0 +1,63 @@
+{
+  "plan_hash": "sha256:3fef6099b589bc29e6ac740291a1407cd6cad3a23b05f5b5ccd26cfca43b2b69",
+  "files_changed": [
+    {
+      "path": "src/layouts/BaseLayout.astro",
+      "lines_added": 5,
+      "lines_removed": 1
+    },
+    {
+      "path": "src/pages/en/paper/2606.18246/slide.astro",
+      "lines_added": 2,
+      "lines_removed": 0
+    },
+    {
+      "path": "src/pages/zh/paper/2606.18246/slide.astro",
+      "lines_added": 2,
+      "lines_removed": 0
+    }
+  ],
+  "git_commits": [
+    {
+      "sha": "f9cb2cb",
+      "site": "content2html",
+      "message": "fix(seo): JSON-LD ScholarlyArticle on 2606.18246 slide + URL-derived og:type"
+    }
+  ],
+  "smart_push_status": {
+    "status": "skipped",
+    "sites": {
+      "content2html": "skipped"
+    },
+    "error_log": "Per §L19 / swarm-config.json phase_4: judge decides push after scoring. Worker does NOT push."
+  },
+  "decision_stream_entries": [
+    {
+      "ts": "2026-07-31T20:50:00.000Z",
+      "type": "auto-decide",
+      "content": "Fix F1: add scholarlyArticleLd JSON-LD to 2606.18246 slide (en + zh)",
+      "decision": "apply fix",
+      "impact": "fills JSON-LD gap on paper slide 2606.18246; mirror existing 2603.12109 pattern",
+      "reversible": true,
+      "risk": "low",
+      "reason": "minimal diff (2 files, 2 lines each), no new deps, restores schema parity"
+    },
+    {
+      "ts": "2026-07-31T20:52:00.000Z",
+      "type": "auto-decide",
+      "content": "Fix F2: derive og:type from URL in BaseLayout (paper/progress → article; index → website)",
+      "decision": "apply fix",
+      "impact": "single-line change in BaseLayout; affects all 12 product pages (og:type=article) + 2 index pages (og:type=website)",
+      "reversible": true,
+      "risk": "low",
+      "reason": "URL-derived (no per-page prop), matches OG best practice for content pages, avoids bloat"
+    }
+  ],
+  "build_outputs": {
+    "content2html": {
+      "dist_exists": true,
+      "astro_check_passed": true,
+      "build_warnings": 0
+    }
+  }
+}
