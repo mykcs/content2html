@@ -29,3 +29,7 @@ node_modules/
 
 # website-improve run artifacts (never commit)
 .website-improve/
+
+# multi-site orchestration session artifacts (never commit, per CLAUDE.md §4 active sites)
+.swarm/
+.worktrees/
