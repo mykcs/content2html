@@ -8,9 +8,10 @@ This directory is the stable Agent entrypoint for `mykcs/content2html`.
 
 1. root [`AGENTS.md`](../../AGENTS.md) — repository operating rules and completion-report contract;
 2. this file — project purpose, current architecture and ownership map;
-3. [`web-gpt-cloudflare-build-budget-workflow.md`](./web-gpt-cloudflare-build-budget-workflow.md) only when evaluating a future Cloudflare introduction; it does **not** describe the current host;
-4. root [`README.md`](../../README.md) — product/user guidance;
-5. `package.json`, `astro.config.mjs`, task-specific source and tests — executable truth.
+3. [`basemodel-hosting-pattern-suggestion.md`](./basemodel-hosting-pattern-suggestion.md) — **advisory reference for future hosting work: evaluate the newer `mykcs/basemodel` Vercel-Preview + Cloudflare-Workers pattern, but do not copy it without a project-specific migration decision**;
+4. [`web-gpt-cloudflare-build-budget-workflow.md`](./web-gpt-cloudflare-build-budget-workflow.md) only when evaluating a future Cloudflare introduction; it does **not** describe the current host;
+5. root [`README.md`](../../README.md) — product/user guidance;
+6. `package.json`, `astro.config.mjs`, task-specific source and tests — executable truth.
 
 Account-wide owner preferences are supplied by the shared Agent harness when available. Keep only project-specific constraints here instead of copying global preference prose into this repository.
 
@@ -24,6 +25,8 @@ Account-wide owner preferences are supplied by the shared Agent harness when ava
 - Baseline correctness gate: `npm run build` (`astro check && astro build`).
 
 Do not migrate the project to Cloudflare, Vercel or another repository's hosting architecture merely for cross-repository uniformity. Deployment architecture is project truth and changes only through an explicit project-specific migration decision.
+
+The sibling `mykcs/basemodel` project is now a useful **reference** for how to separate PR Preview from Production hosting and how to shadow-migrate a static Astro site. Read the suggestion note before future hosting redesigns, but preserve this repository's GitHub Pages/base-path contract until its own migration gate is approved.
 
 ## Repository map
 
@@ -57,7 +60,7 @@ read AGENTS + this file
 - Validate before pushing instead of using repeated hosted-CI push loops.
 - Documentation/policy-only synchronization should avoid an unnecessary deployment/CI run when the hosting platform supports a skip mechanism.
 - Do not conflate GitHub Actions usage with Cloudflare Pages Build usage.
-- If Cloudflare Pages is introduced later, first re-evaluate the current Cloudflare docs and this repository's own architecture; the retained Cloudflare workflow note is migration/fallback context, not authority to migrate automatically.
+- If Cloudflare is introduced later, first re-evaluate current Cloudflare guidance and this repository's own architecture. Prefer a reversible shadow migration; do not replace the current Production/canonical host merely to match another repo.
 
 ## Knowledge precedence
 
