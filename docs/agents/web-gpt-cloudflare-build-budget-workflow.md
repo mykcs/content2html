@@ -1,84 +1,71 @@
-# Web-GPT website workflow and Cloudflare build-budget policy
+# Web-GPT website workflow and hosted-build budget policy
 
-Last reviewed: 2026-08-10
-Owner decision: 2026-08-10
+Last reviewed: **2026-08-11**
 
 ## Current deployment fact
 
-`content2html` is currently an Astro static site deployed to GitHub Pages at:
+`content2html` is an Astro static site deployed to GitHub Pages at:
 
-```text
-https://mykcs.github.io/content2html/
-```
+`https://mykcs.github.io/content2html/`
 
-The repository's current `astro.config.mjs` deliberately uses:
-
-```text
-site = https://mykcs.github.io/content2html/
-base = /content2html
-```
-
-Do **not** add Cloudflare Pages, change the base path, or redesign deployment architecture merely to make this repository match `basemodel`.
+The repository deliberately uses the `/content2html` base path. Do not add another hosting provider merely to copy another project.
 
 ## Owner-level workflow preference
 
-The owner wants routine website work to remain operable from ChatGPT/Codex-style web tooling with minimal manual relay between services.
+Routine website work should remain operable from ChatGPT/Codex-style tooling with minimal manual relay.
 
 Before non-trivial work:
 
-1. read `AGENTS.md` and this file;
-2. inspect current `main`, relevant open PRs, and overlapping work;
-3. keep one coherent feature on one branch / PR;
-4. run repository-owned validation and `npm run build` in the Agent execution environment;
-5. use the deployment/preview mechanism appropriate to this repository rather than inventing a new platform dependency;
-6. report exactly what was built, previewed, merged, and deployed.
-
-"Local build" means the Agent execution environment. The owner should not have to run commands on their own computer just to validate an ordinary website change.
+1. read `AGENTS.md` and current Agent docs;
+2. inspect current `main`, relevant open PRs and overlap;
+3. batch one coherent feature/change before publication;
+4. run repository-owned validation and `npm run build` in the Agent environment;
+5. use the review/deployment mechanism appropriate to this repository;
+6. report exactly what was built, previewed, merged and deployed.
 
 ## Current preview/release rule
 
-Because this repository is currently GitHub Pages-only, the `basemodel` Cloudflare rule of "Wrangler Preview then one Cloudflare Production Build" is **not currently applicable**.
+This repository is GitHub Pages-only. There is no Cloudflare Pages/Workers or Vercel deployment contract to preserve today.
 
-Do not create a Cloudflare project merely for temporary previews unless the owner separately decides to adopt Cloudflare for this site.
+For current work:
 
-For current GitHub Pages work:
-
-- validate locally/Agent-side first;
+- validate Agent-side first;
 - avoid repeated push-loop debugging;
-- use a focused PR and the existing GitHub Pages deployment model;
-- use `[skip ci]` for documentation/policy-only synchronization when a deployment is not desired;
-- do not conflate GitHub Actions usage with Cloudflare Pages Build usage.
+- use focused Git publication only when needed for the requested outcome;
+- use `[skip ci]` for docs/policy-only synchronization only when the actual workflow honors it and no deployment is desired;
+- distinguish source/build/Preview/Production evidence rather than calling any one of them “done”.
 
-## If Cloudflare Pages is adopted later
+## Future hosting changes: role-first, provider-second
 
-If the owner later explicitly chooses Cloudflare Pages for this repository, use the following default unless a project-specific migration plan says otherwise:
+Do not keep a standing instruction that a future Cloudflare adoption must use Direct Upload, or that a future Preview must use Vercel. Provider capabilities, quotas and product needs change.
+
+If hosting/Preview modernization is requested later:
 
 ```text
-GitHub remains source of truth
--> automatic Preview branch deployments = None
--> Agent-side production build
--> Wrangler Direct Upload of prebuilt output to a unique Preview branch
--> inspect public pages.dev Preview
--> source sync without Git-integrated Preview Build
--> merge accepted work to the chosen Production branch
--> only the deliberate Production boundary may consume a Git-integrated Pages Build
+inspect current product + live deployment
+-> map source / CI / Preview / Production / runtime / canonical identity roles
+-> identify the measured missing/problematic role
+-> re-check current first-party provider docs and limits
+-> choose the smallest architecture that solves it
+-> preserve /content2html and SEO identity unless migration is explicit
+-> validate exact reviewed head on a reversible non-production surface
+-> define rollback
+-> explicit Production cutover
+-> verify Production
 ```
 
-Cloudflare currently documents that an existing Git-integrated Pages project can disable automatic deployments and still accept manual Wrangler deployments.
+A new provider should normally replace or satisfy a distinct responsibility. Do not add a second/third provider merely because it is available or because another repository uses it.
 
-When Cloudflare is actually introduced, first create a project-specific migration/runbook that preserves this site's `/content2html` routing, canonical URLs, bilingual hreflang, sitemap behavior, OG metadata, and GitHub Pages rollback path until cutover is proven.
+## Build-resource rule
 
-## Cloudflare pre-push gate for any future integration
+Hosted build resources are separate:
 
-If a Cloudflare Pages project is ever connected, before the first ordinary non-skip branch push:
+- GitHub Actions runner usage;
+- Vercel deployments/build execution;
+- Cloudflare Pages Builds;
+- Cloudflare Workers Builds.
 
-1. confirm which branch is Production;
-2. confirm Preview automatic deployment is `None` when possible;
-3. if Branch control is unknown, use a Cloudflare-supported skip prefix instead of speculative pushes;
-4. use Wrangler Direct Upload for ordinary public Preview review;
-5. do not spend a Git-integrated Preview Build merely to show visual changes.
-
-Cloudflare currently documents these skip prefixes: `[CI Skip]`, `[CI-Skip]`, `[Skip CI]`, `[Skip-CI]`, `[CF-Pages-Skip]`.
+Do not describe one pool as protecting/consuming another. Batch coherent changes, avoid trigger-only commits, and report exact provider evidence when resource consumption matters. If provider quota/capability is central to a decision, verify the current official documentation rather than relying on this dated note.
 
 ## Validation contract
 
@@ -90,28 +77,20 @@ npm run build
 npm test
 ```
 
-`npm run build` already runs `astro check && astro build`.
+For slides, print behavior, bilingual routing, SEO metadata, CSP or browser interaction, run the relevant targeted checks as well.
 
-For changes affecting slides, print behavior, bilingual routing, SEO metadata, CSP, or browser interaction, run the relevant existing targeted scripts/tests in addition to the normal build.
+## Completion report
 
-## Required completion report
-
-Every website task should report:
+Every website task should state:
 
 ```text
 Task status: completed / not completed
 Agent-side validation/build: passed / failed / not run
-Preview URL: <actual URL if one exists>
-Preview mechanism: GitHub Pages / Wrangler Direct Upload / other / none
-Cloudflare Git-integrated Pages Builds triggered: 0 / 1 / more / not applicable / unknown
+Preview URL + mechanism: <actual value or none>
+Hosted provider build triggered: yes / no / unknown / not applicable
 GitHub branch / PR / merge status
 Production changed: yes / no / unknown
 Production URL: https://mykcs.github.io/content2html/
 ```
 
-## Current Cloudflare references for future adoption
-
-- https://developers.cloudflare.com/pages/configuration/branch-build-controls/
-- https://developers.cloudflare.com/pages/configuration/git-integration/
-- https://developers.cloudflare.com/pages/configuration/git-integration/github-integration/
-- https://developers.cloudflare.com/pages/get-started/direct-upload/
+Do not claim a Preview exists unless it was actually created and checked.

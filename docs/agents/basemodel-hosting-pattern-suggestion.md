@@ -1,63 +1,67 @@
-# Hosting architecture suggestion — review the `mykcs/basemodel` pattern before future hosting changes
+# Hosting architecture suggestion — use `basemodel` for reasoning, not provider copying
 
 Last reviewed: **2026-08-11**
 
-Status: **advisory only. This does not change `content2html` hosting.**
+Status: **advisory only. `content2html` remains GitHub Pages-only.**
 
-`content2html` currently uses Astro + GitHub Pages and intentionally serves under the `/content2html` base path. Preserve that current truth unless the owner explicitly starts a project-specific hosting migration.
+## Current local decision
 
-## Pattern worth evaluating
+`content2html` is an Astro static site served intentionally from:
 
-The sibling website `mykcs/basemodel` has converged on a useful division of responsibilities:
+`https://mykcs.github.io/content2html/`
+
+GitHub Pages currently satisfies the site's Production and canonical-identity needs. There is no demonstrated runtime requirement or Preview bottleneck that justifies adding another provider today.
+
+## Updated lesson from `basemodel`
+
+After its 2026-08-11 cross-provider audit, `basemodel` retained:
 
 ```text
-GitHub = source of truth
-non-main branch / PR -> Vercel Preview
-Production target     -> Cloudflare Workers Static Assets
+GitHub = source
+Vercel = ordinary PR Preview
+Cloudflare Pages = Production
 ```
 
-In `basemodel`, Vercel is used because PR Preview, build feedback and Agent-visible logs are already working well there. Cloudflare Workers Static Assets is being evaluated as the modern Cloudflare Production target through a reversible shadow migration; the existing Pages Production is not removed until parity is proved.
+Its previously validated Cloudflare Workers Static Assets shadow is now a dormant future option rather than an automatic Production target.
 
-Agents working here may use that project as a **reference implementation and decision record**, especially:
+The transferable lesson is **provider-role separation**, not that every site should use Vercel + Cloudflare:
 
-- `mykcs/basemodel/docs/agents/LATEST.md`
-- `mykcs/basemodel/docs/agents/current/hosting-architecture.md`
-- `mykcs/basemodel/vercel.json`
-- `mykcs/basemodel/wrangler.jsonc` once the Workers shadow configuration lands
+1. inventory source/CI/Preview/Production/runtime/canonical-identity roles;
+2. keep the smallest provider set that satisfies real needs;
+3. add a provider only for a real missing role or as a deliberate replacement;
+4. avoid a third routine provider merely for consistency;
+5. treat provider-hosted domains/base paths as product/SEO identity;
+6. validate the exact reviewed head and distinguish build/READY from real-page acceptance;
+7. re-check current first-party provider docs when quotas/features are material.
 
-## Do not copy it blindly
+For `content2html`, this reasoning currently points to **no hosting migration**.
 
-Before proposing the same split here, first answer:
+## When a second provider would become justified
 
-1. Is GitHub Pages still meeting the product's real requirements?
-2. Does `/content2html` need to remain the canonical base path?
-3. Is an external PR Preview valuable enough to justify Vercel?
-4. Is there any runtime/API behavior that would change the choice of static host?
-5. What are the current canonical, redirect, sitemap and SEO assumptions?
-6. Can a shadow deployment prove parity without touching the existing Production site?
+Re-evaluate only if a concrete trigger appears, for example:
 
-If the answer is simply “the other repository uses it,” do not migrate.
+- lack of public PR Preview repeatedly blocks review;
+- GitHub Pages has a measured reliability/feature/limit problem;
+- the product gains runtime/API behavior GitHub Pages cannot serve;
+- a custom-domain/identity migration is already planned for product reasons;
+- the owner explicitly requests a hosting migration after its tradeoffs are understood.
 
-## If a future migration is approved
+If Preview alone becomes the problem, compare current Preview products then; do not assume Vercel or Cloudflare is automatically correct. If runtime is the problem, choose based on the runtime requirement rather than static-host fashion.
 
-Prefer the same safety sequence used by `basemodel`:
+## Migration sequence if one is ever approved
 
 ```text
-record current architecture
--> create provider-neutral build contract
--> add non-production Preview/shadow path
--> validate exact Git head
--> compare routes/assets/SEO/headers
+record current role/identity map
+-> prove the actual missing role
+-> choose the smallest replacement/addition
+-> keep framework migration separate
+-> build provider-neutral artifact
+-> create reversible non-production evidence
+-> verify exact head + routes/assets/SEO/base path
 -> define rollback
--> explicit owner cutover
+-> explicit cutover
 -> verify Production
--> retire old host only after verification
+-> only then retire old infrastructure
 ```
 
-Keep framework migration separate from hosting migration. Astro does not need to become Next.js merely because Vercel is used for Preview.
-
-Do not commit provider API tokens or other live credentials into this repository.
-
-## Current authority remains local
-
-For this repository, `AGENTS.md`, `docs/agents/README.md`, `package.json`, `astro.config.mjs` and the current GitHub Pages behavior remain authoritative. This note is a prompt to **evaluate** the newer `basemodel` deployment pattern when hosting work is requested, not permission to change hosting autonomously.
+Do not commit provider credentials. Current repository authority remains `AGENTS.md`, `docs/agents/README.md`, `package.json`, `astro.config.mjs`, and live GitHub Pages behavior.
