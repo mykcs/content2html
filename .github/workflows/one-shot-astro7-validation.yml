@@ -37,17 +37,31 @@ jobs:
           npm audit fix
           npm audit --audit-level=high
 
+      - name: Persist audited dependency metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add package.json package-lock.json
+          if git diff --cached --quiet; then
+            echo 'Audit required no metadata change.'
+          else
+            git commit -m 'fix(deps): resolve post-upgrade audit finding'
+            git push origin HEAD:agent/astro7-upgrade
+          fi
+
       - name: Build upgraded dependency graph
         run: npm run build
 
+      - name: Install repository validation tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ripgrep poppler-utils
+          npx playwright install --with-deps chromium
+
       - name: Check bilingual/template consistency
         run: bash scripts/check-template-consistency.sh
-
-      - name: Install browser and PDF text tools
-        run: |
-          npx playwright install --with-deps chromium
-          sudo apt-get update
-          sudo apt-get install -y poppler-utils
 
       - name: Start upgraded preview server
         shell: bash
@@ -69,20 +83,6 @@ jobs:
           URL: http://127.0.0.1:4321/content2html/zh/paper/2603.12109/slide/
           SLIDE_COUNT: '16'
         run: node scripts/verify-print-e2e.mjs
-
-      - name: Commit audited dependency metadata
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add package.json package-lock.json
-          if git diff --cached --quiet; then
-            echo 'Audit required no metadata change.'
-            exit 0
-          fi
-          git commit -m 'fix(deps): resolve post-upgrade audit finding'
-          git push origin HEAD:agent/astro7-upgrade
 
       - name: Stop preview server
         if: always()
