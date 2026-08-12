@@ -1,0 +1,75 @@
+name: One-shot Astro 7 deep validation
+
+on:
+  push:
+    branches:
+      - agent/astro7-upgrade
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch and submodules
+        uses: actions/checkout@v6
+        with:
+          ref: agent/astro7-upgrade
+          submodules: recursive
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Confirm Astro 7 lock and audit high-severity dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          node -e "const p=require('./node_modules/astro/package.json'); if(!p.version.startsWith('7.')) throw new Error('expected Astro 7, got '+p.version); console.log('Astro', p.version)"
+          npm audit --audit-level=high
+
+      - name: Build exact upgraded head
+        run: npm run build
+
+      - name: Check bilingual/template consistency
+        run: bash scripts/check-template-consistency.sh
+
+      - name: Install browser and PDF text tools
+        run: |
+          npx playwright install --with-deps chromium
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
+
+      - name: Start upgraded preview server
+        shell: bash
+        run: |
+          set -euo pipefail
+          nohup npm run preview -- --host 127.0.0.1 > /tmp/content2html-preview.log 2>&1 &
+          echo $! > /tmp/content2html-preview.pid
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:4321/content2html/zh/paper/2603.12109/slide/ >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/content2html-preview.log
+          exit 1
+
+      - name: Run print/browser regression against upgraded local build
+        env:
+          URL: http://127.0.0.1:4321/content2html/zh/paper/2603.12109/slide/
+          SLIDE_COUNT: '16'
+        run: node scripts/verify-print-e2e.mjs
+
+      - name: Stop preview server
+        if: always()
+        run: |
+          test ! -f /tmp/content2html-preview.pid || kill "$(cat /tmp/content2html-preview.pid)" || true
+          cat /tmp/content2html-preview.log || true
