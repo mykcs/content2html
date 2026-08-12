@@ -12,10 +12,10 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.9",
+    "@astrojs/check": "^0.9.10",
     "@astrojs/sitemap": "^3.7.3",
     "@tailwindcss/vite": "4.1.18",
-    "astro": "^6.4.2",
+    "astro": "^7.2.1",
     "katex": "^0.16.47",
     "sharp": "^0.35.0",
     "tailwindcss": "4.1.18",
