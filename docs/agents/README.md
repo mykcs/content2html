@@ -15,6 +15,8 @@ This directory is the stable Agent entrypoint for `mykcs/content2html`.
 
 Account-wide owner preferences are supplied by the shared Agent harness when available. Keep only project-specific constraints here instead of copying global preference prose into this repository.
 
+For every human-facing rendered web change—including a small request to add one item or block—load `mykcs/myk-skills/website-improve/references/human-thinking-web-expression.md` and classify the change as `APPLY_LIGHT`, `APPLY_FULL`, or `NOT_APPLICABLE`. When it applies, state the reader goal, mental relationship, semantic HTML form, density/flow effect, and evidence from the affected route. This repository’s Astro, `/content2html` base-path, design, accessibility, and validation truth remains authoritative; do not copy the shared policy into a second local source.
+
 The reusable concurrent-work protocol lives at `mykcs/myk-skills/website-improve/references/parallel-agent-delivery.md`. The adaptation below defines how that protocol applies while this project remains GitHub Pages-only.
 
 ## Current project truth
