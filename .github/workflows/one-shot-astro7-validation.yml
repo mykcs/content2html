@@ -6,7 +6,7 @@ on:
       - agent/astro7-upgrade
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   validate:
@@ -18,6 +18,7 @@ jobs:
         with:
           ref: agent/astro7-upgrade
           submodules: recursive
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v5
@@ -28,14 +29,15 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
-      - name: Confirm Astro 7 lock and audit high-severity dependencies
+      - name: Confirm Astro 7 and repair non-breaking audit issues
         shell: bash
         run: |
           set -euo pipefail
           node -e "const p=require('./node_modules/astro/package.json'); if(!p.version.startsWith('7.')) throw new Error('expected Astro 7, got '+p.version); console.log('Astro', p.version)"
+          npm audit fix
           npm audit --audit-level=high
 
-      - name: Build exact upgraded head
+      - name: Build upgraded dependency graph
         run: npm run build
 
       - name: Check bilingual/template consistency
@@ -67,6 +69,20 @@ jobs:
           URL: http://127.0.0.1:4321/content2html/zh/paper/2603.12109/slide/
           SLIDE_COUNT: '16'
         run: node scripts/verify-print-e2e.mjs
+
+      - name: Commit audited dependency metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add package.json package-lock.json
+          if git diff --cached --quiet; then
+            echo 'Audit required no metadata change.'
+            exit 0
+          fi
+          git commit -m 'fix(deps): resolve post-upgrade audit finding'
+          git push origin HEAD:agent/astro7-upgrade
 
       - name: Stop preview server
         if: always()
