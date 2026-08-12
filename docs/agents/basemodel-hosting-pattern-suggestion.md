@@ -1,6 +1,6 @@
 # Hosting architecture suggestion — use `basemodel` for reasoning, not provider copying
 
-Last reviewed: **2026-08-11**
+Last reviewed: **2026-08-12**
 
 Status: **advisory only. `content2html` remains GitHub Pages-only.**
 
@@ -12,29 +12,30 @@ Status: **advisory only. `content2html` remains GitHub Pages-only.**
 
 GitHub Pages currently satisfies the site's Production and canonical-identity needs. There is no demonstrated runtime requirement or Preview bottleneck that justifies adding another provider today.
 
-## Updated lesson from `basemodel`
+## Updated provider-role lesson from `basemodel`
 
-After its 2026-08-11 cross-provider audit, `basemodel` retained:
+`basemodel` changed its deployment ownership on 2026-08-12 after the owner explicitly required normal Cloudflare Pages Builds to become zero and one provider to own both review and release:
 
 ```text
 GitHub = source
-Vercel = ordinary PR Preview
-Cloudflare Pages = Production
+Vercel = Preview + Production
+Cloudflare Pages = frozen legacy rollback snapshot
 ```
 
-Its previously validated Cloudflare Workers Static Assets shadow is now a dormant future option rather than an automatic Production target.
+Vercel now owns both Preview and Production for `basemodel`. Its Astro/React framework did not change; the migration consolidated deployment ownership and moved canonical identity to the Vercel Production domain.
 
-The transferable lesson is **provider-role separation**, not that every site should use Vercel + Cloudflare:
+The earlier 2026-08-11 audit that retained Cloudflare Pages Production was valid under the earlier objective—reduce wasteful Preview builds without migrating the host—but it was later superseded when the owner changed the actual requirement. The transferable lesson is therefore **provider-role separation plus current-objective review**, not that every site should use Vercel or Cloudflare:
 
 1. inventory source/CI/Preview/Production/runtime/canonical-identity roles;
-2. keep the smallest provider set that satisfies real needs;
-3. add a provider only for a real missing role or as a deliberate replacement;
-4. avoid a third routine provider merely for consistency;
-5. treat provider-hosted domains/base paths as product/SEO identity;
-6. validate the exact reviewed head and distinguish build/READY from real-page acceptance;
-7. re-check current first-party provider docs when quotas/features are material.
+2. resolve current requirements against project current docs, executable config/tests and live provider state;
+3. keep the smallest provider set that satisfies real needs;
+4. add or remove a provider only for a real missing role or a deliberate replacement;
+5. avoid a second or third routine provider merely for account-wide consistency;
+6. treat provider-hosted domains/base paths as product/SEO identity;
+7. validate the exact reviewed head and distinguish build/READY from real-page acceptance and Production verification;
+8. treat architecture decisions as current guidance, not eternal rules after the owner changes the objective.
 
-For `content2html`, this reasoning currently points to **no hosting migration**.
+For `content2html`, this reasoning still points to **no hosting migration**.
 
 ## When a second provider would become justified
 
@@ -52,7 +53,7 @@ If Preview alone becomes the problem, compare current Preview products then; do 
 
 ```text
 record current role/identity map
--> prove the actual missing role
+-> prove the actual missing role and current owner objective
 -> choose the smallest replacement/addition
 -> keep framework migration separate
 -> build provider-neutral artifact
@@ -61,7 +62,7 @@ record current role/identity map
 -> define rollback
 -> explicit cutover
 -> verify Production
--> only then retire old infrastructure
+-> only then retire or freeze old infrastructure
 ```
 
 Do not commit provider credentials. Current repository authority remains `AGENTS.md`, `docs/agents/README.md`, `package.json`, `astro.config.mjs`, and live GitHub Pages behavior.
