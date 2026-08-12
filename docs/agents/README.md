@@ -15,6 +15,10 @@ This directory is the stable Agent entrypoint for `mykcs/content2html`.
 
 Account-wide owner preferences are supplied by the shared Agent harness when available. Keep only project-specific constraints here instead of copying global preference prose into this repository.
 
+For every human-facing rendered web change—including a small request to add one item or block—load `mykcs/myk-skills/website-improve/references/human-thinking-web-expression.md` and classify the change as `APPLY_LIGHT`, `APPLY_FULL`, or `NOT_APPLICABLE`. When it applies, state the reader goal, mental relationship, semantic HTML form, density/flow effect, and evidence from the affected route. This repository’s Astro, `/content2html` base-path, design, accessibility, and validation truth remains authoritative; do not copy the shared policy into a second local source.
+
+The reusable concurrent-work protocol lives at `mykcs/myk-skills/website-improve/references/parallel-agent-delivery.md`. The adaptation below defines how that protocol applies while this project remains GitHub Pages-only.
+
 ## Current project truth
 
 - Product: content-to-HTML website/tool.
@@ -55,6 +59,29 @@ read AGENTS + this file
 
 “Agent-side/local build” means the Agent execution environment, not the owner's computer.
 
+## Parallel conversations and release batching
+
+When multiple conversations work on the same release window:
+
+```text
+latest main
+├─ focused worker branch / Draft PR A ┐
+├─ focused worker branch / Draft PR B ├─> one integration/release branch
+└─ focused worker branch / Draft PR C ┘       -> combined `npm run build`
+                                                -> one accepted update to main
+                                                -> GitHub Pages release path
+```
+
+- Worker conversations keep narrow scopes, inspect overlapping PRs and record base/head SHA, changed files, checks, dependencies and shared surfaces such as layouts, global CSS, navigation, Astro config, dependency manifests and lockfiles.
+- Prefer one atomic multi-file commit/ref update per coherent worker change rather than sequential remote file writes.
+- Worker PRs remain Draft and are not merged independently when the owner intends one release batch.
+- The integration conversation refreshes `main`, inspects every candidate diff/check and resolves textual, semantic/UI, dependency/generated and release-workflow conflicts on one explicit integration head.
+- Run the combined `npm run build` and task-relevant browser/base-path/SEO checks on the exact integrated head before release.
+- Merge/update `main` once for the accepted batch. GitHub Pages/Actions behavior is controlled by the current workflow, not by the number of chats.
+- Actions runs or deployments already triggered by earlier pushes remain consumed. A new integration conversation cannot retroactively combine them.
+- Do not batch unrelated or unaccepted work solely to save resources. Preserve reviewability, attribution, rollback and the `/content2html` identity.
+- Mark worker PRs as merged, superseded or still pending after the integration PR is accepted.
+
 ## Build and resource boundary
 
 - Validate before pushing instead of using repeated hosted-CI push loops.
@@ -83,6 +110,8 @@ For implementation work, report:
 - hosted build usage when relevant;
 - branch / PR / merge status;
 - whether Production changed.
+
+For a parallel release batch, also report candidate PRs inspected, accepted/deferred/superseded, conflict classes checked, integration head SHA and final worker-PR disposition.
 
 ## Maintenance rule
 
