@@ -23,10 +23,15 @@ The reusable concurrent-work protocol lives at `mykcs/myk-skills/website-improve
 
 - Product: content-to-HTML website/tool.
 - Framework: Astro.
+- Shared CI decision contract: [mykcs/.agents CI Standard](https://github.com/mykcs/.agents/blob/main/docs/agents/CI_STANDARD.md).
+- CI mode: `DEPLOY_ONLY`; the Pages build is the repository's hosted build/deployment acceptance path.
+- Repository-owned validator: `npm run build` (`astro check && astro build`).
+- Current workflow: `.github/workflows/deploy.yml` runs on `main` pushes and manual dispatch; it does not validate pull requests before merge.
 - Current deployment: GitHub Pages.
 - Public path: `https://mykcs.github.io/content2html/`.
 - The `/content2html` base path is intentional.
-- Baseline correctness gate: `npm run build` (`astro check && astro build`).
+
+Keep this small local statement as the CI adaptation; a separate CI Passport is unnecessary while this remains a simple Pages-only site. Read the shared standard before changing triggers, merge authority, or providers. A `main` push publishes through GitHub Pages, so validate candidate changes before merge and treat publication as a separate release effect.
 
 Do not migrate the project to Cloudflare, Vercel or another repository's hosting architecture merely for cross-repository uniformity. Deployment architecture is project truth and changes only through an explicit project-specific migration decision.
 
