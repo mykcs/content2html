@@ -1,5 +1,7 @@
 # Agent guide
 
+Shared operating policy: follow [the central AGENTS.md](https://github.com/mykcs/.agents/blob/main/AGENTS.md) and [Capability Routing](https://github.com/mykcs/.agents/blob/main/docs/dev/CAPABILITY_ROUTING.md) for authorization reuse, tool fallbacks and engineering completion. This repository retains its scoped scientific, resource, privacy and release requirements.
+
 This repository is often maintained by coding Agents. Prefer autonomous execution through available GitHub/deployment tools and avoid making the owner relay information between services.
 
 ## Read first
