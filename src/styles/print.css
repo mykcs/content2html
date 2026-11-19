@@ -19,7 +19,7 @@
  *   5. Page break strategy = `break-before: page` on adjacent siblings
  *      (NOT `break-after: page` on every slide — that forces a
  *      trailing blank page in real browser print pipeline).
- *   6. `html { font-size: 9.37px }` so every `rem` cascades 0.585×;
+ *   6. `html { font-size: var(--print-root) }` so every `rem` cascades 0.585×;
  *      px-based values are scaled manually.
  *
  * Verification (E2E):
@@ -54,7 +54,7 @@
   html, body {
     background: white !important;
     overflow: visible !important;
-    font-size: 9.37px !important;
+    font-size: var(--print-root) !important;
   }
   .slide-deck {
     display: contents !important;  /* let .slide-page become direct body children */
@@ -65,34 +65,24 @@
          either mm (page-relative) or px scaled by 0.5846 from screen. */
   .slide-page {
     /* Page-sized: 297 × 167 mm = 1122.5 × 631.2 px @ 96 DPI */
-    width: 297mm !important;
-    height: 167mm !important;
+    width: var(--print-width) !important;
+    height: var(--print-height) !important;
 
     /* Padding: 80 × 0.585 ≈ 47, 100 × 0.585 ≈ 58.  Trimmed to 35/40
        to give figure slides enough vertical room for 2:1 images. */
-    padding: 35px 40px !important;
+    padding: var(--print-space-block) var(--print-space-inline) !important;
 
     /* Preserve screen grid layout */
     display: grid !important;
     grid-template-columns: repeat(12, 1fr) !important;
-    gap: 14px !important;  /* 1.5rem × 0.585 ≈ 14 */
+    gap: var(--print-gap) !important;  /* 1.5rem × 0.585 ≈ 14 */
 
     /* Scaled base font-size so all `em` references inside .slide-page
        cascade correctly.  Combined with html font-size 9.37px, both
        em and rem are scaled. */
-    font-size: 9.37px !important;
+    font-size: var(--print-root) !important;
 
-    /* Override Tailwind v4 @theme design tokens in `em` units so they
-       scale with .slide-page font-size. Original values are in rem at
-       html root 16px; here at 9.37px, the value × 0.585 = print size. */
-    --text-display: 5em;       /* was 5rem = 80px  → 5 × 9.37 = 46.85px */
-    --text-headline: 3.5em;    /* was 3.5rem = 56px → 32.80px */
-    --text-title: 2em;         /* was 2rem = 32px  → 18.74px */
-    --text-body: 1.125em;      /* was 1.125rem = 18px → 10.55px */
-    --text-caption: 0.9375em;  /* was 0.9375rem = 15px → 8.78px */
-    --text-kicker: 0.8125em;   /* was 0.8125rem = 13px → 7.61px */
-    --spacing: 0.25em;         /* Tailwind gap base: 0.25 × 9.37 = 2.34px */
-    --spacing-baseline: 0.5em; /* was 8px → 4.68px */
+    /* Type/space role variants are declared once in tokens.css. */
 
     /* Visibility override: screen-mode default is visibility:hidden for
        non-active slides.  Without this override, only the .active
@@ -135,20 +125,20 @@
          and rounded.  Add new rules here when adding new screen
          absolute elements. */
   .slide-page .slide-top-accent {
-    top: 19px !important;        /* screen 32 × 0.585 */
-    left: 58px !important;       /* screen 100 × 0.585 */
+    top: var(--print-meta-bottom) !important;        /* screen 32 × 0.585 */
+    left: var(--print-meta-side) !important;       /* screen 100 × 0.585 */
     width: 35px !important;      /* screen 60 × 0.585 */
     height: 1.2px !important;    /* screen 2 × 0.585 */
   }
   .slide-page .slide-info-corner {
-    bottom: 53px !important;     /* screen 90 × 0.585 */
-    left: 33px !important;       /* screen 56 × 0.585 */
-    max-width: 246px !important; /* screen 420 × 0.585 */
+    bottom: var(--print-info-bottom) !important;     /* screen 90 × 0.585 */
+    left: var(--print-info-left) !important;       /* screen 56 × 0.585 */
+    max-width: var(--print-measure-info) !important; /* screen 420 × 0.585 */
   }
   .slide-page .slide-meta-bar {
     top: auto !important;
-    bottom: 19px !important;     /* screen 32 × 0.585 (moved from top→bottom for print consistency) */
-    right: 58px !important;      /* screen 100 × 0.585 */
+    bottom: var(--print-meta-bottom) !important;     /* screen 32 × 0.585 (moved from top→bottom for print consistency) */
+    right: var(--print-meta-side) !important;      /* screen 100 × 0.585 */
     left: auto !important;
   }
 
@@ -178,25 +168,24 @@
          cascade to (border widths, inline sizes).
          Design contract:
          - Main typography (display/headline/title/body/caption/kicker)
-           uses var(--text-*) from @theme (defined in §3 above).
-         - Component-specific values (info-corner dt/dd 0.7rem/0.85rem,
-           takeaway-item border-left 5px) stay as raw values — these
-           are scoped to ONE component each, adding them to @theme
-           would over-engineer. */
+           uses var(--type-*) from the canonical tokens.css print variant.
+         - Component-specific typography uses semantic type roles too.
+           Border widths remain diagram geometry, not text spacing. */
   .slide-page .takeaway-item {
     border-left-width: 5px !important;  /* screen 8 × 0.585 ≈ 4.68, round to 5 */
   }
   .slide-page .slide-info-corner dt {
-    font-size: 0.7rem !important;  /* em-based, repeat for safety */
+    font-size: var(--type-meta-label) !important;  /* em-based, repeat for safety */
   }
   .slide-page .slide-info-corner dd {
-    font-size: 0.85rem !important;
+    font-size: var(--type-detail) !important;
   }
   .slide-page .meta-page {
-    font-size: var(--text-kicker) !important;
+    font-size: var(--type-kicker) !important;
   }
 
   /* §7 — Hide UI overlays (controls bar, language toggle, dev button) */
+  .skip-link,
   .slide-controls,
   .lang-toggle,
   .dev-btn {

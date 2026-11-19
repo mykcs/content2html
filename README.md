@@ -43,3 +43,7 @@ npm install
 npm run dev          # http://127.0.0.1:4321
 npm run build        # static build → dist/
 ```
+
+## 全站排版与日期
+
+[本站标准](docs/site-standards.md)说明字体、字号、行距、间距、日期及演示/打印角色的唯一归属。`npm run build` 同步独立404的共享样式，并检查全部生成HTML；候选视觉验收运行 `npm run test:standards:browser`，覆盖双浏览器、桌面/手机、每张slide及现有PDF回归。

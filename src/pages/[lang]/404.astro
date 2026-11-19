@@ -19,7 +19,7 @@ const messages = {
     heading: "404",
     message: "抱歉，访问的页面不存在。",
     back: "返回首页",
-    homePath: "/",
+    homePath: "/zh/",
   },
   en: {
     title: "404 - Page Not Found",
@@ -39,47 +39,19 @@ Astro.response.status = 404;
 ---
 
 <!doctype html>
-<html lang={lang}>
+<html lang={lang} data-design-system="content2html-20261120" data-page-role="message">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex" />
+    <link rel="icon" type="image/svg+xml" href={`${baseUrl}/favicon.svg`} />
     <title>{t.title}</title>
   </head>
-  <body>
-    <main class="not-found">
+  <body class="message-page">
+    <main class="message" id="main">
       <h1>{t.heading}</h1>
       <p>{t.message}</p>
       <p><a href={homeUrl}>{t.back}</a></p>
     </main>
   </body>
 </html>
-
-<style>
-  .not-found {
-    max-width: 32rem;
-    margin: 4rem auto;
-    padding: 2rem;
-    text-align: center;
-    font-family: sans-serif;
-  }
-  .not-found h1 {
-    font-size: 4rem;
-    margin-bottom: 1rem;
-  }
-  .not-found p {
-    margin-bottom: 1.5rem;
-    color: #555;
-  }
-  .not-found a {
-    display: inline-block;
-    padding: 0.5rem 1.5rem;
-    background: #333;
-    color: white;
-    text-decoration: none;
-    border-radius: 0.25rem;
-  }
-  .not-found a:hover {
-    background: #555;
-  }
-</style>

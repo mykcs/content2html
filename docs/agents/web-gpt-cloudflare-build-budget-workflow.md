@@ -1,6 +1,6 @@
 # Web-GPT website workflow and hosted-build budget policy
 
-Last reviewed: **2026-08-11**
+Last reviewed: **2026-11-20**
 
 ## Current deployment fact
 
@@ -72,12 +72,12 @@ Do not describe one pool as protecting/consuming another. Batch coherent changes
 Current repository commands:
 
 ```bash
-npm install
+npm ci
+npm run test:standards
 npm run build
-npm test
 ```
 
-For slides, print behavior, bilingual routing, SEO metadata, CSP or browser interaction, run the relevant targeted checks as well.
+For rendered changes, the existing `deploy.yml` manual dispatch accepts the selected ref plus a full `expected_sha`, checks checkout identity, and runs `npm run test:standards:browser` on GitHub-hosted Ubuntu. This serves the candidate under `/content2html/` and verifies all generated routes, both browser engines, desktop/440px, every slide and all six existing PDF regressions. It retains evidence for 3 days and cannot deploy a feature branch. There is no automatic PR browser matrix; batch a coherent candidate before dispatch. See [site-standards.md](../site-standards.md) for the executable owners and evidence boundaries.
 
 ## Completion report
 

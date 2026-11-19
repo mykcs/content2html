@@ -2,6 +2,8 @@
 // src/pages/en/progress/2026-06-17/report.astro
 // progress-mode: English report version (single-column longform, scrollable)
 // Migrated to Astro content collection (getEntry) — see src/content.config.ts
+import DateText from "../../../../components/DateText.astro";
+import ProgressLogText from "../../../../components/ProgressLogText.astro";
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { articleLd } from "../../../../lib/json-ld";
 import { getEntry } from "astro:content";
@@ -26,7 +28,7 @@ const p = entry.data as {
 >
   <article>
     <header>
-      <p class="text-caption text-gray-rule">{p.period}</p>
+      <p class="text-caption text-gray-rule"><DateText value={p.period} lang="en" period /></p>
       <h1>{p.project_name}</h1>
       <p class="text-graphite">progress-mode smoke test · weekly archive</p>
       <hr class="swiss-rule" />
@@ -35,14 +37,14 @@ const p = entry.data as {
     <section>
       <h2>Done (completed)</h2>
       <ol>
-        {p.done.map((d) => <li>{d}</li>)}
+        {p.done.map((d) => <li><ProgressLogText value={d} lang="en" /></li>)}
       </ol>
     </section>
 
     <section>
       <h2>Doing (in progress)</h2>
       <ul>
-        {p.doing.map((d) => <li>{d}</li>)}
+        {p.doing.map((d) => <li><ProgressLogText value={d} lang="en" /></li>)}
       </ul>
     </section>
 
@@ -61,7 +63,7 @@ const p = entry.data as {
             <tr>
               <td>{task}</td>
               <td>{agent}</td>
-              <td>{deadline}</td>
+              <td><DateText value={deadline} lang="en" /></td>
             </tr>
           ))}
         </tbody>
@@ -82,7 +84,7 @@ const p = entry.data as {
 
     <footer>
       <hr class="swiss-rule" />
-      <p class="text-caption text-gray-rule">Smoke test artifact for progress-mode · {entry.id}</p>
+      <p class="text-caption text-gray-rule">Smoke test artifact for progress-mode · <span data-source-identifier="collection-id">{entry.id}</span></p>
     </footer>
   </article>
 </BaseLayout>

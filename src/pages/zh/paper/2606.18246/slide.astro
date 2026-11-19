@@ -67,9 +67,9 @@ const KICKERS = [
 
     <div class="col-span-12 flex flex-col justify-center items-center text-center gap-6">
       <hr class="accent-bar" />
-      <h1 class="text-headline font-sans font-bold leading-tight max-w-6xl">{paper.title_zh}</h1>
+      <h1 class="text-headline font-sans font-bold leading-tight max-w-slide-title">{paper.title_zh}</h1>
       <hr class="swiss-rule w-40" />
-      <p class="text-body leading-relaxed max-w-6xl">{paper.authors.join(" · ")}</p>
+      <p class="text-body leading-relaxed max-w-slide-title">{paper.authors.join(" · ")}</p>
     </div>
 
     <!-- Slide 1 左下角元信息块: arXiv / 章节 / 关键贡献数 -->
@@ -98,13 +98,13 @@ const KICKERS = [
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
-        <p class="kicker mb-3">摘要 · Abstract</p>
+        <p class="text-kicker mb-3">摘要 · Abstract</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight mb-4">一句话总结</h2>
+        <h2 class="text-headline font-sans font-bold mb-4">一句话总结</h2>
       </div>
-      <p class="caption flex-shrink-0">× 形 (&gt;&lt;former) 架构: 保留首尾层宽度而压缩中间层, 形成参数瓶颈. 节省 22% FLOPs + 15% KV cache, 在 200M-3B 参数上 loss 优于参数匹配均匀 baseline.</p>
+      <p class="text-caption flex-shrink-0">× 形 (&gt;&lt;former) 架构: 保留首尾层宽度而压缩中间层, 形成参数瓶颈. 节省 22% FLOPs + 15% KV cache, 在 200M-3B 参数上 loss 优于参数匹配均匀 baseline.</p>
       <div class="flex-1 flex items-center">
-        <p class="text-body leading-relaxed max-w-6xl">{paper.abstract_zh}</p>
+        <p class="text-body leading-relaxed max-w-slide-title">{paper.abstract_zh}</p>
       </div>
     </div>
   </section>
@@ -118,11 +118,11 @@ const KICKERS = [
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
-        <p class="kicker mb-3">{KICKERS[0]}</p>
+        <p class="text-kicker mb-3">{KICKERS[0]}</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_zh[0].heading)}</h2>
+        <h2 class="text-headline font-sans font-bold max-w-slide-heading">{cleanHeading(paper.sections_zh[0].heading)}</h2>
       </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-7xl">
+      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-slide-body">
         {extractBullets(paper.sections_zh[0].body).map((b) => (
           <li class="takeaway-item">{b}</li>
         ))}
@@ -155,11 +155,11 @@ const KICKERS = [
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
-        <p class="kicker mb-3">{KICKERS[2]}</p>
+        <p class="text-kicker mb-3">{KICKERS[2]}</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_zh[2].heading)}</h2>
+        <h2 class="text-headline font-sans font-bold max-w-slide-heading">{cleanHeading(paper.sections_zh[2].heading)}</h2>
       </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-7xl">
+      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-slide-body">
         {extractBullets(paper.sections_zh[2].body).map((b) => (
           <li class="takeaway-item">{b}</li>
         ))}
@@ -176,11 +176,11 @@ const KICKERS = [
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
-        <p class="kicker mb-3">{KICKERS[3]}</p>
+        <p class="text-kicker mb-3">{KICKERS[3]}</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_zh[3].heading)}</h2>
+        <h2 class="text-headline font-sans font-bold max-w-slide-heading">{cleanHeading(paper.sections_zh[3].heading)}</h2>
       </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-7xl">
+      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-slide-body">
         {extractBullets(paper.sections_zh[3].body).map((b) => (
           <li class="takeaway-item">{b}</li>
         ))}

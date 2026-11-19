@@ -46,7 +46,7 @@ const switchTitle = targetLang === "en" ? "Switch to English" : "切换到中文
 const iconUrl = `${baseUrl}/icons/translate.svg`;
 ---
 <!doctype html>
-<html lang={lang} class={productType === "slide" ? "slide-mode" : "longform-mode"}>
+<html lang={lang} data-design-system="content2html-20261120" data-page-role={productType} class={productType === "slide" ? "slide-mode" : "longform-mode"}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -164,7 +164,7 @@ const iconUrl = `${baseUrl}/icons/translate.svg`;
             <circle cx="12" cy="12" r="10"></circle>
             <polygon points="10 8 16 12 10 16 10 8"></polygon>
           </svg>
-          <span class="text-[11px] font-semibold uppercase tracking-wider">{lang === "en" ? "Dev" : "开发"}</span>
+          <span class="text-ui-badge font-semibold uppercase tracking-wider">{lang === "en" ? "Dev" : "开发"}</span>
           <span class="h-3.5 w-px bg-white/25" aria-hidden="true"></span>
           <img
             src="https://github.com/mykcs/content2html/actions/workflows/deploy.yml/badge.svg?branch=main&style=flat-square"

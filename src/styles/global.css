@@ -1,9 +1,11 @@
 /* content2html - global.css
  * 按 ADR-0004 (4 产物统一 fork guizang Style B - design tokens 复用)
- * Wrap guizang 视觉 tokens 进 Tailwind v4 @theme {} 块
+ * tokens.css owns typography and layout values; Tailwind is an adapter.
  * Source: vendor/guizang-ppt-skill/references/{themes-swiss,components}.md
  */
 @import "tailwindcss";
+@import "./tokens.css";
+@import "./message.css";
 
 /* =============================================================
  * Tailwind v4 — explicit content paths + dark variant infra
@@ -57,37 +59,52 @@
   --color-paper: #FAFAFA;
   --color-white: #FFFFFF;
 
-  /* 字体 (Swiss + 学术衬线) */
-  --font-sans: 'Helvetica Neue', 'Inter', system-ui, -apple-system, sans-serif;
-  --font-serif: 'Times New Roman', 'Noto Serif SC', Georgia, serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
-
-  /* Swiss 网格基准 (8pt baseline) */
-  --spacing-baseline: 8px;
-  --grid-rule-width: 0.5px;  /* 发丝线 */
+  --grid-rule-width: 0.5px;
   --grid-rule-style: solid;
+}
 
-  /* 字号层级 (v2: 整体放大 ~25% — user 反馈 "文字都太小了") */
-  --text-display: 5rem;        /* 80pt — slide title (Slide 1) */
-  --text-headline: 3.5rem;     /* 56pt — H2 节标题 (Q&A / image) */
-  --text-title: 2rem;          /* 32pt — H3 子标题 / lead 段 */
-  --text-body: 1.125rem;       /* 18pt — body (Q&A) */
-  --text-caption: 0.9375rem;   /* 15pt — caption / 斜体注释 */
-  --text-kicker: 0.8125rem;    /* 13pt — 大写小标签 (AReW · 2603.12109) */
 
-  /* C.1 — Print scale factor. Formula:
-       scale = 297mm / (1920px / 96dpi × 25.4) = 297 / 508 ≈ 0.5846
-     ⚠️ 不能命名 --slide-scale (跟 screen :root 里的同名 var 冲突;
-     :root --slide-scale: 1 会被 slide-nav.ts 设置为 1, 覆盖我们的 0.5846
-     导致 screen 加载时 slide 缩到 1/2 → 全部 overflow → 16 页变 26 页).
-     用 --print-scale 区分 screen vs print. */
-  --print-scale: 0.5846;
+/* Tailwind is an adapter: all active text/spacing/measure values are owned
+   by tokens.css, including utility classes used in page bodies. */
+@theme inline {
+  --font-*: initial;
+  --text-*: initial;
+  --leading-*: initial;
+  --font-weight-*: initial;
+  --tracking-*: initial;
+  --container-*: initial;
+  --font-sans: var(--type-font-sans);
+  --font-serif: var(--type-font-serif);
+  --font-mono: var(--type-font-mono);
+  --text-display: var(--type-display);
+  --text-headline: var(--type-headline);
+  --text-title: var(--type-title);
+  --text-body: var(--type-body);
+  --text-caption: var(--type-caption);
+  --text-kicker: var(--type-kicker);
+  --text-ui-badge: var(--type-ui-badge);
+  --leading-tight: var(--leading-title);
+  --leading-relaxed: var(--leading-readable);
+  --font-weight-normal: var(--weight-normal);
+  --font-weight-medium: var(--weight-medium);
+  --font-weight-semibold: var(--weight-semibold);
+  --font-weight-bold: var(--weight-bold);
+  --tracking-wider: var(--tracking-wide);
+  --spacing: var(--space-grid);
+  --spacing-baseline: var(--space-baseline);
+  --container-slide-heading: var(--measure-slide-heading);
+  --container-slide-title: var(--measure-slide-title);
+  --container-slide-body: var(--measure-slide-body);
 }
 
 /* ============ Swiss grid baseline (8pt) ============ */
+@layer base {
 html {
-  font-size: 16px;
-  line-height: 1.5;
+  font-size: var(--type-root);
+  line-height: var(--leading-body);
+}
+b, strong { font-weight: var(--weight-bold); }
+code, pre, kbd, samp { font-family: var(--type-font-mono); }
 }
 
 /* ============ Skip-link (Round 15 a11y) ============
@@ -96,27 +113,30 @@ html {
  * WCAG 2.4.1 (Bypass Blocks). */
 .skip-link {
   position: absolute;
-  left: 0.5rem;
-  top: -3rem;
+  left: calc(var(--space-unit) * 2);
+  top: calc(var(--space-unit) * -12);
   z-index: 100;
-  padding: 0.5rem 1rem;
+  padding: calc(var(--space-unit) * 2) calc(var(--space-unit) * 4);
   background: var(--color-black);
   color: var(--color-white);
   text-decoration: none;
   border-radius: 0.25rem;
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: var(--type-ui);
+  font-weight: var(--weight-semibold);
   transition: top 0.15s ease-in;
 }
 .skip-link:focus,
 .skip-link:focus-visible {
-  top: 0.5rem;
+  top: calc(var(--space-unit) * 2);
   outline: 2px solid var(--color-ikb-blue);
   outline-offset: 2px;
 }
 
 body {
-  font-family: var(--font-sans);
+  font-size: var(--type-prose);
+  font-weight: var(--weight-normal);
+  letter-spacing: var(--tracking-body);
+  font-family: var(--type-font-sans);
   color: var(--color-black);
   background: var(--color-white);
   -webkit-font-smoothing: antialiased;
@@ -132,12 +152,7 @@ body {
 }
 
 /* === Slide Deck (OSA-like: dark frame + 1920x1080 white card auto-scaled) === */
-:root {
-  --slide-w: 1920px;
-  --slide-h: 1080px;
-  --slide-scale: 1;       /* set by slide-nav.ts on load/resize */
-  --slide-frame-pad: 80px; /* breathing room around scaled slide */
-}
+
 
 @media screen {
   html.slide-mode { overflow: hidden; }
@@ -149,7 +164,7 @@ body {
   overflow: hidden;
   position: relative;
   background: #0a0a0a;  /* OSA signature dark frame */
-  font-family: var(--font-serif);  /* Times New Roman + Noto Serif SC */
+  font-family: var(--type-font-serif);  /* Times New Roman + Noto Serif SC */
 }
 
 .slide-page {
@@ -165,13 +180,13 @@ body {
   transition: opacity 0.35s ease-in-out, visibility 0s linear 0.35s;
   background: #ffffff;
   color: var(--color-black);
-  padding: 80px 100px;  /* v2: 加大呼吸空间 (user 反馈 缺审美) */
+  padding: var(--slide-space-block) var(--slide-space-inline);  /* v2: 加大呼吸空间 (user 反馈 缺审美) */
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: 1.5rem;
+  gap: calc(var(--space-unit) * 6);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);  /* depth on dark bg */
   border-radius: 6px;
-  font-family: var(--font-serif);
+  font-family: var(--type-font-serif);
   overflow: hidden;  /* v3: 截断超 slide 高的内容 (Q3 长 slide 必备, 否则溢出 body) */
 }
 
@@ -231,46 +246,34 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
    so they're discoverable alongside Tailwind utilities + reusable in
    print.css via class instead of duplicating rules.
    Audit (2026-06-22): kicker 24×, caption 30×, meta-page 26×.
-   ⚠️ Raw CSS kept for backward compat; @utility provides identical
-   declarations for new components / print.css consumers. */
+   Page callers use these utilities; legacy raw type duplicates are removed.
+   The variables resolve to the same canonical owner on screen and in print. */
 @utility text-kicker {
-  font-family: var(--font-sans);
-  font-size: var(--text-kicker);
-  font-weight: 700;
+  font-family: var(--type-font-sans);
+  font-size: var(--type-kicker);
+  font-weight: var(--weight-bold);
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: var(--tracking-kicker);
   color: var(--color-ikb-blue);
-  line-height: 1.2;
+  line-height: var(--leading-kicker);
 }
 
 @utility text-caption {
-  font-family: var(--font-sans);
-  font-size: var(--text-caption);
+  font-family: var(--type-font-sans);
+  font-size: var(--type-caption);
   font-style: italic;
-  line-height: 1.4;
+  line-height: var(--leading-caption);
   color: var(--color-graphite);
-  letter-spacing: 0.01em;
+  letter-spacing: var(--tracking-caption);
 }
 
 @utility text-meta-page {
   font-variant-numeric: tabular-nums;
-  font-weight: 700;
+  font-weight: var(--weight-bold);
   color: var(--color-black);
-  letter-spacing: 0.08em;
+  letter-spacing: var(--tracking-page);
 }
 
-/* === v2: Typography signatures (Swiss editorial 风) — raw CSS, kept for
-   existing components. New code should prefer the @utility versions
-   defined in the A.1 block above. */
-.kicker {
-  font-family: var(--font-sans);
-  font-size: var(--text-kicker);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--color-ikb-blue);
-  line-height: 1.2;
-}
 
 .accent-bar {
   width: 60px;
@@ -285,38 +288,28 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
 
 /* H2 标题 (Q&A + image slide) 统一用 sans-serif + IKB-blue + 加粗 + tracking */
 .slide-page h2.text-headline {
-  font-family: var(--font-sans);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  font-family: var(--type-font-sans);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-heading);
+  line-height: var(--leading-slide-heading);
   color: var(--color-black);
 }
 
 /* Lead paragraph (abstract / 图 caption 强调) */
 .slide-page .lead {
-  font-family: var(--font-serif);
-  font-size: var(--text-title);
-  line-height: 1.5;
+  font-family: var(--type-font-serif);
+  font-size: var(--type-title);
+  line-height: var(--leading-body);
   color: var(--color-graphite);
 }
 
 /* Q&A body — serif + 大行高 (阅读体验) */
 .slide-page .qa-body {
-  font-family: var(--font-serif);
-  font-size: var(--text-body);
-  line-height: 1.75;
+  font-family: var(--type-font-serif);
+  font-size: var(--type-body);
+  line-height: var(--leading-prose);
   color: var(--color-black);
-  letter-spacing: 0.005em;
-}
-
-/* Caption (图注) — sans + 斜体 + IKB 灰 */
-.slide-page .caption {
-  font-family: var(--font-sans);
-  font-size: var(--text-caption);
-  font-style: italic;
-  line-height: 1.4;
-  color: var(--color-graphite);
-  letter-spacing: 0.01em;
+  letter-spacing: var(--tracking-prose);
 }
 
 /* === Meta bar (页码: 右下角) ===
@@ -325,16 +318,16 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
    - bottom-right: .meta-page "01 / 13" 格式 */
 .slide-meta-bar {
   position: absolute;
-  bottom: 32px;          /* 2026-06-22 fix: 移到 bottom-right (user 反馈) */
-  right: 100px;
+  bottom: var(--slide-meta-bottom);          /* 2026-06-22 fix: 移到 bottom-right (user 反馈) */
+  right: var(--slide-space-inline);
   display: flex;
   justify-content: flex-end;
   align-items: baseline;
-  font-family: var(--font-sans);
-  font-size: var(--text-kicker);
-  font-weight: 600;
+  font-family: var(--type-font-sans);
+  font-size: var(--type-kicker);
+  font-weight: var(--weight-semibold);
   text-transform: lowercase;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--tracking-meta);
   color: var(--color-graphite);
   pointer-events: none;
   z-index: 5;  /* 高于 info-corner 避免被覆盖 */
@@ -344,30 +337,25 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
   color: var(--color-ikb-blue);
   text-decoration: none;
   pointer-events: auto;
-  font-weight: 700;
+  font-weight: var(--weight-bold);
   transition: color 0.15s;
 }
 
 .slide-meta-bar a:hover { text-decoration: underline; }
 
 .slide-meta-bar .meta-date {
-  margin-left: 1ch;
+  margin-left: var(--space-character);
   color: var(--color-graphite);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
 }
 
-.slide-meta-bar .meta-page {
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
-  color: var(--color-black);
-  letter-spacing: 0.08em;
-}
+.slide-meta-bar .meta-page { @apply text-meta-page; }
 
 /* 顶部细线 (薄 1px IKB-blue 装饰, 替代原 kicker bar) */
 .slide-top-accent {
   position: absolute;
-  top: 32px;
-  left: 100px;
+  top: var(--slide-meta-bottom);
+  left: var(--slide-space-inline);
   width: 60px;
   height: 2px;
   background: var(--color-ikb-blue);
@@ -379,11 +367,11 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
    info-corner 留在 bottom:90px (左下, 跟 top-right meta-bar 完全分离) */
 .slide-info-corner {
   position: absolute;
-  bottom: 90px;
-  left: 56px;
-  max-width: 420px;
+  bottom: var(--slide-info-bottom);
+  left: var(--slide-info-left);
+  max-width: var(--measure-slide-info);
   text-align: left;
-  font-family: var(--font-sans);
+  font-family: var(--type-font-sans);
   pointer-events: auto;
   user-select: text;
   z-index: 5;
@@ -392,25 +380,25 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
   margin: 0;
   display: grid;
   grid-template-columns: max-content 1fr;
-  column-gap: 14px;
-  row-gap: 6px;
+  column-gap: var(--slide-info-column-gap);
+  row-gap: var(--slide-info-row-gap);
   justify-content: start;
   align-items: baseline;
 }
 .slide-info-corner dt {
-  font-size: 0.7rem;
-  font-weight: 700;
+  font-size: var(--type-meta-label);
+  font-weight: var(--weight-bold);
   color: var(--color-ikb-blue);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--tracking-page);
   white-space: nowrap;
 }
 .slide-info-corner dd {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--type-detail);
   color: var(--color-graphite);
-  font-weight: 500;
-  line-height: 1.4;
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-caption);
   text-align: left;
   word-break: break-word;
 }
@@ -425,19 +413,19 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
 }
 .slide-info-corner dd .venue-rank {
   color: var(--color-graphite);
-  font-weight: 500;
-  margin-left: 4px;
+  font-weight: var(--weight-medium);
+  margin-left: var(--slide-info-rank-gap);
   opacity: 0.85;
 }
 
 /* Key takeaways — Q&A slide bullets (slide 3, 5, 7, 9, 11, 12 等) */
 .slide-page .takeaway-item {
-  font-family: var(--font-serif);
-  font-size: 2rem;         /* 2026-06-21: 1.5→1.75→2.25→2.5→2rem (final, 2.5rem 反馈过大) */
-  line-height: 1.35;
+  font-family: var(--type-font-serif);
+  font-size: var(--type-title);         /* 2026-06-21: 1.5→1.75→2.25→2.5→2rem (final, 2.5rem 反馈过大) */
+  line-height: var(--leading-bullet);
   border-left: 8px solid var(--color-ikb-blue);  /* 2rem 配 8px border 视觉平衡 */
-  padding: 0.5rem 0 0.5rem 1.5rem;
-  font-weight: 500;
+  padding: calc(var(--space-unit) * 2) 0 calc(var(--space-unit) * 2) calc(var(--space-unit) * 6);
+  font-weight: var(--weight-medium);
 }
 
 /* Paper slide bullet 3 variants (2026-06-22 加, paper slide 缺公式修复)
@@ -446,21 +434,21 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
    - definition: 长段, 0.85rem + 灰边 (与 title 区分) — 2 行 clamp 截断, hover 展开
    - formula:   独立公式, 1.1rem 卡片 (圆角+阴影+居中) + KaTeX 渲染 */
 .slide-page .takeaway-item--title {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: var(--type-bullet-title);
+  font-weight: var(--weight-bold);
   color: var(--color-ikb-blue);
   border-left: 6px solid var(--color-ikb-blue);
-  padding: 0.3rem 0 0.3rem 0.8rem;
-  margin-top: 0.4rem;
+  padding: calc(var(--space-unit) * 1.2) 0 calc(var(--space-unit) * 1.2) calc(var(--space-unit) * 3.2);
+  margin-top: calc(var(--space-unit) * 1.6);
 }
 .slide-page .takeaway-item--definition {
-  font-size: 0.85rem;
-  line-height: 1.4;
-  font-weight: 400;
+  font-size: var(--type-detail);
+  line-height: var(--leading-caption);
+  font-weight: var(--weight-normal);
   color: rgba(0, 0, 0, 0.78);
   border-left: 3px solid rgba(0, 0, 0, 0.12);
-  padding: 0.25rem 0 0.25rem 0.7rem;
-  margin: 0.15rem 0;
+  padding: calc(var(--space-unit) * 1) 0 calc(var(--space-unit) * 1) calc(var(--space-unit) * 2.8);
+  margin: calc(var(--space-unit) * 0.6) 0;
   /* 2 行 clamp: 截断长段避免 slide 溢出; hover 展开全文 (依赖 title attr) */
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -478,29 +466,29 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
   border-radius: 0 4px 4px 0;
 }
 .slide-page .takeaway-item--formula {
-  font-size: 1.1rem;
-  line-height: 1.4;
+  font-size: var(--type-formula-inline);
+  line-height: var(--leading-caption);
   text-align: center;
   background: linear-gradient(135deg, #f8fafc 0%, #eef2f7 100%);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-left: 4px solid var(--color-ikb-blue);
   border-radius: 6px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  padding: 0.5rem 0.8rem;
-  margin: 0.3rem 0;
-  font-family: var(--font-mono);
+  padding: calc(var(--space-unit) * 2) calc(var(--space-unit) * 3.2);
+  margin: calc(var(--space-unit) * 1.2) 0;
+  font-family: var(--type-font-mono);
 }
 .slide-page .takeaway-item--formula .formula-code {
   background: transparent;
   border: 0;
   padding: 0;
-  font-family: var(--font-mono);
+  font-family: var(--type-font-mono);
 }
 
 /* Title slide 装饰: IKB-blue 巨数字 + 作者高亮 */
 .slide-page .author-name {
   color: var(--color-ikb-blue);
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
 }
 
 /* Per-slide page number bottom-right REMOVED (2026-06-21): was duplicating top-right meta-page.
@@ -511,43 +499,43 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
 /* Slide Controls Bar (OSA-style: dark glass-morphism, 底部居中) */
 .slide-controls {
   position: fixed;
-  bottom: 1.25rem;
+  bottom: calc(var(--space-unit) * 5);
   left: 50%;
   transform: translateX(-50%);
   z-index: 200;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: calc(var(--space-unit) * 1.6);
   background: rgba(10, 10, 10, 0.88);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 0.75rem;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.8rem;
+  padding: calc(var(--space-unit) * 2) calc(var(--space-unit) * 3);
+  font-size: var(--type-control);
   color: #e2e8f0;
-  font-family: var(--font-sans);
+  font-family: var(--type-font-sans);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
   white-space: nowrap;
 }
 
 .slide-controls__label {
   color: #64748b;
-  font-size: 0.72rem;
-  margin-right: 0.2rem;
+  font-size: var(--type-control-label);
+  margin-right: calc(var(--space-unit) * 0.8);
 }
 
 .slide-controls__zoom {
-  min-width: 2.8rem;
+  min-width: var(--measure-zoom-label);
   text-align: center;
   font-variant-numeric: tabular-nums;
-  font-size: 0.78rem;
+  font-size: var(--type-control-zoom);
   color: #94a3b8;
 }
 
 .slide-controls__group {
   display: flex;
-  gap: 0.1rem;
+  gap: calc(var(--space-unit) * 0.4);
 }
 
 .slide-controls button {
@@ -556,15 +544,15 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
   border-radius: 0.375rem;
   color: #e2e8f0;
   cursor: pointer;
-  font-size: 0.9rem;
-  width: 2rem;
-  height: 2rem;
+  font-size: var(--type-control-button);
+  width: var(--measure-control);
+  height: var(--measure-control);
   display: flex;
   align-items: center;
   justify-content: center;
   transition: background 0.15s, border-color 0.15s;
   font-family: inherit;
-  line-height: 1;
+  line-height: var(--leading-flat);
 }
 
 .slide-controls button:hover {
@@ -582,33 +570,40 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
   width: 1px;
   height: 1.4rem;
   background: rgba(255, 255, 255, 0.1);
-  margin: 0 0.2rem;
+  margin: 0 calc(var(--space-unit) * 0.8);
 }
 
 .slide-controls__print {
   width: auto !important;
-  padding: 0 0.65rem !important;
-  font-size: 0.75rem !important;
-  gap: 0.3rem;
+  padding: 0 calc(var(--space-unit) * 2.6) !important;
+  font-size: var(--type-control-print) !important;
+  gap: calc(var(--space-unit) * 1.2);
 }
 
 /* Long-form 单栏长文 (max-width 720px, 1 永字 ≈ 16px) */
 .longform {
-  max-width: 45rem;  /* 720px */
+  max-width: var(--measure-reading);  /* 720px */
   margin: 0 auto;
-  padding: 2rem 1.5rem;
+  padding: var(--space-prose-block) var(--space-prose-inline);
   overflow-wrap: anywhere;
-  line-height: 1.75;
-  font-family: var(--font-serif);
+  line-height: var(--leading-prose);
+  font-family: var(--type-font-serif);
 }
 
+@layer base {
 .longform h1, .longform h2, .longform h3 {
-  font-family: var(--font-sans);
-  letter-spacing: -0.01em;
-  margin-top: 2.5rem;
-  margin-bottom: 1rem;
+  font-family: var(--type-font-sans);
+  letter-spacing: var(--tracking-title);
+  margin-top: var(--space-heading-before);
+  margin-bottom: var(--space-heading-after);
 }
 
-.longform h1 { font-size: var(--text-headline); }
-.longform h2 { font-size: var(--text-title); }
-.longform h3 { font-size: 1.25rem; }
+.longform h1 { font-size: var(--type-headline); }
+.longform h2 { font-size: var(--type-title); }
+.longform h3 { font-size: var(--type-subheading); }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide-page, .slide-page.active { transition: none; }
+}

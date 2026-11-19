@@ -2,14 +2,18 @@
   "name": "content2html",
   "type": "module",
   "version": "0.1.0",
-  "description": "内容 (arxiv paper / 本地 progress) → HTML (slide + long-form). guizang Style B 视觉.",
+  "description": "\u5185\u5bb9 (arxiv paper / \u672c\u5730 progress) \u2192 HTML (slide + long-form). guizang Style B \u89c6\u89c9.",
   "private": true,
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro check && astro build",
+    "dev": "npm run styles:sync && astro dev",
+    "build": "npm run styles:sync && node scripts/check-site-standards.mjs --source-only && astro check && astro build && npm run standards:check",
     "preview": "astro preview",
     "test": "playwright --version && node -e \"console.log('content2html: no jest tests; e2e via Playwright ad-hoc. See scripts/verify-print-e2e.mjs')\"",
-    "astro": "astro"
+    "astro": "astro",
+    "styles:sync": "node scripts/sync-message-styles.mjs",
+    "standards:check": "node scripts/check-site-standards.mjs",
+    "test:standards": "node --test tests/site-standards.test.mjs",
+    "test:standards:browser": "node scripts/verify-site-standards.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.9",

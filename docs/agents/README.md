@@ -24,9 +24,9 @@ The reusable concurrent-work protocol lives at `mykcs/myk-skills/website-improve
 - Product: content-to-HTML website/tool.
 - Framework: Astro.
 - Shared CI decision contract: [mykcs/.agents CI Standard](https://github.com/mykcs/.agents/blob/main/docs/agents/CI_STANDARD.md).
-- CI mode: `DEPLOY_ONLY`; the Pages build is the repository's hosted build/deployment acceptance path.
-- Repository-owned validator: `npm run build` (`astro check && astro build`).
-- Current workflow: `.github/workflows/deploy.yml` runs on `main` pushes and manual dispatch; it does not validate pull requests before merge.
+- CI mode: `DEPLOY_ONLY` for routine main updates; the same Pages workflow has an explicit final-only browser/print qualification lane for rendered changes. No second provider or generic hosted CI is added.
+- Repository-owned validators: `npm run test:standards` and `npm run build` (shared-style sync, source guard, Astro check/build, all-HTML output guard).
+- Current workflow: `.github/workflows/deploy.yml` builds/releases on `main` pushes. Manual dispatch on a selected candidate ref requires its full `expected_sha` and runs `npm run test:standards:browser` against that checkout (all routes, Chromium/WebKit, desktop/440px, every slide, existing PDF regressions). It adds no automatic PR browser trigger. Feature branches cannot enter the Pages deploy job.
 - Current deployment: GitHub Pages.
 - Public path: `https://mykcs.github.io/content2html/`.
 - The `/content2html` base path is intentional.
@@ -36,6 +36,8 @@ Keep this small local statement as the CI adaptation; a separate CI Passport is 
 Do not migrate the project to Cloudflare, Vercel or another repository's hosting architecture merely for cross-repository uniformity. Deployment architecture is project truth and changes only through an explicit project-specific migration decision.
 
 The sibling `mykcs/basemodel` project is now a useful **reference** for how to separate PR Preview from Production hosting and how to shadow-migrate a static Astro site. Read the suggestion note before future hosting redesigns, but preserve this repository's GitHub Pages/base-path contract until its own migration gate is approved.
+
+Current visual/calendar owner and route inventory: [site-standards.md](../site-standards.md). Semantic values live in `src/styles/tokens.css`; `public/404.html` receives the same tokens through the guarded build sync. Candidate evidence lives in `test-results/standards/` and manual Actions artifacts (3-day retention). A local source build does not substitute for an exact-SHA browser run.
 
 ## Repository map
 
