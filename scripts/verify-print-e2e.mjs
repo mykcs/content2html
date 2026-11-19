@@ -14,7 +14,7 @@
 // issue (2f0e7dd, 0fda967, bfb850c, bef1017, ...). Without this script, future fixes
 // will repeat the same loop.
 import { chromium } from 'playwright';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, rmSync, writeFileSync, mkdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -59,6 +59,12 @@ const buf = await page.pdf({
   preferCSSPageSize: true,
 });
 writeFileSync(pdfPath, buf);
+// Candidate acceptance retains the actual PDF alongside the unchanged checks.
+if (process.env.PRINT_EVIDENCE_DIR) {
+  mkdirSync(process.env.PRINT_EVIDENCE_DIR, { recursive: true });
+  const name = (process.env.PRINT_EVIDENCE_NAME || 'print-verify').replace(/[^a-z0-9-]/gi, '-');
+  writeFileSync(join(process.env.PRINT_EVIDENCE_DIR, `${name}.pdf`), buf);
+}
 const pdfPages = (buf.toString('binary').match(/\/Type\s*\/Page[^s]/g) || []).length;
 
 // 2. Visual fidelity check (no 100% font-size artifacts)

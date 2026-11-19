@@ -2,6 +2,7 @@
 // src/pages/en/paper/2603.12109/slide.astro
 // paper-mode: English slide (horizontal pagination) — 8 Q&A + 4 figures
 // v2 aesthetic upgrade: typography +25%, Swiss editorial signature
+import DateText from "../../../../components/DateText.astro";
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getEntry } from "astro:content";
 import { scholarlyArticleLd } from "../../../../lib/json-ld";
@@ -85,12 +86,12 @@ function cleanHeading(heading: string): string {
 
     <div class="col-span-12 flex flex-col justify-center items-center text-center gap-6">
       <hr class="accent-bar" />
-      <h1 class="text-headline font-sans font-bold leading-tight max-w-6xl">{TITLE_EN}</h1>
+      <h1 class="text-headline font-sans font-bold leading-tight max-w-slide-title">{TITLE_EN}</h1>
       <hr class="swiss-rule w-40" />
-      <p class="text-body leading-relaxed max-w-6xl">
+      <p class="text-body leading-relaxed max-w-slide-title">
         {AUTHORS_EN.map((a, i) => <><span class="author-name">{a.name}</span><sup class="text-caption text-ikb-blue">{a.affil.map((x) => String(AFFILS_EN.indexOf(x) + 1)).join(",")}</sup>{i < AUTHORS_EN.length - 1 ? " · " : ""}</>)}
       </p>
-      <ol class="text-caption text-graphite leading-relaxed list-none max-w-6xl text-left mt-2">
+      <ol class="text-caption text-graphite leading-relaxed list-none max-w-slide-title text-left mt-2">
         {AFFILS_EN.map((aff, idx) => <li><sup class="text-ikb-blue font-semibold">{idx + 1}</sup> {aff}</li>)}
       </ol>
     </div>
@@ -101,7 +102,7 @@ function cleanHeading(heading: string): string {
         <dt>arXiv</dt>
         <dd><a href={`https://arxiv.org/abs/${paperId}`} target="_blank" rel="noopener noreferrer">{paperId}</a></dd>
         <dt>Published</dt>
-        <dd>{paper.published_date ?? "N/A"}</dd>
+        <dd>{paper.published_date ? <DateText value={paper.published_date} lang="en" /> : "N/A"}</dd>
         <dt>Code</dt>
         <dd>
           {paper.code_url
@@ -132,11 +133,11 @@ function cleanHeading(heading: string): string {
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
-        <p class="kicker mb-3">Figure 1 · Core Diagram</p>
+        <p class="text-kicker mb-3">Figure 1 · Core Diagram</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight mb-4 max-w-5xl">Information Self-Locking (SeL) and AReW Mitigation</h2>
+        <h2 class="text-headline font-sans font-bold mb-4 max-w-slide-heading">Information Self-Locking (SeL) and AReW Mitigation</h2>
       </div>
-      <p class="caption flex-shrink-0">Top: vanilla outcome-based RL trapped in self-locking (Uninformative AS + Anti-aligned BT); Bottom: AReW restores AS-BT alignment via directional critiques (Informative AS + Aligned BT)</p>
+      <p class="text-caption flex-shrink-0">Top: vanilla outcome-based RL trapped in self-locking (Uninformative AS + Anti-aligned BT); Bottom: AReW restores AS-BT alignment via directional critiques (Informative AS + Aligned BT)</p>
       <figure class="frame-img r-2x1 fit-contain flex-1">
         <img src={`${FIG}/fig1_pipeline.png`} alt="Fig 1: SeL overview + AReW mitigation" loading="lazy" decoding="async" />
       </figure>
@@ -151,11 +152,11 @@ function cleanHeading(heading: string): string {
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
-        <p class="kicker mb-3">Q1 · Problem</p>
+        <p class="text-kicker mb-3">Q1 · Problem</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[0].heading)}</h2>
+        <h2 class="text-headline font-sans font-bold max-w-slide-heading">{cleanHeading(paper.sections_en[0].heading)}</h2>
       </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-7xl">
+      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-slide-body">
         {extractBullets(paper.sections_en[0].body).map((b) => (
           <li class="takeaway-item">{b}</li>
         ))}
@@ -171,11 +172,11 @@ function cleanHeading(heading: string): string {
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
-        <p class="kicker mb-3">Q2 · Related Work</p>
+        <p class="text-kicker mb-3">Q2 · Related Work</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[1].heading)}</h2>
+        <h2 class="text-headline font-sans font-bold max-w-slide-heading">{cleanHeading(paper.sections_en[1].heading)}</h2>
       </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-7xl">
+      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-slide-body">
         {extractBullets(paper.sections_en[1].body).map((b) => (
           <li class="takeaway-item">{b}</li>
         ))}
@@ -209,11 +210,11 @@ function cleanHeading(heading: string): string {
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
-        <p class="kicker mb-3">Figure 4 · Training Dynamics (4 tasks)</p>
+        <p class="text-kicker mb-3">Figure 4 · Training Dynamics (4 tasks)</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight mb-4">Training Dynamics Results</h2>
+        <h2 class="text-headline font-sans font-bold mb-4">Training Dynamics Results</h2>
       </div>
-      <p class="caption flex-shrink-0">vanilla PPO (red) vs AReW-AS ONLY (green) vs AReW-AS+BT (blue) Reward vs Training Steps; AReW sustained improvement, vanilla stalls</p>
+      <p class="text-caption flex-shrink-0">vanilla PPO (red) vs AReW-AS ONLY (green) vs AReW-AS+BT (blue) Reward vs Training Steps; AReW sustained improvement, vanilla stalls</p>
       <figure class="frame-img r-16x10 fit-contain flex-1">
         <img src={`${FIG}/fig4_full.png`} alt="Fig 4: training dynamics" loading="lazy" decoding="async" />
       </figure>
@@ -228,11 +229,11 @@ function cleanHeading(heading: string): string {
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
-        <p class="kicker mb-3">Q4.1 · Experiments (Setup + Table 1)</p>
+        <p class="text-kicker mb-3">Q4.1 · Experiments (Setup + Table 1)</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[3].heading)}</h2>
+        <h2 class="text-headline font-sans font-bold max-w-slide-heading">{cleanHeading(paper.sections_en[3].heading)}</h2>
       </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-7xl">
+      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-slide-body">
         {extractBullets(paper.sections_en[3].body).map((b) => (
           <li class="takeaway-item">{b}</li>
         ))}
@@ -248,11 +249,11 @@ function cleanHeading(heading: string): string {
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
-        <p class="kicker mb-3">Figure 3 · Cross-Algorithm Generalization</p>
+        <p class="text-kicker mb-3">Figure 3 · Cross-Algorithm Generalization</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight mb-4">PPO / GRPO / GSPO — Consistent Gains</h2>
+        <h2 class="text-headline font-sans font-bold mb-4">PPO / GRPO / GSPO — Consistent Gains</h2>
       </div>
-      <p class="caption flex-shrink-0">(a) MediQ intervention: outcome-RL reduces feedback sensitivity, increases belief consistency; (b) PE-F under GRPO; (c) FloDial-Easy under GSPO</p>
+      <p class="text-caption flex-shrink-0">(a) MediQ intervention: outcome-RL reduces feedback sensitivity, increases belief consistency; (b) PE-F under GRPO; (c) FloDial-Easy under GSPO</p>
       <figure class="frame-img h-30 fit-contain">
         <img src={`${FIG}/fig3_full.png`} alt="Fig 3: algorithm generalization" loading="lazy" decoding="async" />
       </figure>
@@ -267,11 +268,11 @@ function cleanHeading(heading: string): string {
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
-        <p class="kicker mb-3">Q4.2 · Experiments (Dynamics + Robustness + λ)</p>
+        <p class="text-kicker mb-3">Q4.2 · Experiments (Dynamics + Robustness + λ)</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[4].heading)}</h2>
+        <h2 class="text-headline font-sans font-bold max-w-slide-heading">{cleanHeading(paper.sections_en[4].heading)}</h2>
       </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-7xl">
+      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-slide-body">
         {extractBullets(paper.sections_en[4].body).map((b) => (
           <li class="takeaway-item">{b}</li>
         ))}
@@ -287,11 +288,11 @@ function cleanHeading(heading: string): string {
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
-        <p class="kicker mb-3">Figures 5+6 · Robustness + Real Scenario</p>
+        <p class="text-kicker mb-3">Figures 5+6 · Robustness + Real Scenario</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight mb-4">λ Reweighting Strength and Cross-Scenario Generalization</h2>
+        <h2 class="text-headline font-sans font-bold mb-4">λ Reweighting Strength and Cross-Scenario Generalization</h2>
       </div>
-      <p class="caption flex-shrink-0">Fig 5 (left): τ²-bench training dynamics — (a) rewards (b) tool execution errors (c) consumed response tokens (d) instruction turns · Fig 6 (right): τ²-bench AReW customer service</p>
+      <p class="text-caption flex-shrink-0">Fig 5 (left): τ²-bench training dynamics — (a) rewards (b) tool execution errors (c) consumed response tokens (d) instruction turns · Fig 6 (right): τ²-bench AReW customer service</p>
       <div class="flex-1 grid grid-cols-2 gap-6 items-center">
         <figure class="frame-img h-30 fit-contain">
           <img src={`${FIG}/fig5_taubench.png`} alt="Fig 5: τ²-bench training dynamics — (a) rewards (b) tool execution errors (c) consumed response tokens (d) instruction turns" loading="lazy" decoding="async" />
@@ -311,11 +312,11 @@ function cleanHeading(heading: string): string {
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
-        <p class="kicker mb-3">Q5 · Future Work</p>
+        <p class="text-kicker mb-3">Q5 · Future Work</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[5].heading)}</h2>
+        <h2 class="text-headline font-sans font-bold max-w-slide-heading">{cleanHeading(paper.sections_en[5].heading)}</h2>
       </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-7xl">
+      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-slide-body">
         {extractBullets(paper.sections_en[5].body).map((b) => (
           <li class="takeaway-item">{b}</li>
         ))}
@@ -331,11 +332,11 @@ function cleanHeading(heading: string): string {
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
-        <p class="kicker mb-3">Q6 · Summary</p>
+        <p class="text-kicker mb-3">Q6 · Summary</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[6].heading)}</h2>
+        <h2 class="text-headline font-sans font-bold max-w-slide-heading">{cleanHeading(paper.sections_en[6].heading)}</h2>
       </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-7xl">
+      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-slide-body">
         {extractBullets(paper.sections_en[6].body).map((b) => (
           <li class="takeaway-item">{b}</li>
         ))}
@@ -351,9 +352,9 @@ function cleanHeading(heading: string): string {
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
-        <p class="kicker mb-3">Q7 · Learn More</p>
+        <p class="text-kicker mb-3">Q7 · Learn More</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[7].heading)}</h2>
+        <h2 class="text-headline font-sans font-bold max-w-slide-heading">{cleanHeading(paper.sections_en[7].heading)}</h2>
       </div>
       <p class="qa-body flex-1 whitespace-pre-line">{paper.sections_en[7].body}</p>
     </div>

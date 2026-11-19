@@ -2,6 +2,8 @@
 // src/pages/zh/progress/2026-06-17/report.astro
 // progress-mode: 中文 report 版本 (单栏 longform, scrollable)
 // 改用 Astro content collection (getEntry) — 见 src/content.config.ts
+import DateText from "../../../../components/DateText.astro";
+import ProgressLogText from "../../../../components/ProgressLogText.astro";
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { articleLd } from "../../../../lib/json-ld";
 import { getEntry } from "astro:content";
@@ -26,7 +28,7 @@ const p = entry.data as {
 >
   <article>
     <header>
-      <p class="text-caption text-gray-rule">{p.period}</p>
+      <p class="text-caption text-gray-rule"><DateText value={p.period} lang="zh" period /></p>
       <h1>{p.project_name}</h1>
       <p class="text-graphite">progress-mode 烟雾测试 · 周报归档</p>
       <hr class="swiss-rule" />
@@ -35,14 +37,14 @@ const p = entry.data as {
     <section>
       <h2>Done (已完成)</h2>
       <ol>
-        {p.done.map((d) => <li>{d}</li>)}
+        {p.done.map((d) => <li><ProgressLogText value={d} lang="zh" /></li>)}
       </ol>
     </section>
 
     <section>
       <h2>Doing (进行中)</h2>
       <ul>
-        {p.doing.map((d) => <li>{d}</li>)}
+        {p.doing.map((d) => <li><ProgressLogText value={d} lang="zh" /></li>)}
       </ul>
     </section>
 
@@ -61,7 +63,7 @@ const p = entry.data as {
             <tr>
               <td>{task}</td>
               <td>{agent}</td>
-              <td>{deadline}</td>
+              <td><DateText value={deadline} lang="zh" /></td>
             </tr>
           ))}
         </tbody>
@@ -82,7 +84,7 @@ const p = entry.data as {
 
     <footer>
       <hr class="swiss-rule" />
-      <p class="text-caption text-gray-rule">本文为 progress-mode 烟雾测试产物 · {entry.id}</p>
+      <p class="text-caption text-gray-rule">本文为 progress-mode 烟雾测试产物 · <span data-source-identifier="collection-id">{entry.id}</span></p>
     </footer>
   </article>
 </BaseLayout>

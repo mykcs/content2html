@@ -1,0 +1,8 @@
+---
+import DateText from './DateText.astro';
+import { splitLogLabel } from '../lib/calendar.mjs';
+interface Props { value: string; lang: 'zh' | 'en' }
+const { value, lang } = Astro.props;
+const { date, message } = splitLogLabel(value);
+---
+{date && <><span>[</span><DateText value={date} lang={lang} /><span>] </span></>}<span data-source-quote="commit-message">{message}</span>

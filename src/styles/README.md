@@ -1,99 +1,36 @@
-# content2html styles/ — architecture
+# Content2HTML 样式架构
 
-This directory holds the visual contract for all 4 content2html products:
-`paper-slide`, `paper-summary`, `progress-slide`, `progress-report`.
+本目录的实际全站规范见 [排版、间距与日期标准](../../docs/site-standards.md)。四类内容产物、双语目录、跳转、错误页都消费同一套 token；演示与打印保留物理角色。
 
-## File layout
+| 文件 | 职责 |
+| --- | --- |
+| `tokens.css` | 唯一字体、字号、字重、行距、字距、间距与文字宽度数值 owner；屏幕/打印角色 |
+| `global.css` | Tailwind `@theme inline` 适配、base 层、长文、演示、控件；导入其他三个CSS |
+| `message.css` | 根跳转与错误页的共享可读回退 |
+| `print.css` | 297×167mm 物理布局、分页、可见性与打印控件行为 |
 
-| File | Scope | Media | Purpose |
-|------|-------|-------|---------|
-| `global.css` | All slides + longform | screen | Design tokens (Tailwind v4 `@theme`), typography, slide deck chrome, `@utility` typography helpers, `@custom-variant dark` infra |
-| `print.css` | All slides (`.slide-page` and descendants) | `@media print` only | Print-optimized layout (297×167mm, 1 slide per page) |
+`@utility text-kicker`、`text-caption`、`text-meta-page` 是唯一活动排版定义；旧 raw `.kicker` / `.caption` 调用已迁移。`@custom-variant dark` 仍为预留基础设施，本站当前保持 light-only。
 
-## Tailwind v4 directives (2026-06-22 added)
+`public/404.html` 由 `scripts/sync-message-styles.mjs` 嵌入完全相同的 tokens 与 message CSS。运行 `npm run styles:sync`，不要手工改生成区域。`npm run dev` 与 `npm run build` 都先同步。
 
-| Directive | Location | Purpose |
-|-----------|----------|---------|
-| `@import "tailwindcss"` | global.css:6 | v4 CSS-first config entry |
-| `@source "../pages/**/*.astro"` etc. | global.css:14-16 | A.3 — explicit scan paths (v4 auto-scans by default; explicit = future-proof) |
-| `@custom-variant dark (&:where(.dark, .dark *))` | global.css:19 | A.2 — dark mode infra (CLAUDE.md v4 requires this exact syntax). Light-only today. |
-| `@theme { --text-display, --color-ikb-blue, ... }` | global.css:21-71 | Design tokens — see "Adding new design tokens" below |
-| `@utility text-kicker` | global.css | A.1 — typography helper (kicker 24×, caption 30×, meta-page 26× usage). Raw CSS kept for backward compat. |
-| `--print-scale: 0.5846` | global.css:65 | C.1 — print scale factor (297mm / 508mm). NOT named `--slide-scale` to avoid collision with `:root --slide-scale: 1` (set by slide-nav.ts). |
+## 扩展页面
 
-## How print works
+先复用现有语义 token，再考虑新增角色。不要加入任意 `font-size`、独立 font stack、line-height、reading padding 或 max-width；不要用默认 `text-sm/2xl` 让页面另建尺寸层级。普通 Tailwind 间距倍数从 `--space-unit` 推导，演示文字宽度使用 `max-w-slide-heading/title/body`。
 
-## How print works
+新增 slide 自动继承打印规则。绝对定位元素须在 `print.css` 补对应物理布局；新增 figure 比例须加入该文件的 figure 规则。保留固定画布1920×1080、打印297×167mm、9.37px rem、每页一个slide、无尾随空白页。纸张 `@page` 声明不能被屏幕运行时 `--slide-scale` 代替。
 
-`global.css` imports `print.css` after `@import "tailwindcss"`. The print rules
-are scoped under `@media print`, so they never affect screen rendering. Every
-`.slide-page` element (and its children) is automatically styled for print
-without per-slide configuration.
-
-```css
-/* global.css */
-@import "tailwindcss";
-@import "./print.css";   /* auto-applied to all slides in print */
-```
-
-## Why two files (not one)
-
-After 6 commits iterating on print (see `~/.claude/docs/adr/0006-content2html-print-strategy.md` Update 1+2
-and `~/.claude/knowledge/cases/wiki/CASE-CONTENT2HTML-PRINT-PAGE-COUNT-DVR-20260622.md`),
-print grew to ~165 lines of rules with their own design contract (4-layer
-print pipeline semantics). Keeping them in a separate file:
-
-1. **Readability** — screen designers scanning `global.css` aren't distracted by print rules.
-2. **Single responsibility** — `print.css` documents the print contract top-to-bottom
-   in section comments (§1 @page, §2 root font-size, §3 slide sizing, §4 absolute
-   elements, §5 figures, §6 per-element px, §7 UI hide). New contributors can read
-   the print contract in one place.
-3. **Independent evolution** — print rules change at a different cadence than screen
-   rules (e.g. print fix tied to a specific browser bug, screen fix tied to a
-   visual redesign).
-4. **Reuse across products** — `summary` and `report` products use the same
-   `global.css` but skip slide print rules (they use `.longform` not `.slide-page`).
-   With print.css imported in global.css, the rules apply automatically when `.slide-page`
-   is present.
-
-## Adding a new slide type
-
-No print.css changes needed — every `.slide-page` automatically inherits print rules.
-If your new slide has absolute-positioned elements, see `print.css` §4 for
-the scaling pattern (multiply screen px by `0.5846` and round).
-
-## Adding a new figure aspect class
-
-Append to the figure rule list in `print.css` §5:
-
-```css
-.slide-page .frame-img.r-3x4,    /* new aspect ratio */
-.slide-page .frame-img.r-21x9,
-... { flex: 0 1 auto !important; max-height: 75% !important; height: auto !important; }
-```
-
-## E2E verification
+## 验证
 
 ```bash
-node scripts/verify-print-e2e.mjs
+npm run test:standards
+npm run build
+npm run test:standards:browser
 ```
 
-Checks (all must pass):
+完整浏览器入口按当前构建动态枚举全部页面，在 Chromium/WebKit 的桌面与440px视口检查样式消费、全slide、交互和打印，并逐个调用既有PDF回归。单独定位某套deck时显式指定候选URL与已知页数：
 
-1. PDF page count = `.slide-page` count (no trailing blank, no overflow)
-2. `.slide-page` width = 297mm (1122.52px @ 96 DPI)
-3. `html` font-size = 9.37px (rem cascade 0.585×)
-4. Adjacent sibling `.slide-page + .slide-page` has `break-before: page`
-5. Print CSS contains `@page { size: 297mm 167mm }` and `@media print` rules
-
-See `scripts/verify-print-e2e.mjs` for the canonical implementation.
-
-## Scale formula
-
-```
-scale = 297mm / (1920px / 96dpi × 25.4mm/inch) = 297 / 508 ≈ 0.5846
+```bash
+URL=http://127.0.0.1:4321/content2html/zh/paper/2603.12109/slide/ SLIDE_COUNT=16 node scripts/verify-print-e2e.mjs
 ```
 
-Every screen px value in `print.css` is `screenValue × scale` (rounded to int).
-Every em/rem value cascades from `.slide-page { font-size: 9.37px }` which is
-`16px × scale` — so `5rem` (h1 screen) renders as `5 × 9.37 = 46.85px` in print.
+页面截图、计算样式、实际token扰动恢复、PDF、页数及最后一页文本共同构成证据；文件存在或根节点有token不能证明整页已接入标准。

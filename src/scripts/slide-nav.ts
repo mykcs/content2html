@@ -18,9 +18,11 @@ const ACTIVE_CLASS = "active";
 const CONTROLS_CLASS = "slide-controls";
 const WHEEL_DEBOUNCE_MS = 700;
 const TOUCH_SWIPE_THRESHOLD = 50;
-const SLIDE_W = 1920;
-const SLIDE_H = 1080;
-const FRAME_PAD = 80;
+function layoutValue(token: string): number {
+  const value = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(token));
+  if (!Number.isFinite(value) || value <= 0) throw new Error(`Missing slide layout token: ${token}`);
+  return value;
+}
 const ZOOM_LEVELS = [0.5, 0.75, 1, "fit"] as const;
 type ZoomLevel = (typeof ZOOM_LEVELS)[number];
 type ZoomAction = ZoomLevel | "print";
@@ -58,9 +60,9 @@ function ensureFirstPageActive(): void {
 
 // === Scaling (OSA-style fit-to-viewport + 3 manual levels) ===
 function fitScale(): number {
-  const availableW = window.innerWidth - FRAME_PAD;
-  const availableH = window.innerHeight - FRAME_PAD;
-  return Math.min(availableW / SLIDE_W, availableH / SLIDE_H, 1);
+  const availableW = window.innerWidth - layoutValue("--slide-frame-pad");
+  const availableH = window.innerHeight - layoutValue("--slide-frame-pad");
+  return Math.min(availableW / layoutValue("--slide-w"), availableH / layoutValue("--slide-h"), 1);
 }
 
 function applyZoom(level: ZoomLevel): void {

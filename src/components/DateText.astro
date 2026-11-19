@@ -1,0 +1,9 @@
+---
+import { formatCalendar, formatPeriod } from '../lib/calendar.mjs';
+interface Props { value: string; lang: 'zh' | 'en'; period?: boolean }
+const { value, lang, period = false } = Astro.props;
+const label = period ? formatPeriod(value, lang) : formatCalendar(value, lang);
+---
+{period
+  ? <span data-calendar-value={value} data-calendar-kind="period" data-calendar-lang={lang}>{label}</span>
+  : <time datetime={value} data-calendar-value={value} data-calendar-kind="date" data-calendar-lang={lang}>{label}</time>}

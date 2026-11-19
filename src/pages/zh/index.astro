@@ -1,5 +1,6 @@
 ---
 // src/pages/zh/index.astro - 中文版导航页（zh 路由）
+import DateText from "../../components/DateText.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { webSiteLd } from "../../lib/json-ld";
 import { getCollection } from "astro:content";
@@ -43,7 +44,7 @@ const productCount = paperCount * 2 + progressCount * 2;
           {papers.map((p) => (
             <li>
               <a href={`/content2html/${lang}/paper/${p.id}/slide/`}>{p.data.title_zh ?? p.data.title_en}</a>
-              {p.data.published_date && <span class="caption"> · {p.data.published_date}</span>}
+              {p.data.published_date && <span class="text-caption"> · <DateText value={p.data.published_date} lang="zh" /></span>}
             </li>
           ))}
         </ul>
@@ -58,7 +59,7 @@ const productCount = paperCount * 2 + progressCount * 2;
           {progressEntries.map((p) => (
             <li>
               <a href={`/content2html/${lang}/progress/${p.id}/slide/`}>{p.data.project_name}</a>
-              <span class="caption"> · {p.data.period}</span>
+              <span class="text-caption"> · <DateText value={p.data.period} lang="zh" period /></span>
             </li>
           ))}
         </ul>

@@ -33,3 +33,6 @@ node_modules/
 # multi-site orchestration session artifacts (never commit, per CLAUDE.md §4 active sites)
 .swarm/
 .worktrees/
+
+# Candidate-local browser/PDF evidence; retained by manual acceptance artifacts.
+test-results/

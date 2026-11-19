@@ -1,0 +1,43 @@
+html[data-page-role="message"], html[data-page-role="redirect"] { font-size: var(--type-root); }
+/* Message pages share this owner, including the independently served 404. */
+.message-page {
+  margin: 0;
+  padding: var(--space-prose-inline);
+  font-family: var(--type-font-sans);
+  font-size: var(--type-prose);
+  line-height: var(--leading-body);
+  font-weight: var(--weight-normal);
+  letter-spacing: var(--tracking-body);
+  color: #0a0a0a;
+  background: #fff;
+}
+.message-page, .message-page * { box-sizing: border-box; }
+.message {
+  max-width: var(--measure-message);
+  margin: var(--space-message-margin) auto;
+  padding: var(--space-prose-inline);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.message h1 {
+  font-family: var(--type-font-sans);
+  font-size: var(--type-message-title);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-title);
+  letter-spacing: var(--tracking-heading);
+  margin: 0 0 var(--space-heading-after);
+  color: #002fa7;
+}
+.message p { margin: 0 0 var(--space-prose-inline); }
+.message a {
+  display: inline-block;
+  padding: calc(var(--space-unit) * 2.4) var(--space-prose-inline);
+  background: #002fa7;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: var(--weight-semibold);
+}
+.message a:hover { background: #001a5c; }
+.message .lang-switch { margin-top: var(--space-heading-after); font-size: var(--type-ui); }
+.message .lang-switch a { background: transparent; color: #002fa7; padding: var(--space-unit) calc(var(--space-unit) * 2); }

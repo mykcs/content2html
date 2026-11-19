@@ -4,45 +4,79 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      expected_sha:
+        description: 'Full reviewed SHA of the selected ref; required for candidate browser acceptance'
+        required: true
+        type: string
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: false
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    concurrency:
+      group: content2html-build-${{ github.ref }}
+      cancel-in-progress: true
     steps:
-      - name: Checkout (含 guizang submodule)
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
-
-      - name: Setup Node
-        uses: actions/setup-node@v5
+          persist-credentials: false
+      - name: Bind manual acceptance to the reviewed candidate
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]] || { echo 'Full expected_sha required'; exit 1; }
+          [[ "$(git rev-parse HEAD)" == "$EXPECTED_SHA" ]] || { echo 'Selected ref moved'; exit 1; }
+          echo "EXPECTED_SHA=$EXPECTED_SHA" >> "$GITHUB_ENV"
+      - uses: actions/setup-node@v5
         with:
-          node-version: 22
+          node-version: '22.16.0'
           cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build Astro (含 astro check)
-        run: npm run build
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v5
+      - run: npm ci
+      - run: npm run test:standards
+      - run: npm run build
+      - name: Cache candidate browser binaries
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: content2html-playwright-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('package-lock.json') }}
+      - name: Install candidate browser and PDF dependencies
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          npx playwright install --with-deps chromium webkit
+          command -v pdftotext || { sudo apt-get update && sudo apt-get install -y poppler-utils; }
+      - name: Verify every generated route, slide and existing print contract
+        if: github.event_name == 'workflow_dispatch'
+        run: npm run test:standards:browser
+      - name: Preserve candidate render and print evidence
+        if: always() && github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: content2html-standards-${{ github.sha }}
+          path: test-results/standards/
+          retention-days: 3
+      - uses: actions/upload-pages-artifact@v5
+        if: github.ref == 'refs/heads/main'
         with:
           path: ./dist
 
   deploy:
+    if: github.ref == 'refs/heads/main'
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

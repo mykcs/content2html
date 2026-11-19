@@ -67,9 +67,9 @@ const KICKERS = [
 
     <div class="col-span-12 flex flex-col justify-center items-center text-center gap-6">
       <hr class="accent-bar" />
-      <h1 class="text-headline font-sans font-bold leading-tight max-w-6xl">{paper.title_en}</h1>
+      <h1 class="text-headline font-sans font-bold leading-tight max-w-slide-title">{paper.title_en}</h1>
       <hr class="swiss-rule w-40" />
-      <p class="text-body leading-relaxed max-w-6xl">{paper.authors.join(" · ")}</p>
+      <p class="text-body leading-relaxed max-w-slide-title">{paper.authors.join(" · ")}</p>
     </div>
 
     <!-- Slide 1 left-bottom info corner: arXiv / sections / takeaways / topic / scale -->
@@ -98,13 +98,13 @@ const KICKERS = [
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
-        <p class="kicker mb-3">Abstract</p>
+        <p class="text-kicker mb-3">Abstract</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight mb-4">One-liner</h2>
+        <h2 class="text-headline font-sans font-bold mb-4">One-liner</h2>
       </div>
-      <p class="caption flex-shrink-0">×-shaped (&gt;&lt;former) architecture: keep early/late layers wide, compress middle layers as a parameter-free bottleneck. Saves 22% FLOPs + 15% KV cache, with lower loss than parameter-matched uniform baselines on 200M-3B models.</p>
+      <p class="text-caption flex-shrink-0">×-shaped (&gt;&lt;former) architecture: keep early/late layers wide, compress middle layers as a parameter-free bottleneck. Saves 22% FLOPs + 15% KV cache, with lower loss than parameter-matched uniform baselines on 200M-3B models.</p>
       <div class="flex-1 flex items-center">
-        <p class="text-body leading-relaxed max-w-6xl">{paper.abstract_en}</p>
+        <p class="text-body leading-relaxed max-w-slide-title">{paper.abstract_en}</p>
       </div>
     </div>
   </section>
@@ -118,11 +118,11 @@ const KICKERS = [
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
-        <p class="kicker mb-3">{KICKERS[0]}</p>
+        <p class="text-kicker mb-3">{KICKERS[0]}</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[0].heading)}</h2>
+        <h2 class="text-headline font-sans font-bold max-w-slide-heading">{cleanHeading(paper.sections_en[0].heading)}</h2>
       </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-7xl">
+      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-slide-body">
         {extractBullets(paper.sections_en[0].body).map((b) => (
           <li class="takeaway-item">{b}</li>
         ))}
@@ -155,11 +155,11 @@ const KICKERS = [
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
-        <p class="kicker mb-3">{KICKERS[2]}</p>
+        <p class="text-kicker mb-3">{KICKERS[2]}</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[2].heading)}</h2>
+        <h2 class="text-headline font-sans font-bold max-w-slide-heading">{cleanHeading(paper.sections_en[2].heading)}</h2>
       </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-7xl">
+      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-slide-body">
         {extractBullets(paper.sections_en[2].body).map((b) => (
           <li class="takeaway-item">{b}</li>
         ))}
@@ -176,11 +176,11 @@ const KICKERS = [
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
-        <p class="kicker mb-3">{KICKERS[3]}</p>
+        <p class="text-kicker mb-3">{KICKERS[3]}</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold leading-tight max-w-5xl">{cleanHeading(paper.sections_en[3].heading)}</h2>
+        <h2 class="text-headline font-sans font-bold max-w-slide-heading">{cleanHeading(paper.sections_en[3].heading)}</h2>
       </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-7xl">
+      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-slide-body">
         {extractBullets(paper.sections_en[3].body).map((b) => (
           <li class="takeaway-item">{b}</li>
         ))}
