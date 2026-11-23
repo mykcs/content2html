@@ -133,6 +133,8 @@ const iconUrl = `${baseUrl}/icons/translate.svg`;
     <link rel="icon" type="image/svg+xml" href={`${baseUrl}/favicon.svg`} />
     {/* PWA manifest (Round 15 SEO fix). Served from public/manifest.json */}
     <link rel="manifest" href={`${baseUrl}/manifest.json`} />
+    <link rel="help" href={`${baseUrl}/${lang}/agent/`} />
+    <link rel="alternate" type="text/plain" href={`${baseUrl}/llms.txt`} />
   </head>
   <body class={productType === "slide" ? "slide-deck" : "longform"}>
     {/* Skip-link (Round 15 a11y fix). Hidden until focused — keyboard-only users

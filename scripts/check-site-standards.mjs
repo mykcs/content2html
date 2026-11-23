@@ -6,6 +6,7 @@ import { createHash } from 'node:crypto';
 import postcss from 'postcss';
 import { formatCalendar, formatPeriod, splitLogLabel } from '../src/lib/calendar.mjs';
 import { syncMessageStyles, messageStyles } from './sync-message-styles.mjs';
+import { checkAgentReader } from './check-agent-reader.mjs';
 export const root = fileURLToPath(new URL('../', import.meta.url));
 export const STANDARD = 'content2html-20261120';
 export const BASE = '/content2html/';
@@ -123,11 +124,12 @@ export function checkStandards({ output = true } = {}) {
     routes = routeInventory();
     errors.push(...routes.flatMap(route => route.errors));
     const required = ['index.html', '404.html', ...['en', 'zh'].flatMap(lang => [
-      `${lang}/index.html`, `${lang}/404/index.html`,
+      `${lang}/index.html`, `${lang}/404/index.html`, `${lang}/agent/index.html`,
       ...filesBelow(path.join(root, 'src/content/papers')).filter(file => file.endsWith('.json')).flatMap(file => ['slide', 'summary'].map(type => `${lang}/paper/${path.basename(file, '.json')}/${type}/index.html`)),
       ...periodEntries.flatMap(entry => ['slide', 'report'].map(type => `${lang}/progress/${entry.id}/${type}/index.html`)),
     ])];
     for (const file of required) if (!routes.some(route => route.file === file)) errors.push(`Missing route ${file}`);
+    errors.push(...checkAgentReader(path.join(root, "dist"), required.filter(file=>/^(zh|en)\/(paper|progress)\//.test(file))));
     if (!fs.readFileSync(path.join(root, 'dist/404.html'), 'utf8').includes(messageStyles())) errors.push('Built 404 embeds stale token/message owners');
     fs.mkdirSync(path.join(root, 'test-results/standards'), { recursive: true });
     fs.writeFileSync(path.join(root, 'test-results/standards/route-inventory.json'), JSON.stringify({ source: sourceIdentity(), routes }, null, 2) + '\n');
