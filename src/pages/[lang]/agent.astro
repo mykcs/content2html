@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { readerPath } from '../../lib/agent-reader';
+export function getStaticPaths() {
+  return [{params:{lang:'zh'}},{params:{lang:'en'}}];
+}
+const lang = Astro.params.lang === 'en' ? 'en' : 'zh';
+const en = lang === 'en';
+const title = en ? 'For agents' : '给 Agent 读';
+const text = en ? {
+  intro:'Read the published bilingual directory and source rules before using an AI assistant to explore this site.',
+  back:'Back to index', links:'Reading entry points', catalog:'Public directory (llms.txt)', json:'Structured catalog (JSON)', rules:'Read-only guide (SKILL.md)',
+  copy:'Copy reading context', ready:'Context ready.', done:'Context copied.', fallback:'Clipboard unavailable. The text is selected for manual copying.', unavailable:'Unable to load context. Open the text files above to copy manually.',
+  static:'Open the text files above to copy manually, or use the copy control when available.', loading:'Loading public context…', preview:'Context preview', boundary:'Only published titles and links are included. This is not a live progress feed, an experiment result, or authorization to execute anything.',
+} : {
+  intro:'先了解网站已经公开的双语目录和原始证据，再让 AI 助手帮你找到合适的论文、幻灯片或进展归档。',
+  back:'返回目录', links:'阅读入口', catalog:'公开目录（llms.txt）', json:'结构化目录（JSON）', rules:'只读阅读规约（SKILL.md）',
+  copy:'复制阅读上下文',ready:'上下文已就绪。',done:'已复制阅读上下文。',fallback:'无法使用剪贴板，已选中文本，请手动复制。',unavailable:'无法读取上下文，请打开上方文件手动复制。',
+  static:'可打开上方两个文本文件手动复制；启用 JavaScript 后也可一键复制。',loading:'正在读取公开上下文…',preview:'上下文预览',boundary:'只包含已公开标题及链接，不代表 Agent 已读取正文、历史进展是当前状态或具备任何执行授权。',
+};
+---
+<BaseLayout title={title + ' · content2html'} description={text.intro} lang={lang}>
+  <header>
+    <a href={readerPath(lang + '/')}>{text.back}</a>
+    <h1>{title}</h1>
+    <p class="swiss-rule"></p>
+    <p>{text.intro}</p>
+  </header>
+  <section>
+    <h2>{text.links}</h2>
+    <ul>
+      <li><a href={readerPath('llms.txt')}>{text.catalog}</a></li>
+      <li><a href={readerPath('agent/site.json')}>{text.json}</a></li>
+      <li><a href={readerPath('agent/SKILL.md')}>{text.rules}</a></li>
+    </ul>
+  </section>
+  <section id="agent-copy" data-llms={readerPath('llms.txt')} data-rules={readerPath('agent/SKILL.md')} data-loading={text.loading} data-ready={text.ready} data-done={text.done} data-fallback={text.fallback} data-unavailable={text.unavailable}>
+    <h2>{text.copy}</h2>
+    <p>{text.boundary}</p>
+    <p id="agent-status" role="status" aria-live="polite">{text.static}</p>
+    <div id="agent-copy-tools" hidden>
+      <button type="button" id="agent-copy-button" disabled>{text.copy}</button>
+      <p><label for="agent-context">{text.preview}</label></p>
+      <textarea id="agent-context" rows="12" readonly></textarea>
+    </div>
+  </section>
+  <script is:inline src={readerPath('agent/reader.js')} defer></script>
+  <style>
+    header a,section a { text-decoration:underline; text-underline-offset:.15em; }
+    section li { margin-block:var(--space-baseline); }
+    #agent-copy-tools[hidden] { display:none; }
+    #agent-copy-tools p { margin-block:var(--space-baseline); }
+    #agent-copy-button { font-family:var(--type-font-sans); font-size:var(--type-prose); line-height:var(--leading-body); font-weight:var(--weight-semibold); border:1px solid currentColor; padding:calc(var(--space-unit)*2) calc(var(--space-unit)*4); cursor:pointer; }
+    #agent-context { display:block; width:100%; max-width:100%; min-width:0; font-family:var(--type-font-mono); font-size:var(--type-caption); line-height:var(--leading-readable); padding:calc(var(--space-unit)*3); border:1px solid currentColor; resize:vertical; }
+    #agent-copy-button:focus-visible,#agent-context:focus-visible { outline:2px solid currentColor; outline-offset:2px; }
+  </style>
+</BaseLayout>
