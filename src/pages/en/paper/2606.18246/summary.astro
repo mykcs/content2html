@@ -30,7 +30,7 @@ const paperId = paper.arxiv_id ?? entry.id;
 >
   <article>
     <header>
-      <p class="text-caption text-gray-rule">arXiv: {paperId}</p>
+      <p class="text-caption text-graphite">arXiv: {paperId}</p>
       <h1>{paper.title_en}</h1>
       <p class="text-graphite">{paper.authors.join(" · ")}</p>
       <hr class="swiss-rule" />
@@ -59,7 +59,7 @@ const paperId = paper.arxiv_id ?? entry.id;
 
     <footer>
       <hr class="swiss-rule" />
-      <p class="text-caption text-gray-rule">Smoke test artifact for paper-mode · {entry.id}</p>
+      <p class="text-caption text-graphite">Smoke test artifact for paper-mode · {entry.id}</p>
     </footer>
   </article>
 </BaseLayout>
