@@ -25,3 +25,5 @@ Dev explains how content2html is maintained and where executable/live owners res
 | Governance | AGENTS, Wish, Dev and site standards own their respective decisions. |
 
 This map routes to existing owners; it does not assert that unrun checks passed.
+
+Feature-level goals and protected semantics: [Intent](../intent/README.md). This file retains its existing ownership and history.

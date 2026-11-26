@@ -74,3 +74,5 @@ Always state:
 - hosted build/provider resource triggered when relevant (`yes / no / unknown / not applicable`);
 - branch / PR / merge status;
 - whether Production changed.
+
+For material page/feature changes, resolve [Intent](docs/intent/README.md) first, then follow the existing Wish, Design, Dev and verification owners; preserve confirmed behavior and do not infer approval from implementation.

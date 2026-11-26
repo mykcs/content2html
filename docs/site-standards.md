@@ -102,3 +102,5 @@ npm run test:standards:browser
 生产仍是 `https://mykcs.github.io/content2html/`。`deploy.yml` 对 main push 执行便宜的标准/构建门禁并发布 Pages；手动选择候选 branch、传入完整 `expected_sha` 才运行上述浏览器/PDF验收。工作流核对 checkout SHA、使用冻结 npm 依赖并保留3天证据；feature branch 不上传生产 artifact，也不能进入 deploy job。没有新增自动 PR 浏览器矩阵或新 hosting provider。
 
 生成证据位于 `test-results/standards/route-inventory.json` 与 `test-results/standards/browser/`，包含源码身份、每页HTML哈希、真实样式、扰动恢复、截图和PDF。最终候选、合并与发布状态以 [PR #17](https://github.com/mykcs/content2html/pull/17) 和对应 [Actions](https://github.com/mykcs/content2html/actions/workflows/deploy.yml) 为准；仓库标准文档不保存会过时的 CI 状态回执。
+
+Feature-level goals and protected semantics: [Intent](intent/README.md). This file retains its existing ownership and history.

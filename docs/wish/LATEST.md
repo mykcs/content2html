@@ -8,3 +8,5 @@ Protect:
 - outputs that remain inspectable and maintainable;
 - a simple path from source content to published HTML;
 - current hosting identity without adding providers just for fashion.
+
+Feature-level goals and protected semantics: [Intent](../intent/README.md). This file retains its existing ownership and history.
