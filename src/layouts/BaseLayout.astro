@@ -196,6 +196,12 @@ const iconUrl = `${baseUrl}/icons/translate.svg`;
       <slot />
     </main>
     {productType === "slide" && (
+      <details class="slide-source-links" id="slide-source-links" hidden>
+        <summary>{lang === "en" ? "Source links" : "资料链接"}</summary>
+        <ul aria-label={lang === "en" ? "Sources on this slide" : "当前幻灯片资料"}></ul>
+      </details>
+    )}
+    {productType === "slide" && (
       <div class="slide-controls" role="toolbar" aria-label={lang === "en" ? "Slide controls" : "幻灯片控件"}>
         <span class="slide-controls__label">{lang === "en" ? "Preview:" : "预览:"}</span>
         <span class="slide-controls__zoom" id="slide-zoom-level">{lang === "en" ? "Fit" : "适应"}</span>
