@@ -36,7 +36,7 @@ const TOTAL_SLIDES = 5;
     </div>
     <div class="col-span-12 flex flex-col justify-center items-center text-center gap-6">
       <hr class="accent-bar" />
-      <p class="text-caption text-gray-rule"><DateText value={p.period} lang="zh" period /></p>
+      <p class="text-caption text-graphite"><DateText value={p.period} lang="zh" period /></p>
       <h1 class="text-headline font-sans font-bold leading-tight max-w-slide-title">{p.project_name}</h1>
       <hr class="swiss-rule w-40" />
       <p class="text-kicker">Progress Log · 工作进展汇报</p>
@@ -133,7 +133,7 @@ const TOTAL_SLIDES = 5;
       <dl class="col-span-10 col-start-2 grid grid-cols-2 gap-4 text-body">
         {Object.entries(p.metrics ?? {}).map(([k, v]) => (
           <div class="border-l-4 border-ikb-blue pl-4">
-            <dt class="text-caption text-gray-rule">{k}</dt>
+            <dt class="text-caption text-graphite">{k}</dt>
             <dd class="font-semibold mt-1">{v}</dd>
           </div>
         ))}

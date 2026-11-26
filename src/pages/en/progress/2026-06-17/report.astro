@@ -28,7 +28,7 @@ const p = entry.data as {
 >
   <article>
     <header>
-      <p class="text-caption text-gray-rule"><DateText value={p.period} lang="en" period /></p>
+      <p class="text-caption text-graphite"><DateText value={p.period} lang="en" period /></p>
       <h1>{p.project_name}</h1>
       <p class="text-graphite">progress-mode smoke test · weekly archive</p>
       <hr class="swiss-rule" />
@@ -84,7 +84,7 @@ const p = entry.data as {
 
     <footer>
       <hr class="swiss-rule" />
-      <p class="text-caption text-gray-rule">Smoke test artifact for progress-mode · <span data-source-identifier="collection-id">{entry.id}</span></p>
+      <p class="text-caption text-graphite">Smoke test artifact for progress-mode · <span data-source-identifier="collection-id">{entry.id}</span></p>
     </footer>
   </article>
 </BaseLayout>
