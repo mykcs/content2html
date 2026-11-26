@@ -74,3 +74,5 @@ Always state:
 - hosted build/provider resource triggered when relevant (`yes / no / unknown / not applicable`);
 - branch / PR / merge status;
 - whether Production changed.
+
+For material page/feature changes, resolve the relevant [Feature Design](docs/design/features/README.md) (intent and realization), preserve source-backed essential outcomes, then actively compare and verify a better feasible design using the latest owner intent, technology and evidence. Do not freeze the old implementation or infer approval from a passing test.

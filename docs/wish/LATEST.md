@@ -8,3 +8,5 @@ Protect:
 - outputs that remain inspectable and maintainable;
 - a simple path from source content to published HTML;
 - current hosting identity without adding providers just for fashion.
+
+Feature goals and current/better design: [Feature Design](../design/features/README.md). This is part of Design, not a separate governance owner.

@@ -25,3 +25,5 @@ Dev explains how content2html is maintained and where executable/live owners res
 | Governance | AGENTS, Wish, Dev and site standards own their respective decisions. |
 
 This map routes to existing owners; it does not assert that unrun checks passed.
+
+Feature goals and current/better design: [Feature Design](../design/features/README.md). This is part of Design, not a separate governance owner.
