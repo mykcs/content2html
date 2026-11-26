@@ -27,6 +27,40 @@ const ZOOM_LEVELS = [0.5, 0.75, 1, "fit"] as const;
 type ZoomLevel = (typeof ZOOM_LEVELS)[number];
 type ZoomAction = ZoomLevel | "print";
 
+// Metadata remains on the original print canvas; compact screen controls use
+// the very same source URLs outside the transform-scaled artboard.
+function syncSourceLinks(): void {
+  const panel = document.querySelector<HTMLDetailsElement>("#slide-source-links");
+  const list = panel?.querySelector("ul");
+  if (!panel || !list) return;
+  const deck = document.querySelector<HTMLElement>(".slide-deck");
+  for (const source of document.querySelectorAll<HTMLAnchorElement>(".slide-info-corner a[href]")) {
+    if (!/^https?:$/.test(new URL(source.href).protocol)) continue;
+    if (!source.dataset.mobileSource) {
+      const mirror = document.createElement("span");
+      mirror.className = "slide-source-text";
+      mirror.textContent = source.textContent;
+      source.insertAdjacentElement("afterend", mirror);
+      source.dataset.mobileSource = "true";
+    }
+  }
+  const anchors = Array.from(document.querySelectorAll<HTMLAnchorElement>(".slide-page.active .slide-info-corner a[data-mobile-source]"));
+  panel.open = false;
+  list.replaceChildren(...anchors.map(source => {
+    const item = document.createElement("li");
+    const a = document.createElement("a");
+    a.href = source.href;
+    a.target = source.target;
+    a.rel = "noopener noreferrer";
+    const label = source.closest("dd")?.previousElementSibling?.textContent?.trim();
+    a.textContent = (label ? label + " · " : "") + (source.textContent?.trim() || source.hostname);
+    item.append(a);
+    return item;
+  }));
+  panel.hidden = !anchors.length;
+  if (deck) deck.dataset.sourceLinksReady = "true";
+}
+
 // === Navigation ===
 // Page number is shown once in top-right .slide-meta-bar .meta-page (e.g. "01 / 14").
 // Previously also rendered bottom-right (CSS ::after) + bottom-left (slide-indicator JS) — REMOVED 2026-06-21.
@@ -39,6 +73,7 @@ function navigate(shift: number): void {
   const current = pages.findIndex((p) => p.classList.contains(ACTIVE_CLASS));
   if (current < 0) {
     pages[0]?.classList.add(ACTIVE_CLASS);
+    syncSourceLinks();
     return;
   }
 
@@ -47,6 +82,7 @@ function navigate(shift: number): void {
 
   pages[current].classList.remove(ACTIVE_CLASS);
   pages[next].classList.add(ACTIVE_CLASS);
+  syncSourceLinks();
 }
 
 function ensureFirstPageActive(): void {
@@ -110,6 +146,7 @@ function readCurrentZoom(): ZoomLevel {
 // === Keyboard ===
 function onKeyDown(e: KeyboardEvent): void {
   const tag = (e.target as HTMLElement | null)?.tagName;
+  if ((e.target as HTMLElement | null)?.closest?.(".slide-source-links")) return;
   if (
     tag === "INPUT" ||
     tag === "TEXTAREA" ||
@@ -165,6 +202,7 @@ function onKeyDown(e: KeyboardEvent): void {
           );
           if (current >= 0) pages[current].classList.remove(ACTIVE_CLASS);
           pages[target].classList.add(ACTIVE_CLASS);
+          syncSourceLinks();
         }
       }
   }
@@ -173,6 +211,7 @@ function onKeyDown(e: KeyboardEvent): void {
 // === Wheel (debounced) ===
 let lastWheelTime = 0;
 function onWheel(e: WheelEvent): void {
+  if ((e.target as HTMLElement | null)?.closest?.(".slide-source-links")) return;
   // Ctrl+wheel = zoom (trackpad pinch)
   if (e.ctrlKey || e.metaKey) {
     e.preventDefault();
@@ -188,13 +227,16 @@ function onWheel(e: WheelEvent): void {
 }
 
 // === Touch swipe ===
-let touchStartY = 0;
+let touchStartY: number | null = null;
 function onTouchStart(e: TouchEvent): void {
-  touchStartY = e.touches[0]?.clientY ?? 0;
+  touchStartY = (e.target as HTMLElement | null)?.closest?.(".slide-source-links")
+    ? null : (e.touches[0]?.clientY ?? 0);
 }
 function onTouchEnd(e: TouchEvent): void {
+  if (touchStartY === null) return;
   const endY = e.changedTouches[0]?.clientY ?? 0;
   const dy = touchStartY - endY;
+  touchStartY = null;
   if (Math.abs(dy) >= TOUCH_SWIPE_THRESHOLD) {
     navigate(dy > 0 ? 1 : -1);
   }
@@ -225,6 +267,7 @@ function onResize(): void {
 // === Attach / Detach ===
 function attach(): void {
   ensureFirstPageActive();
+  syncSourceLinks();
   applyZoom("fit");
   document.addEventListener("keydown", onKeyDown);
   window.addEventListener("wheel", onWheel, { passive: false });
