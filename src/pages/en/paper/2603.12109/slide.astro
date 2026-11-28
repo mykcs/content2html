@@ -1,11 +1,21 @@
 ---
 // src/pages/en/paper/2603.12109/slide.astro
-// paper-mode: English slide (horizontal pagination) — 8 Q&A + 4 figures
-// v2 aesthetic upgrade: typography +25%, Swiss editorial signature
+// paper-mode: English slide (horizontal pagination)
+//   1 Title · then SEQUENCE (Q1…Q7 and 4 figures) · last page Key takeaways
+//
+// v4.1 (2026-11-27): deck plan + automatic pagination by the canvas budget.
+//   The old template rendered sections_en[3..7] for the Q4.1/Q4.2/Q5/Q6/Q7 slides,
+//   which actually showed Q3.2/Q3.3/Q3.4/Q4.1/Q4.2, and sections 8-10 never
+//   appeared. It also kept only "N. " lines, so Q4.1/Q4.2/Q5 rendered empty.
 import DateText from "../../../../components/DateText.astro";
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getEntry } from "astro:content";
 import { scholarlyArticleLd } from "../../../../lib/json-ld";
+import { getKeyFormulasForSection } from "../../../../lib/paper-slide-template";
+import { assertDeckPlan, cleanSectionHeading, deckKicker, resolveDeckSlide } from "../../../../lib/deck-plan.mjs";
+
+import { splitSectionBlocks } from "../../../../lib/slide-content.mjs";
+import PaperFigureSlide from "../../../../components/PaperFigureSlide.astro";
 import PaperSlideSection from "../../../../components/PaperSlideSection.astro";
 
 const entry = await getEntry("papers", "2603.12109");
@@ -28,14 +38,9 @@ const paper = entry.data as {
   venue?: string;
   venue_rank?: string;
   venue_url?: string;
-  category?: string;
-  field_large_zh?: string;
   field_large_en?: string;
-  field_medium_zh?: string;
   field_medium_en?: string;
-  field_small_zh?: string;
   field_small_en?: string;
-  technologies_zh?: string[];
   technologies_en?: string[];
   key_formulas?: {
     section_index: number;
@@ -51,25 +56,127 @@ const paperId = paper.arxiv_id ?? entry.id;
 const AUTHORS_EN = paper.authors_with_affil_en ?? paper.authors.map((n) => ({ name: n, affil: [] as string[] }));
 const AFFILS_EN: string[] = paper.affiliations_en ?? Array.from(new Set(AUTHORS_EN.flatMap((a) => a.affil)));
 
-// 精简 PPT: extract "1./2./3. xxx" bullet titles from body, drop long paragraphs
-// Honors "slides should have minimal text" PPT design principle
-function extractBullets(body: string): string[] {
-  const out: string[] = [];
-  // 1) numbered: "1. xxx[:]..." single line
-  const numbered = body.match(/^\d+\.\s+[^\n]+/gm);
-  if (numbered) out.push(...numbered.map((s) => s.trim()));
-  // 2) "Solution overview: xxx" closing segment
-  const sol = body.match(/^Solution overview[:\s][^\n]+/gim);
-  if (sol) out.push(...sol.map((s) => s.trim()));
-  return out;
+// Deck plan: every section exactly once, paper order, Q number matches the heading
+/** @type {import("../../../../lib/deck-plan.mjs").DeckSlide[]} */
+const PLAN = [
+  { key: "Q1", label: "Problem", section: 0 },
+  { key: "Q2", label: "Related Work", section: 1 },
+  { key: "Q3.1", label: "AS channel critique signal", section: 2 },
+  { key: "Q3.2", label: "BT channel critique signal", section: 3 },
+  { key: "Q3.3", label: "Margin-aware auxiliary objective", section: 4 },
+  { key: "Q3.4", label: "Minimum-invasive advantage reweighting", section: 5 },
+  { key: "Q4.1", label: "Experiments (Setup + Table 1)", section: 6 },
+  { key: "Q4.2", label: "Experiments (Dynamics + Robustness + λ)", section: 7 },
+  { key: "Q5", label: "Future Work", section: 8 },
+  { key: "Q6", label: "Summary", section: 9 },
+  { key: "Q7", label: "Learn More", section: 10 },
+];
+assertDeckPlan(PLAN, paper.sections_en);
+
+const sectionLayout = new Map<string, {
+  slide: import("../../../../lib/deck-plan.mjs").DeckSlide;
+  section: { heading: string; body: string };
+  index: number;
+  chunks: import("../../../../lib/slide-content.mjs").SlideBlockChunks;
+}>();
+for (const plan of PLAN) {
+  const resolved = resolveDeckSlide(PLAN, paper.sections_en, plan.key);
+  const hasFormula = getKeyFormulasForSection(paper.key_formulas, resolved.index).length > 0;
+  const { chunks } = splitSectionBlocks({
+    heading: cleanSectionHeading(resolved.section.heading),
+    body: resolved.section.body,
+    hasFormula,
+  });
+  sectionLayout.set(plan.key, { slide: resolved.slide, section: resolved.section, index: resolved.index, chunks });
 }
 
-// Strip "Q1." / "Q4.1" prefix from Q&A section headings.
-// kicker already labels position (e.g. "Q1 · Problem"), so H2 only needs the question text.
-// summary.astro keeps Q-prefix (FAQ enumeration style), only slide.astro strips here.
-function cleanHeading(heading: string): string {
-  return heading.replace(/^Q\d+(?:\.\d+)?\.\s*/, "");
+const FIGURES = {
+  fig1: {
+    kicker: "Figure 1 · Core Diagram",
+    heading: "Information Self-Locking (SeL) and AReW Mitigation",
+    caption: "Top: vanilla outcome-based RL trapped in self-locking (Uninformative AS + Anti-aligned BT); Bottom: AReW restores AS-BT alignment via directional critiques (Informative AS + Aligned BT)",
+    layout: "single" as const,
+    images: [{ src: `${FIG}/fig1_pipeline.png`, alt: "Fig 1: SeL overview + AReW mitigation", frame: "r-2x1 fit-contain flex-1" }],
+  },
+  fig4: {
+    kicker: "Figure 4 · Training Dynamics (4 tasks)",
+    heading: "Training Dynamics Results",
+    caption: "vanilla PPO (red) vs AReW-AS ONLY (green) vs AReW-AS+BT (blue) Reward vs Training Steps; AReW sustained improvement, vanilla stalls",
+    layout: "single" as const,
+    images: [{ src: `${FIG}/fig4_full.png`, alt: "Fig 4: training dynamics", frame: "r-16x10 fit-contain flex-1" }],
+  },
+  fig3: {
+    kicker: "Figure 3 · Cross-Algorithm Generalization",
+    heading: "PPO / GRPO / GSPO — Consistent Gains",
+    caption: "(a) MediQ intervention: outcome-RL reduces feedback sensitivity, increases belief consistency; (b) PE-F under GRPO; (c) FloDial-Easy under GSPO",
+    layout: "single" as const,
+    images: [{ src: `${FIG}/fig3_full.png`, alt: "Fig 3: algorithm generalization", frame: "h-30 fit-contain" }],
+  },
+  fig5: {
+    kicker: "Figures 5+6 · Robustness + Real Scenario",
+    heading: "λ Reweighting Strength and Cross-Scenario Generalization",
+    caption: "Fig 5 (left): τ²-bench training dynamics — (a) rewards (b) tool execution errors (c) consumed response tokens (d) instruction turns · Fig 6 (right): τ²-bench AReW customer service",
+    layout: "pair" as const,
+    images: [
+      { src: `${FIG}/fig5_taubench.png`, alt: "Fig 5: τ²-bench training dynamics — (a) rewards (b) tool execution errors (c) consumed response tokens (d) instruction turns", frame: "h-30 fit-contain" },
+      { src: `${FIG}/gh-tau2-AREW.png`, alt: "Fig 6: τ²-bench AReW customer service", frame: "h-30 fit-contain" },
+    ],
+  },
+};
+
+const SEQUENCE: Array<{ kind: "figure"; id: keyof typeof FIGURES } | { kind: "section"; key: string }> = [
+  { kind: "figure", id: "fig1" },
+  { kind: "section", key: "Q1" },
+  { kind: "section", key: "Q2" },
+  { kind: "section", key: "Q3.1" },
+  { kind: "section", key: "Q3.2" },
+  { kind: "section", key: "Q3.3" },
+  { kind: "section", key: "Q3.4" },
+  { kind: "figure", id: "fig4" },
+  { kind: "section", key: "Q4.1" },
+  { kind: "figure", id: "fig3" },
+  { kind: "section", key: "Q4.2" },
+  { kind: "figure", id: "fig5" },
+  { kind: "section", key: "Q5" },
+  { kind: "section", key: "Q6" },
+  { kind: "section", key: "Q7" },
+];
+
+type SlideEntry =
+  | { kind: "figure"; page: number; figure: (typeof FIGURES)[keyof typeof FIGURES] }
+  | {
+      kind: "section";
+      page: number;
+      section: { heading: string; body: string };
+      chunk: import("../../../../lib/slide-content.mjs").SlideBlockChunk;
+      index: number;
+      kicker: string;
+    };
+
+const SLIDES: SlideEntry[] = [];
+let nextPage = 2;
+for (const slot of SEQUENCE) {
+  if (slot.kind === "figure") {
+    SLIDES.push({ kind: "figure", page: nextPage, figure: FIGURES[slot.id] });
+    nextPage += 1;
+  } else {
+    const layout = sectionLayout.get(slot.key)!;
+    const total = layout.chunks.length;
+    layout.chunks.forEach((chunk, index) => {
+      SLIDES.push({
+        kind: "section",
+        page: nextPage,
+        section: layout.section,
+        chunk,
+        index: layout.index,
+        kicker: total > 1 ? `${deckKicker(layout.slide)} (${index + 1}/${total})` : deckKicker(layout.slide),
+      });
+      nextPage += 1;
+    });
+  }
 }
+const TOTAL_SLIDES = nextPage;
+const meta = (page: number) => `${String(page).padStart(2, "0")} / ${String(TOTAL_SLIDES).padStart(2, "0")}`;
 ---
 <BaseLayout
   title={`${paper.title_en} | paper-slide`}
@@ -79,9 +186,10 @@ function cleanHeading(heading: string): string {
   jsonLd={scholarlyArticleLd(paper, "en", entry.id)}
 >
   <!-- Slide 1: Title (full English title + English authors + English affiliations) -->
-  <section class="slide-page active" data-page="1">    <div class="slide-top-accent"></div>
+  <section class="slide-page active" data-page="1">
+    <div class="slide-top-accent"></div>
     <div class="slide-meta-bar">
-      <span class="meta-page">01 / 16</span>
+      <span class="meta-page">{meta(1)}</span>
     </div>
 
     <div class="col-span-12 flex flex-col justify-center items-center text-center gap-6">
@@ -124,241 +232,55 @@ function cleanHeading(heading: string): string {
     </aside>
   </section>
 
+  {SLIDES.map((slide) =>
+    slide.kind === "figure" ? (
+      <PaperFigureSlide
+        page={slide.page}
+        total={TOTAL_SLIDES}
+        kicker={slide.figure.kicker}
+        heading={slide.figure.heading}
+        caption={slide.figure.caption}
+        images={slide.figure.images}
+        layout={slide.figure.layout}
+      />
+    ) : (
+      <section class="slide-page" data-page={String(slide.page)}>
+        <div class="slide-top-accent"></div>
+        <div class="slide-meta-bar">
+          <span class="meta-page">{meta(slide.page)}</span>
+        </div>
+        <div class="col-span-12 flex flex-col gap-5 h-full">
+          <PaperSlideSection
+            section={slide.section}
+            blocks={slide.chunk}
+            sectionIndex={slide.index}
+            keyFormulas={paper.key_formulas}
+            lang="en"
+            kicker={slide.kicker}
+          />
+        </div>
+      </section>
+    )
+  )}
 
-  <!-- Slide 3: Fig 1 concept — r-2x1 (2.01:1) -->
-  <section class="slide-page" data-page="2">    <div class="slide-top-accent"></div>
+  <!-- Key takeaways -->
+  <section class="slide-page" data-page={String(TOTAL_SLIDES)}>
+    <div class="slide-top-accent"></div>
     <div class="slide-meta-bar">
-      <span class="meta-page">02 / 16</span>
+      <span class="meta-page">{meta(TOTAL_SLIDES)}</span>
     </div>
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
-        <p class="text-kicker mb-3">Figure 1 · Core Diagram</p>
+        <p class="text-kicker mb-3">Key Takeaways · Core contributions</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold mb-4 max-w-slide-heading">Information Self-Locking (SeL) and AReW Mitigation</h2>
+        <h2 class="text-headline font-sans font-bold">Core contributions</h2>
       </div>
-      <p class="text-caption flex-shrink-0">Top: vanilla outcome-based RL trapped in self-locking (Uninformative AS + Anti-aligned BT); Bottom: AReW restores AS-BT alignment via directional critiques (Informative AS + Aligned BT)</p>
-      <figure class="frame-img r-2x1 fit-contain flex-1">
-        <img src={`${FIG}/fig1_pipeline.png`} alt="Fig 1: SeL overview + AReW mitigation" loading="lazy" decoding="async" />
-      </figure>
-    </div>
-  </section>
-
-  <!-- Slide 4: Q1 -->
-  <section class="slide-page" data-page="3">    <div class="slide-top-accent"></div>
-    <div class="slide-meta-bar">
-      <span class="meta-page">03 / 16</span>
-    </div>
-
-    <div class="col-span-12 flex flex-col gap-5 h-full">
-      <div>
-        <p class="text-kicker mb-3">Q1 · Problem</p>
-        <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold max-w-slide-heading">{cleanHeading(paper.sections_en[0].heading)}</h2>
-      </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-slide-body">
-        {extractBullets(paper.sections_en[0].body).map((b) => (
-          <li class="takeaway-item">{b}</li>
+      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-slide-heading">
+        {paper.key_takeaways.map((t) => (
+          <li class="takeaway-item">{t}</li>
         ))}
       </ul>
     </div>
   </section>
-
-  <!-- Slide 5: Q2 -->
-  <section class="slide-page" data-page="4">    <div class="slide-top-accent"></div>
-    <div class="slide-meta-bar">
-      <span class="meta-page">04 / 16</span>
-    </div>
-
-    <div class="col-span-12 flex flex-col gap-5 h-full">
-      <div>
-        <p class="text-kicker mb-3">Q2 · Related Work</p>
-        <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold max-w-slide-heading">{cleanHeading(paper.sections_en[1].heading)}</h2>
-      </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-slide-body">
-        {extractBullets(paper.sections_en[1].body).map((b) => (
-          <li class="takeaway-item">{b}</li>
-        ))}
-      </ul>
-    </div>
-  </section>
-
-  <!-- Slide 6-9: Q3.1-Q3.4 — v3.0 模板: 每 sub-section 1 公式卡片 -->
-  {[2, 3, 4, 5].map((i, idx) => (
-    <section class="slide-page" data-page={`${5 + idx}`}>
-      <div class="slide-top-accent"></div>
-      <div class="slide-meta-bar">
-        <span class="meta-page">{String(5 + idx).padStart(2, "0")} / 16</span>
-      </div>
-      <div class="col-span-12 flex flex-col gap-5 h-full">
-        <PaperSlideSection
-          section={paper.sections_en[i]}
-          sectionIndex={i}
-          keyFormulas={paper.key_formulas}
-          lang="en"
-        />
-      </div>
-    </section>
-  ))}
-
-  <!-- Slide 7: Fig 4 training dynamics 4 panels — r-16x10 (1.56:1) -->
-  <section class="slide-page" data-page="9">    <div class="slide-top-accent"></div>
-    <div class="slide-meta-bar">
-      <span class="meta-page">09 / 16</span>
-    </div>
-
-    <div class="col-span-12 flex flex-col gap-5 h-full">
-      <div>
-        <p class="text-kicker mb-3">Figure 4 · Training Dynamics (4 tasks)</p>
-        <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold mb-4">Training Dynamics Results</h2>
-      </div>
-      <p class="text-caption flex-shrink-0">vanilla PPO (red) vs AReW-AS ONLY (green) vs AReW-AS+BT (blue) Reward vs Training Steps; AReW sustained improvement, vanilla stalls</p>
-      <figure class="frame-img r-16x10 fit-contain flex-1">
-        <img src={`${FIG}/fig4_full.png`} alt="Fig 4: training dynamics" loading="lazy" decoding="async" />
-      </figure>
-    </div>
-  </section>
-
-  <!-- Slide 8: Q4 (1/2) -->
-  <section class="slide-page" data-page="10">    <div class="slide-top-accent"></div>
-    <div class="slide-meta-bar">
-      <span class="meta-page">10 / 16</span>
-    </div>
-
-    <div class="col-span-12 flex flex-col gap-5 h-full">
-      <div>
-        <p class="text-kicker mb-3">Q4.1 · Experiments (Setup + Table 1)</p>
-        <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold max-w-slide-heading">{cleanHeading(paper.sections_en[3].heading)}</h2>
-      </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-slide-body">
-        {extractBullets(paper.sections_en[3].body).map((b) => (
-          <li class="takeaway-item">{b}</li>
-        ))}
-      </ul>
-    </div>
-  </section>
-
-  <!-- Slide 9: Fig 3 algorithm generalization 3 panels — h-30 -->
-  <section class="slide-page" data-page="11">    <div class="slide-top-accent"></div>
-    <div class="slide-meta-bar">
-      <span class="meta-page">11 / 16</span>
-    </div>
-
-    <div class="col-span-12 flex flex-col gap-5 h-full">
-      <div>
-        <p class="text-kicker mb-3">Figure 3 · Cross-Algorithm Generalization</p>
-        <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold mb-4">PPO / GRPO / GSPO — Consistent Gains</h2>
-      </div>
-      <p class="text-caption flex-shrink-0">(a) MediQ intervention: outcome-RL reduces feedback sensitivity, increases belief consistency; (b) PE-F under GRPO; (c) FloDial-Easy under GSPO</p>
-      <figure class="frame-img h-30 fit-contain">
-        <img src={`${FIG}/fig3_full.png`} alt="Fig 3: algorithm generalization" loading="lazy" decoding="async" />
-      </figure>
-    </div>
-  </section>
-
-  <!-- Slide 10: Q4 (2/2) -->
-  <section class="slide-page" data-page="12">    <div class="slide-top-accent"></div>
-    <div class="slide-meta-bar">
-      <span class="meta-page">12 / 16</span>
-    </div>
-
-    <div class="col-span-12 flex flex-col gap-5 h-full">
-      <div>
-        <p class="text-kicker mb-3">Q4.2 · Experiments (Dynamics + Robustness + λ)</p>
-        <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold max-w-slide-heading">{cleanHeading(paper.sections_en[4].heading)}</h2>
-      </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-slide-body">
-        {extractBullets(paper.sections_en[4].body).map((b) => (
-          <li class="takeaway-item">{b}</li>
-        ))}
-      </ul>
-    </div>
-  </section>
-
-  <!-- Slide 11: Fig 5 lambda + Fig 6 τ²-bench — dual h-30 -->
-  <section class="slide-page" data-page="13">    <div class="slide-top-accent"></div>
-    <div class="slide-meta-bar">
-      <span class="meta-page">13 / 16</span>
-    </div>
-
-    <div class="col-span-12 flex flex-col gap-5 h-full">
-      <div>
-        <p class="text-kicker mb-3">Figures 5+6 · Robustness + Real Scenario</p>
-        <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold mb-4">λ Reweighting Strength and Cross-Scenario Generalization</h2>
-      </div>
-      <p class="text-caption flex-shrink-0">Fig 5 (left): τ²-bench training dynamics — (a) rewards (b) tool execution errors (c) consumed response tokens (d) instruction turns · Fig 6 (right): τ²-bench AReW customer service</p>
-      <div class="flex-1 grid grid-cols-2 gap-6 items-center">
-        <figure class="frame-img h-30 fit-contain">
-          <img src={`${FIG}/fig5_taubench.png`} alt="Fig 5: τ²-bench training dynamics — (a) rewards (b) tool execution errors (c) consumed response tokens (d) instruction turns" loading="lazy" decoding="async" />
-        </figure>
-        <figure class="frame-img h-30 fit-contain">
-          <img src={`${FIG}/gh-tau2-AREW.png`} alt="Fig 6: τ²-bench AReW customer service" loading="lazy" decoding="async" />
-        </figure>
-      </div>
-    </div>
-  </section>
-
-  <!-- Slide 12: Q5 -->
-  <section class="slide-page" data-page="14">    <div class="slide-top-accent"></div>
-    <div class="slide-meta-bar">
-      <span class="meta-page">14 / 16</span>
-    </div>
-
-    <div class="col-span-12 flex flex-col gap-5 h-full">
-      <div>
-        <p class="text-kicker mb-3">Q5 · Future Work</p>
-        <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold max-w-slide-heading">{cleanHeading(paper.sections_en[5].heading)}</h2>
-      </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-slide-body">
-        {extractBullets(paper.sections_en[5].body).map((b) => (
-          <li class="takeaway-item">{b}</li>
-        ))}
-      </ul>
-    </div>
-  </section>
-
-  <!-- Slide 13: Q6 -->
-  <section class="slide-page" data-page="15">    <div class="slide-top-accent"></div>
-    <div class="slide-meta-bar">
-      <span class="meta-page">15 / 16</span>
-    </div>
-
-    <div class="col-span-12 flex flex-col gap-5 h-full">
-      <div>
-        <p class="text-kicker mb-3">Q6 · Summary</p>
-        <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold max-w-slide-heading">{cleanHeading(paper.sections_en[6].heading)}</h2>
-      </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-slide-body">
-        {extractBullets(paper.sections_en[6].body).map((b) => (
-          <li class="takeaway-item">{b}</li>
-        ))}
-      </ul>
-    </div>
-  </section>
-
-  <!-- Slide 14: Q7 (restored) -->
-  <section class="slide-page" data-page="16">    <div class="slide-top-accent"></div>
-    <div class="slide-meta-bar">
-      <span class="meta-page">16 / 16</span>
-    </div>
-
-    <div class="col-span-12 flex flex-col gap-5 h-full">
-      <div>
-        <p class="text-kicker mb-3">Q7 · Learn More</p>
-        <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold max-w-slide-heading">{cleanHeading(paper.sections_en[7].heading)}</h2>
-      </div>
-      <p class="qa-body flex-1 whitespace-pre-line">{paper.sections_en[7].body}</p>
-    </div>
-  </section>
-
-  <!-- Slide 15 (Q7 restorable) -->
 </BaseLayout>

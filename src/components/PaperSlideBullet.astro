@@ -1,41 +1,30 @@
 ---
 // src/components/PaperSlideBullet.astro
-// 通用 paper slide bullet 渲染: 3 种 kind
-//   - title:     编号段 (e.g. "1. xxx")
-//   - definition: 长段, 含 CJK + 内联公式 (markMath 后内联 $...$ 公式)
-//   - formula:   独立公式行, 卡片化 (圆角+阴影) + KaTeX
+// 演示正文的一个 block: 大纲标题 / 列表项 / 独立公式行 / 散文段
 //
-// KaTeX 由 BaseLayout 在 productType="slide" 时自动加载, 无需本组件关心.
-//   markMath 替换为 $...$ 后, auto-render 扫描并替换为 HTML.
-//
-// v2 (2026-06-22): 去掉 formula 角标 (5)-, 看起来奇怪; definition 加 title attr
-//   (CSS hover 时展开全文, 应对 2-line clamp 截断)
-//
-// 当前调用方:
-//   src/pages/{zh,en}/paper/2603.12109/slide.astro
-//   计划接入: 2606.18246 slide (按需)
-import type { SlideBullet } from "../lib/paper-bullets";
-import { markMath } from "../lib/paper-bullets";
+// 2026-11-27 改造: 旧版是 3 种 bullet (title/definition/formula) + 2 行 clamp +
+//   title 属性 hover 展开。clamp 会裁掉正文, hover 展开在触屏/键盘不可达,
+//   因此改为按 block 类型输出语义元素, 完整呈现且不裁切。
+import { markMath } from "../lib/slide-content.mjs";
 
 interface Props {
-  bullet: SlideBullet;
-  // v2 弃用: 公式不再显示角标
-  index?: never;
+  block: import("../lib/slide-content.mjs").SlideBlock;
 }
 
-const { bullet } = Astro.props;
-const mathText = markMath(bullet.text);
+const { block } = Astro.props;
+// 独立公式行保留源文本 (源是 Unicode 符号 + LaTeX 下标混排, 拆开标记会破坏语义);
+// 正文/标题里的数学 token 才包成 $...$ 交给 KaTeX auto-render。
+const text = block.kind === "formula" ? block.text : markMath(block.text);
 ---
-{bullet.kind === "title" && (
-  <li class="takeaway-item takeaway-item--title">{mathText}</li>
+{block.kind === "item" && (
+  <li class="slide-body-item">{text}</li>
 )}
-{bullet.kind === "definition" && (
-  <li class="takeaway-item takeaway-item--definition" title={bullet.text}>
-    {mathText}
-  </li>
+{block.kind === "heading" && (
+  <p class="slide-body-block slide-body-heading">{text}</p>
 )}
-{bullet.kind === "formula" && (
-  <li class="takeaway-item takeaway-item--formula">
-    <code class="formula-code">{mathText}</code>
-  </li>
+{block.kind === "paragraph" && (
+  <p class="slide-body-block slide-body-paragraph">{text}</p>
+)}
+{block.kind === "formula" && (
+  <p class="slide-body-block slide-body-formula">{text}</p>
 )}

@@ -68,6 +68,10 @@
   --measure-slide-heading: 64rem;
   --measure-slide-title: 72rem;
   --measure-slide-body: 80rem;
+  /* Section body measure: the full slide content width (1920 − 100×2 inline padding).
+     A section body carries the paper's whole outline, so it spans the canvas
+     instead of the narrower reading measure used for headings and titles. */
+  --measure-slide-section: 107.5rem;
   --measure-zoom-label: 2.8rem;
   --measure-control: 2rem;
   --slide-w: 1920px;

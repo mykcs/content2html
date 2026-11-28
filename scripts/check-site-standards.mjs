@@ -7,6 +7,7 @@ import postcss from 'postcss';
 import { formatCalendar, formatPeriod, splitLogLabel } from '../src/lib/calendar.mjs';
 import { syncMessageStyles, messageStyles } from './sync-message-styles.mjs';
 import { checkAgentReader } from './check-agent-reader.mjs';
+import { checkAllSlideContent } from './check-slide-content.mjs';
 export const root = fileURLToPath(new URL('../', import.meta.url));
 export const STANDARD = 'content2html-20261120';
 export const BASE = '/content2html/';
@@ -130,6 +131,7 @@ export function checkStandards({ output = true } = {}) {
     ])];
     for (const file of required) if (!routes.some(route => route.file === file)) errors.push(`Missing route ${file}`);
     errors.push(...checkAgentReader(path.join(root, "dist"), required.filter(file=>/^(zh|en)\/(paper|progress)\//.test(file))));
+    errors.push(...checkAllSlideContent(path.join(root, 'dist'), path.join(root, 'src/content/papers')));
     if (!fs.readFileSync(path.join(root, 'dist/404.html'), 'utf8').includes(messageStyles())) errors.push('Built 404 embeds stale token/message owners');
     fs.mkdirSync(path.join(root, 'test-results/standards'), { recursive: true });
     fs.writeFileSync(path.join(root, 'test-results/standards/route-inventory.json'), JSON.stringify({ source: sourceIdentity(), routes }, null, 2) + '\n');

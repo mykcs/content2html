@@ -1,0 +1,56 @@
+---
+// src/components/PaperFigureSlide.astro
+// 演示里的一张图页: kicker + 标题 + 图注 + 一张或两张图
+//
+// 2026-11-27 新增: 原本每张图页都在各 slide.astro 里手写, 页码一改就要改四处;
+//   抽成组件后 deck 的页面顺序由 SEQUENCE 驱动, 页码动态计算。
+interface ImageSpec {
+  src: string;
+  alt: string;
+  /** 图框样式: 大图占满 (flex-1) 或固定高度 */
+  frame?: string;
+}
+
+interface Props {
+  page: number;
+  total: number;
+  kicker: string;
+  heading: string;
+  caption?: string;
+  images: ImageSpec[];
+  /** single = 一张大图; pair = 两张并排 */
+  layout?: "single" | "pair";
+}
+
+const { page, total, kicker, heading, caption, images, layout = "single" } = Astro.props;
+const meta = `${String(page).padStart(2, "0")} / ${String(total).padStart(2, "0")}`;
+---
+
+<section class="slide-page" data-page={String(page)}>
+  <div class="slide-top-accent"></div>
+  <div class="slide-meta-bar">
+    <span class="meta-page">{meta}</span>
+  </div>
+
+  <div class="col-span-12 flex flex-col gap-5 h-full">
+    <div>
+      <p class="text-kicker mb-3">{kicker}</p>
+      <hr class="accent-bar mb-6" />
+      <h2 class="text-headline font-sans font-bold mb-4 max-w-slide-heading">{heading}</h2>
+    </div>
+    {caption && <p class="text-caption flex-shrink-0">{caption}</p>}
+    {layout === "pair" ? (
+      <div class="flex-1 grid grid-cols-2 gap-6 items-center">
+        {images.map((image) => (
+          <figure class={`frame-img ${image.frame ?? "h-30 fit-contain"}`}>
+            <img src={image.src} alt={image.alt} loading="lazy" decoding="async" />
+          </figure>
+        ))}
+      </div>
+    ) : (
+      <figure class={`frame-img ${images[0]?.frame ?? "fit-contain flex-1"}`}>
+        <img src={images[0]?.src} alt={images[0]?.alt} loading="lazy" decoding="async" />
+      </figure>
+    )}
+  </div>
+</section>
