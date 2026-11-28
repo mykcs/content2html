@@ -1,0 +1,42 @@
+---
+// src/components/PaperSlideBody.astro
+// 论文正文 blocks → 演示正文区域
+//
+// 2026-11-27 新增: 旧实现用正则只取编号行, 纯散文 section 会渲染出空 slide。
+// 本组件按 projectPaperBody() 的 block 顺序完整渲染正文, 不丢行、不裁切。
+import PaperSlideBullet from "./PaperSlideBullet.astro";
+
+/** @type {{ blocks: import('../lib/slide-content.mjs').SlideBlock[] }} */
+interface Props {
+  blocks: import("../lib/slide-content.mjs").SlideBlock[];
+}
+
+const { blocks } = Astro.props;
+
+// 连续的 item 合并成一个列表, 其余 block 独立成行 (与 CommonMark 结构一致)
+const groups: Array<
+  { kind: "items"; items: import("../lib/slide-content.mjs").SlideBlock[] } |
+  { kind: "block"; block: import("../lib/slide-content.mjs").SlideBlock }
+> = [];
+for (const block of blocks) {
+  const last = groups[groups.length - 1];
+  if (block.kind === "item") {
+    if (last && last.kind === "items") last.items.push(block);
+    else groups.push({ kind: "items", items: [block] });
+  } else {
+    groups.push({ kind: "block", block });
+  }
+}
+---
+
+<div class="slide-body flex-1 flex flex-col justify-start overflow-y-auto">
+  {groups.map((group) =>
+    group.kind === "items" ? (
+      <ul class="slide-body-list">
+        {group.items.map((item) => <PaperSlideBullet block={item} />)}
+      </ul>
+    ) : (
+      <PaperSlideBullet block={group.block} />
+    )
+  )}
+</div>

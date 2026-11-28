@@ -31,15 +31,15 @@ await page.waitForTimeout(1500);
 // fails for paper slides that have <section class="slide-page"> inside map() loops
 // or inside component-rendered markup where Playwright counts nested/extra nodes.
 // SLIDE_COUNT is the single source of truth — caller must pass it explicitly
-// matching the actual slide count in the slide.astro source (e.g. 16 for 2603.12109,
-// 6 for 2606.18246, 5 for progress 2026-06-17).
+// matching the actual slide count in the slide.astro source (e.g. 21 for 2603.12109,
+// 8 for 2606.18246, 5 for progress 2026-06-17).
 const rawSlideCount = process.env.SLIDE_COUNT;
 if (!rawSlideCount) {
   console.error('❌ SLIDE_COUNT env var is required.');
-  console.error('   Usage: SLIDE_COUNT=16 node scripts/verify-print-e2e.mjs');
+  console.error('   Usage: SLIDE_COUNT=21 node scripts/verify-print-e2e.mjs');
   console.error('   Known slide counts:');
-  console.error('     - 2603.12109 paper slide: 16');
-  console.error('     - 2606.18246 paper slide: 6');
+  console.error('     - 2603.12109 paper slide: 21');
+  console.error('     - 2606.18246 paper slide: 8');
   console.error('     - progress 2026-06-17 slide: 5');
   process.exit(2);
 }

@@ -180,7 +180,7 @@ async function localImages(page) {
   });
 }
 function runPrint(route) {
-  const known = route.url.includes('/paper/2603.12109/') ? 16 : route.url.includes('/paper/2606.18246/') ? 6 : route.url.includes('/progress/2026-06-17/') ? 5 : null;
+  const known = route.url.includes('/paper/2603.12109/') ? 21 : route.url.includes('/paper/2606.18246/') ? 8 : route.url.includes('/progress/2026-06-17/') ? 5 : null;
   assert.ok(known, `New deck ${route.url} needs an intentional print page-count expectation`);
   assert.equal(route.slides, known, 'build/source slide count must match the print regression');
   const key = route.file.replace(/[^a-z0-9]+/gi, '-');

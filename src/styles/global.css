@@ -485,6 +485,63 @@ figure.frame-img { margin: 0; display: flex; flex-direction: column; min-width: 
   font-family: var(--type-font-mono);
 }
 
+/* === Slide body blocks (2026-11-27) ===
+   论文正文按 projectPaperBody() 的 block 渲染: 大纲标题 / 列表项 / 独立公式行 / 散文段。
+   旧实现只取 "1. " 编号行, 纯散文 section 会渲染成空 slide; 这里完整呈现且不裁切。
+   字号、行距、间距、字距全部引用 tokens, 不引入独立数值。 */
+.slide-page .slide-body {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-unit) * 1.5);
+  min-height: 0;
+  max-width: var(--measure-slide-section);
+}
+.slide-page .slide-body-block {
+  margin: 0;
+}
+.slide-page .slide-body-heading {
+  font-family: var(--type-font-sans);
+  font-size: var(--type-bullet-title);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-bullet);
+  letter-spacing: var(--tracking-title);
+  color: var(--color-ikb-blue);
+  margin: calc(var(--space-unit) * 1.2) 0 0;
+}
+.slide-page .slide-body-paragraph {
+  font-family: var(--type-font-serif);
+  font-size: var(--type-body);
+  font-weight: var(--weight-normal);
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-black);
+  overflow-wrap: break-word;
+}
+.slide-page .slide-body-list {
+  margin: 0;
+  padding-left: calc(var(--space-unit) * 6);
+}
+.slide-page .slide-body-item {
+  font-family: var(--type-font-serif);
+  font-size: var(--type-body);
+  font-weight: var(--weight-normal);
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-black);
+  margin: calc(var(--space-unit) * 0.6) 0;
+  overflow-wrap: break-word;
+}
+.slide-page .slide-body-formula {
+  font-family: var(--type-font-mono);
+  font-size: var(--type-formula-inline);
+  font-weight: var(--weight-normal);
+  line-height: var(--leading-caption);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-black);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
 /* Title slide 装饰: IKB-blue 巨数字 + 作者高亮 */
 .slide-page .author-name {
   color: var(--color-ikb-blue);

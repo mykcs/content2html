@@ -1,11 +1,19 @@
 ---
 // src/pages/zh/paper/2606.18246/slide.astro
-// paper-mode: 中文 slide (横向翻页) — 6 Q&A (Title + 5 sections from paper)
-// Template style: 跟 2603.12109 对齐 (Title + Info-Corner + Q&A 配 extractBullets)
-// v3.2 美学升级: Swiss editorial 签名 (accent-bar + kicker + top-accent)
+// paper-mode: 中文 slide (横向翻页)
+//   1 标题 · 2 摘要 · 之后按 SEQUENCE 排布 Q1…Q5 · 最后 1 页核心贡献
+//
+// v4.1 (2026-11-27): deck 计划 + 版式预算自动分页。
+//   旧实现手写 sections_zh[0..3] + 正则只取编号行 —— Q1/Q3/Q4 三张 slide
+//   渲染为空 (正文是纯散文, 没有 "1. " 行), 且第 5 节「结论」从未出现。
+//   现在每节一页 (超出画布则自动分页), 正文完整呈现, 计划在构建期校验。
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getEntry } from "astro:content";
 import { scholarlyArticleLd } from "../../../../lib/json-ld";
+import { getKeyFormulasForSection } from "../../../../lib/paper-slide-template";
+import { assertDeckPlan, cleanSectionHeading, deckKicker, resolveDeckSlide } from "../../../../lib/deck-plan.mjs";
+
+import { splitSectionBlocks } from "../../../../lib/slide-content.mjs";
 import PaperSlideSection from "../../../../components/PaperSlideSection.astro";
 
 const entry = await getEntry("papers", "2606.18246");
@@ -29,27 +37,79 @@ const paper = entry.data as {
 };
 const paperId = paper.arxiv_id ?? entry.id;
 
-// 精简 PPT: extract "1./2./3. xxx" bullet titles from body, drop long paragraphs
-function extractBullets(body: string): string[] {
-  const out: string[] = [];
-  const numbered = body.match(/^\d+\.\s+[^\n]+/gm);
-  if (numbered) out.push(...numbered.map((s) => s.trim()));
-  return out;
-}
-
-// Strip "1." / "Q1." prefix from section heading (kicker already labels position)
-function cleanHeading(heading: string): string {
-  return heading.replace(/^\d+\.\s*/, "").replace(/^Q\d+(?:\.\d+)?\.\s*/, "");
-}
-
-// Q&A kicker labels — 每节一个角色
-const KICKERS = [
-  "Q1 · 试图解决什么问题",   // sections_zh[0]
-  "Q2 · 方法",                // sections_zh[1]
-  "Q3 · 实验",                // sections_zh[2]
-  "Q4 · 分析",                // sections_zh[3]
-  "Q5 · 总结",                // sections_zh[4]
+// Deck 计划: 每节恰好一次, 顺序与论文一致, Q 编号与该节标题一致 (构建期校验)
+/** @type {import("../../../../lib/deck-plan.mjs").DeckSlide[]} */
+const PLAN = [
+  { key: "Q1", label: "试图解决什么问题", section: 0 },
+  { key: "Q2", label: "方法", section: 1 },
+  { key: "Q3", label: "实验", section: 2 },
+  { key: "Q4", label: "分析", section: 3 },
+  { key: "Q5", label: "总结", section: 4 },
 ];
+assertDeckPlan(PLAN, paper.sections_zh);
+
+const sectionLayout = new Map<string, {
+  slide: import("../../../../lib/deck-plan.mjs").DeckSlide;
+  section: { heading: string; body: string };
+  index: number;
+  chunks: import("../../../../lib/slide-content.mjs").SlideBlockChunks;
+}>();
+for (const plan of PLAN) {
+  const resolved = resolveDeckSlide(PLAN, paper.sections_zh, plan.key);
+  const hasFormula = getKeyFormulasForSection(paper.key_formulas, resolved.index).length > 0;
+  const { chunks } = splitSectionBlocks({
+    heading: cleanSectionHeading(resolved.section.heading),
+    body: resolved.section.body,
+    hasFormula,
+  });
+  sectionLayout.set(plan.key, { slide: resolved.slide, section: resolved.section, index: resolved.index, chunks });
+}
+
+// 页面顺序: 标题(1) + 摘要(2) + 各节 + 核心贡献
+const SEQUENCE: Array<{ kind: "abstract" } | { kind: "section"; key: string }> = [
+  { kind: "abstract" },
+  { kind: "section", key: "Q1" },
+  { kind: "section", key: "Q2" },
+  { kind: "section", key: "Q3" },
+  { kind: "section", key: "Q4" },
+  { kind: "section", key: "Q5" },
+];
+
+type SlideEntry =
+  | { kind: "abstract"; page: number }
+  | {
+      kind: "section";
+      page: number;
+      section: { heading: string; body: string };
+      chunk: import("../../../../lib/slide-content.mjs").SlideBlockChunk;
+      index: number;
+      kicker: string;
+    };
+
+const SLIDES: SlideEntry[] = [];
+let nextPage = 2;
+for (const slot of SEQUENCE) {
+  if (slot.kind === "abstract") {
+    SLIDES.push({ kind: "abstract", page: nextPage });
+    nextPage += 1;
+  } else {
+    const layout = sectionLayout.get(slot.key)!;
+    const total = layout.chunks.length;
+    layout.chunks.forEach((chunk, index) => {
+      SLIDES.push({
+        kind: "section",
+        page: nextPage,
+        section: layout.section,
+        chunk,
+        index: layout.index,
+        kicker: total > 1 ? `${deckKicker(layout.slide)} (${index + 1}/${total})` : deckKicker(layout.slide),
+      });
+      nextPage += 1;
+    });
+  }
+}
+const TOTAL_SLIDES = nextPage;
+const meta = (page: number) => `${String(page).padStart(2, "0")} / ${String(TOTAL_SLIDES).padStart(2, "0")}`;
 ---
 <BaseLayout
   title={`${paper.title_zh} | paper-slide`}
@@ -62,7 +122,7 @@ const KICKERS = [
   <section class="slide-page active" data-page="1">
     <div class="slide-top-accent"></div>
     <div class="slide-meta-bar">
-      <span class="meta-page">01 / 06</span>
+      <span class="meta-page">{meta(1)}</span>
     </div>
 
     <div class="col-span-12 flex flex-col justify-center items-center text-center gap-6">
@@ -89,100 +149,62 @@ const KICKERS = [
     </aside>
   </section>
 
-  <!-- Slide 2: 摘要 (Abstract) -->
-  <section class="slide-page" data-page="2">
+  {SLIDES.map((slide) =>
+    slide.kind === "abstract" ? (
+      <section class="slide-page" data-page={String(slide.page)}>
+        <div class="slide-top-accent"></div>
+        <div class="slide-meta-bar">
+          <span class="meta-page">{meta(slide.page)}</span>
+        </div>
+
+        <div class="col-span-12 flex flex-col gap-5 h-full">
+          <div>
+            <p class="text-kicker mb-3">摘要 · Abstract</p>
+            <hr class="accent-bar mb-6" />
+            <h2 class="text-headline font-sans font-bold mb-4">一句话总结</h2>
+          </div>
+          <p class="text-caption flex-shrink-0">× 形 (&gt;&lt;former) 架构: 保留首尾层宽度而压缩中间层, 形成参数瓶颈. 节省 22% FLOPs + 15% KV cache, 在 200M-3B 参数上 loss 优于参数匹配均匀 baseline.</p>
+          <div class="flex-1 flex items-center">
+            <p class="text-body leading-relaxed max-w-slide-title">{paper.abstract_zh}</p>
+          </div>
+        </div>
+      </section>
+    ) : (
+      <section class="slide-page" data-page={String(slide.page)}>
+        <div class="slide-top-accent"></div>
+        <div class="slide-meta-bar">
+          <span class="meta-page">{meta(slide.page)}</span>
+        </div>
+        <div class="col-span-12 flex flex-col gap-5 h-full">
+          <PaperSlideSection
+            section={slide.section}
+            blocks={slide.chunk}
+            sectionIndex={slide.index}
+            keyFormulas={paper.key_formulas}
+            lang="zh"
+            kicker={slide.kicker}
+          />
+        </div>
+      </section>
+    )
+  )}
+
+  <!-- 核心贡献 -->
+  <section class="slide-page" data-page={String(TOTAL_SLIDES)}>
     <div class="slide-top-accent"></div>
     <div class="slide-meta-bar">
-      <span class="meta-page">02 / 06</span>
+      <span class="meta-page">{meta(TOTAL_SLIDES)}</span>
     </div>
 
     <div class="col-span-12 flex flex-col gap-5 h-full">
       <div>
-        <p class="text-kicker mb-3">摘要 · Abstract</p>
+        <p class="text-kicker mb-3">Key Takeaways · 核心贡献</p>
         <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold mb-4">一句话总结</h2>
+        <h2 class="text-headline font-sans font-bold">核心贡献</h2>
       </div>
-      <p class="text-caption flex-shrink-0">× 形 (&gt;&lt;former) 架构: 保留首尾层宽度而压缩中间层, 形成参数瓶颈. 节省 22% FLOPs + 15% KV cache, 在 200M-3B 参数上 loss 优于参数匹配均匀 baseline.</p>
-      <div class="flex-1 flex items-center">
-        <p class="text-body leading-relaxed max-w-slide-title">{paper.abstract_zh}</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Slide 3: Q1 引言 -->
-  <section class="slide-page" data-page="3">
-    <div class="slide-top-accent"></div>
-    <div class="slide-meta-bar">
-      <span class="meta-page">03 / 06</span>
-    </div>
-
-    <div class="col-span-12 flex flex-col gap-5 h-full">
-      <div>
-        <p class="text-kicker mb-3">{KICKERS[0]}</p>
-        <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold max-w-slide-heading">{cleanHeading(paper.sections_zh[0].heading)}</h2>
-      </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-slide-body">
-        {extractBullets(paper.sections_zh[0].body).map((b) => (
-          <li class="takeaway-item">{b}</li>
-        ))}
-      </ul>
-    </div>
-  </section>
-
-  <!-- Slide 4: Q2 方法 — v3.3 模板接入: 宽度函数公式卡片 -->
-  <section class="slide-page" data-page="4">
-    <div class="slide-top-accent"></div>
-    <div class="slide-meta-bar">
-      <span class="meta-page">04 / 06</span>
-    </div>
-    <div class="col-span-12 flex flex-col gap-5 h-full">
-      <PaperSlideSection
-        section={paper.sections_zh[1]}
-        sectionIndex={1}
-        keyFormulas={paper.key_formulas}
-        lang="zh"
-      />
-    </div>
-  </section>
-
-  <!-- Slide 5: Q3 实验 -->
-  <section class="slide-page" data-page="5">
-    <div class="slide-top-accent"></div>
-    <div class="slide-meta-bar">
-      <span class="meta-page">05 / 06</span>
-    </div>
-
-    <div class="col-span-12 flex flex-col gap-5 h-full">
-      <div>
-        <p class="text-kicker mb-3">{KICKERS[2]}</p>
-        <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold max-w-slide-heading">{cleanHeading(paper.sections_zh[2].heading)}</h2>
-      </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-slide-body">
-        {extractBullets(paper.sections_zh[2].body).map((b) => (
-          <li class="takeaway-item">{b}</li>
-        ))}
-      </ul>
-    </div>
-  </section>
-
-  <!-- Slide 6: Q4 分析 -->
-  <section class="slide-page" data-page="6">
-    <div class="slide-top-accent"></div>
-    <div class="slide-meta-bar">
-      <span class="meta-page">06 / 06</span>
-    </div>
-
-    <div class="col-span-12 flex flex-col gap-5 h-full">
-      <div>
-        <p class="text-kicker mb-3">{KICKERS[3]}</p>
-        <hr class="accent-bar mb-6" />
-        <h2 class="text-headline font-sans font-bold max-w-slide-heading">{cleanHeading(paper.sections_zh[3].heading)}</h2>
-      </div>
-      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-slide-body">
-        {extractBullets(paper.sections_zh[3].body).map((b) => (
-          <li class="takeaway-item">{b}</li>
+      <ul class="flex-1 flex flex-col gap-3 justify-center max-w-slide-heading">
+        {paper.key_takeaways.map((t) => (
+          <li class="takeaway-item">{t}</li>
         ))}
       </ul>
     </div>

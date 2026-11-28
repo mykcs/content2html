@@ -47,7 +47,7 @@
 | --- | --- |
 | 长文 | `--measure-reading: 45rem`；两侧 padding 共用普通间距，正文可换行 |
 | 跳转/错误页 | `--measure-message: 32rem`；同一消息布局与移动端换行规则 |
-| 演示文字 | `--measure-slide-heading/title/body` 分别为 64/72/80rem；不再在页面分散写 `max-w-5xl/6xl/7xl` |
+| 演示文字 | `--measure-slide-heading/title/body` 分别为 64/72/80rem；章节正文用 `--measure-slide-section` (107.5rem, 画布内容宽)；不再在页面分散写 `max-w-5xl/6xl/7xl` |
 | 屏幕演示 | 1920×1080 固定画布，80px 外框余量；`slide-nav.ts` 从 CSS owner 读取尺寸后计算 Fit |
 | 演示内部留白 | `--slide-space-block/inline` 为 80/100px，元信息位置与宽度也有独立演示角色 |
 | 打印页面 | 297×167mm；`@page` 的固定纸张声明与 tokens 中的页面宽高一致 |
@@ -65,6 +65,18 @@
 
 进展条目只拆开已知的 `[YYYY-MM-DD]` 前缀：日期标签经 `DateText` 显示，后面的归档提交信息由 `ProgressLogText` 原样呈现，包括里面的代码、标识符和原文引用日期。门禁只认可源 JSON 中实际存在的归档消息及内容 ID；不能随意给新日期套一个“引用”属性来绕过规范。原始 content JSON 不因显示规范改变。
 
+## 演示正文与 deck 计划
+
+论文 deck 由一份 **deck 计划** 驱动（`src/lib/paper-slide-template.ts` 的 `DeckSlide[]`），而不是页面里手写的 section 下标。每条计划声明它自称的 Q 编号、短标签和引用的 section。构建期 `assertDeckPlan` 校验：论文每一节恰好被引用一次且顺序与论文一致；slide 自称的 Q 主号必须与该节标题里的 Q 主号一致（拦截"标 Q4.1 却渲染 Q3.2"）；key 不重复。
+
+正文按 `src/lib/slide-content.mjs` 的 `projectPaperBody()` 做**无损投影**：每一行非空源码行都落到且只落到一个 block（编号大纲标题 / 列表项 / 独立公式行 / 散文段），段内软换行按 CommonMark 合并。旧的 `body.match(/^\d+\.\s+/gm)` 只取编号行，纯散文章节会渲染出空 slide、且会静默丢掉其余正文，现已废弃。
+
+章节正文按 1920×1080 画布的可用高度自动分页：`splitSectionBlocks()` 用与版式一致的模型估算高度，装不下就切成多页，后一页标题带 `(n/N)`；构建期断言每页都装得下，超出即构建失败。章节正文跨画布内容宽（`--measure-slide-section`），标题与题注仍用各自的 `--measure-slide-*`。
+
+正文里的数学 token 由 `markMath()` 包成 `$...$`，交给 `BaseLayout` 的 KaTeX auto-render 渲染；独立公式行保留源文本。`markMath()` 幂等，且不拆开 `{z_t}_{t=0}^{H−1}`、`Ψ_{t+1}` 这类复合表达式。
+
+`scripts/check-slide-content.mjs` 是内容覆盖门禁：构建后核对双语 deck 里每一节的标题与每一行正文都真实存在，任一缺失即构建失败；`scripts/probe-slide-content.mjs` 输出同一口径的可读覆盖率报告，`scripts/estimate-slide-fit.mjs` 用同一模型复核产物的画布占用。
+
 ## 完整覆盖和验收入口
 
 构建动态枚举 `dist/**/*.html`，并从论文/进展 collection 校验应有路由。现有输出为18个 HTML：
@@ -74,7 +86,7 @@
 | `/en/`、`/zh/` | 2 | 双语目录 |
 | `/en/paper/{2603.12109,2606.18246}/summary/` 及中文对应页 | 4 | 论文长文 |
 | `/en/progress/2026-06-17/report/` 及中文页 | 2 | 进展长文 |
-| 以上三份内容的双语 `/slide/` | 6 | 16、6、5张 slide，各有中英文版本 |
+| 以上三份内容的双语 `/slide/` | 6 | 21、8、5张 slide，各有中英文版本 |
 | `/en/404/`、`/zh/404/` | 2 | 双语错误页 |
 | `/` | 1 | 到 `/content2html/zh/` 的真实跳转及可读 fallback |
 | `/404.html` | 1 | GitHub Pages 独立静态错误页 |
@@ -89,7 +101,7 @@ npx playwright install --with-deps chromium webkit
 npm run test:standards:browser
 ```
 
-源码/构建门禁验证单一 owner、合法变量、无独立文字/间距/宽度值、DateText 与窄原文边界、全部构建路由和独立404同步。负例包括“外壳接对了但正文另写字体”、未知token、非标准英文月份与带空格中文日期、伪造引用边界。
+源码/构建门禁验证单一 owner、合法变量、无独立文字/间距/宽度值、DateText 与窄原文边界、全部构建路由、独立404同步，以及双语 deck 的正文覆盖（每节标题与每一行正文都真实存在）。负例包括“外壳接对了但正文另写字体”、未知token、非标准英文月份与带空格中文日期、伪造引用边界。
 
 浏览器入口在当前 `dist` 下启动 `/content2html/` 本地服务，检查 Chromium 与 WebKit 的1280×956和440×956视口；不把生产站 smoke 当作分支验收。全部页面及每张 slide 检查实际 computed 字体/字号/字重/行距、日期、溢出、文字裁切与本地图片，并保留截图。每条路由修改实际消费者引用的 font、size、leading、spacing、measure token，等待具体变化后恢复；宽度还必须改变真实元素矩形，不能只检查 CSS 声明。另有浏览器“正确外壳/错误正文”负例。
 
